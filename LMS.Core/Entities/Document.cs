@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,5 +18,6 @@ namespace LMS.Core.Entities
         public Course? Course { get; set; }
         public Module? Module { get; set; }
         public Activity? Activity { get; set; }
+        public IdentityUser Owner { get; set; }
     }
 }
