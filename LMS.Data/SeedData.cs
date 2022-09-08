@@ -41,21 +41,17 @@ namespace LMS.Data
             userManager = services.GetRequiredService<UserManager<IdentityUser>>();
             ArgumentNullException.ThrowIfNull(userManager);
 
+            faker = new Faker("sv");
+
             var roleNames = new[] { "Student", "Teacher" };
 
             await AddRolesAsync(roleNames);
 
-            //var teacher = await AddTeacherAsync("teacher@lms.se", "a");
-
-            var teachers = await GetUsersAsync();
-
-            //await AddToRolesAsync(teacher, new[] { "Teacher" });
-
+            var teachers = await GetTeacherUsersAsync(5);
             await AddToRolesAsync(teachers, new[] { "Teacher" });
 
-            // TODO: Lägg till studenter + ev. flera teachers
-
-            faker = new Faker("sv");
+            var students = await GetStudentUsersAsync(5);
+            await AddToRolesAsync(students, new[] { "Student" });
 
             var activityTypes = GetActivityTypes();
             await db.AddRangeAsync(activityTypes);
@@ -71,17 +67,35 @@ namespace LMS.Data
         {
             foreach (var roleName in roleNames)
             {
-                if (await roleManager.RoleExistsAsync(roleName)) continue;
+                if (await roleManager.RoleExistsAsync(roleName))
+                    continue;
+
                 var role = new IdentityRole { Name = roleName };
                 var result = await roleManager.CreateAsync(role);
 
-                if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+                if (!result.Succeeded)
+                    throw new Exception(string.Join("\n", result.Errors));
             }
         }
 
-        private static async Task<IdentityUser> GetUsersAsync(int nrOfUsers)
+        private static async Task<IEnumerable<IdentityUser>> GetTeacherUsersAsync(int nrOfUsers)
         {
             var users = new List<IdentityUser>();
+
+            var password = "a";
+
+            var testTeacher = new TeacherUser()
+            {
+                UserName = "teacher@lms.se",
+                Email = "teacher@lms.se",
+                FirstName = faker.Name.FirstName(),
+                LastName = faker.Name.LastName()
+            };
+
+            var result = await userManager.CreateAsync(testTeacher, password);
+
+            if (!result.Succeeded)
+                throw new Exception(string.Join("\n", result.Errors));
 
             for (var i = 0; i < nrOfUsers; i++)
             {
@@ -99,10 +113,53 @@ namespace LMS.Data
                     //TimeOfRegistration = DateTime.Now
                 };
 
-                var password = "a";
-
-                var result = await userManager.CreateAsync(teacher, password);
+                result = await userManager.CreateAsync(teacher, password);
                 if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+            }
+
+            return users;
+        }
+
+        private static async Task<IEnumerable<IdentityUser>> GetStudentUsersAsync(int nrOfUsers)
+        {
+            var users = new List<IdentityUser>();
+
+            var password = "a";
+
+            var testStudent = new StudentUser
+            {
+                UserName = "student@lms.se",
+                Email = "student@lms.se",
+                FirstName = faker.Name.FirstName(),
+                LastName = faker.Name.LastName()
+                //TimeOfRegistration = DateTime.Now
+            };
+
+            var result = await userManager.CreateAsync(testStudent, password);
+
+            if (!result.Succeeded)
+                throw new Exception(string.Join("\n", result.Errors));
+
+            for (var i = 0; i < nrOfUsers; i++)
+            {
+                var email = faker.Internet.Email();
+                var found = await userManager.FindByEmailAsync(email);
+
+                if (found != null) return null!;
+
+                var teacher = new StudentUser
+                {
+                    UserName = email,
+                    Email = email,
+                    FirstName = faker.Name.FirstName(),
+                    LastName = faker.Name.LastName()
+                    //TimeOfRegistration = DateTime.Now
+                };
+
+                result = await userManager.CreateAsync(teacher, password);
+
+                if (!result.Succeeded)
+                    throw new Exception(string.Join("\n", result.Errors));
             }
 
             return users;
@@ -114,9 +171,13 @@ namespace LMS.Data
             {
                 foreach (var role in roleNames)
                 {
-                    if (await userManager.IsInRoleAsync(user, role)) continue;
+                    if (await userManager.IsInRoleAsync(user, role))
+                        continue;
+
                     var result = await userManager.AddToRoleAsync(user, role);
-                    if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+
+                    if (!result.Succeeded)
+                        throw new Exception(string.Join("\n", result.Errors));
                 }
             }
         }
