@@ -55,10 +55,13 @@ namespace LMS.Data
 
             var activityTypes = GetActivityTypes();
             await db.AddRangeAsync(activityTypes);
-            var courses = GetCourses(5, 3, 6, activityTypes);
+            var courses = GetCourses(5, 3, 6, activityTypes, teachers, students);
             await db.AddRangeAsync(courses);
 
             // TODO: Lägg till seeddata för dokument
+
+            //var documents = await GetDocuments(80, courses, teachers, students);
+            //await db.AddRangeAsync(documents);
 
             await db.SaveChangesAsync();
         }
@@ -113,6 +116,8 @@ namespace LMS.Data
                     //TimeOfRegistration = DateTime.Now
                 };
 
+                users.Add(teacher);
+
                 result = await userManager.CreateAsync(teacher, password);
                 if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
             }
@@ -147,7 +152,7 @@ namespace LMS.Data
 
                 if (found != null) return null!;
 
-                var teacher = new StudentUser
+                var student = new StudentUser
                 {
                     UserName = email,
                     Email = email,
@@ -156,7 +161,9 @@ namespace LMS.Data
                     //TimeOfRegistration = DateTime.Now
                 };
 
-                result = await userManager.CreateAsync(teacher, password);
+                users.Add(student);
+
+                result = await userManager.CreateAsync(student, password);
 
                 if (!result.Succeeded)
                     throw new Exception(string.Join("\n", result.Errors));
@@ -182,37 +189,6 @@ namespace LMS.Data
             }
         }
 
-        //private static async Task<TeacherUser> AddTeacherAsync(string teacherEmail, string teacherPW)
-        //{
-        //    var found = await userManager.FindByEmailAsync(teacherEmail);
-
-        //    if (found != null) return null!;
-
-        //    var teacher = new TeacherUser
-        //    {
-        //        UserName = teacherEmail,
-        //        Email = teacherEmail,
-        //        FirstName = "Admin",
-        //        //TimeOfRegistration = DateTime.Now
-        //    };
-
-        //    var result = await userManager.CreateAsync(teacher, teacherPW);
-        //    if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
-
-        //    return teacher;
-        //}
-
-        //private static async Task AddToRolesAsync(IdentityUser user, string[] roleNames)
-        //{
-        //    foreach (var role in roleNames)
-        //    {
-        //        if (await userManager.IsInRoleAsync(user, role)) continue;
-        //        var result = await userManager.AddToRoleAsync(user, role);
-        //        if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
-        //    }
-        //}
-
-
         private static IEnumerable<ActivityType> GetActivityTypes()
         {
             var activityTypes = new List<ActivityType>();
@@ -225,7 +201,8 @@ namespace LMS.Data
             return activityTypes;
         }
 
-        private static IEnumerable<Course> GetCourses(int nrCourses, int nrModules, int nrActivities, IEnumerable<ActivityType> activityTypes)
+        private static IEnumerable<Course> GetCourses(int nrCourses, int nrModules, int nrActivities,
+            IEnumerable<ActivityType> activityTypes, IEnumerable<IdentityUser> teachers, IEnumerable<IdentityUser> students)
         {
             var courses = new List<Course>();
 
@@ -241,7 +218,23 @@ namespace LMS.Data
                 };
 
                 course.Modules = GetModules(nrModules, nrActivities,
-                    course.StartDate, course.EndDate, activityTypes);
+                    course.StartDate, course.EndDate, activityTypes, teachers, students);
+
+                var nrOfDocuments = Random.Shared.Next(8);
+
+                for (var j = 0; j < nrOfDocuments; j++)
+                {
+                    IdentityUser docOwner = teachers.ElementAt(Random.Shared.Next(teachers.Count()));
+
+                    course.Documents.Add(new Document()
+                    {
+                        Name = faker!.Lorem.Word(),
+                        Description = faker!.Lorem.Sentence(),
+                        Timestamp = faker.Date.Recent(10),
+                        FilePath = faker.Internet.UrlRootedPath(".pdf"),
+                        Owner = docOwner
+                    });
+                }
 
                 courses.Add(course);
             }
@@ -249,8 +242,9 @@ namespace LMS.Data
             return courses;
         }
 
-        private static ICollection<Module> GetModules(int nrModules, int nrActivities, DateTime courseStart, DateTime courseEnd,
-            IEnumerable<ActivityType> activityTypes)
+        private static ICollection<Module> GetModules(int nrModules, int nrActivities,
+            DateTime courseStart, DateTime courseEnd, IEnumerable<ActivityType> activityTypes,
+            IEnumerable<IdentityUser> teachers, IEnumerable<IdentityUser> students)
         {
             var modules = new List<Module>();
 
@@ -273,9 +267,25 @@ namespace LMS.Data
                     EndDate = moduleEndDate
                 };
 
+                var nrOfDocuments = Random.Shared.Next(8);
+
+                for (var j = 0; j < nrOfDocuments; j++)
+                {
+                    IdentityUser docOwner = teachers.ElementAt(Random.Shared.Next(teachers.Count()));
+
+                    module.Documents.Add(new Document()
+                    {
+                        Name = faker!.Lorem.Word(),
+                        Description = faker!.Lorem.Sentence(),
+                        Timestamp = faker.Date.Recent(10),
+                        FilePath = faker.Internet.UrlRootedPath(".pdf"),
+                        Owner = docOwner
+                    });
+                }
+
                 moduleStartDate = moduleEndDate;
 
-                module.Activities = GetActivites(nrActivities, module.StartDate, module.EndDate, activityTypes);
+                module.Activities = GetActivites(nrActivities, module.StartDate, module.EndDate, activityTypes, teachers, students);
 
                 modules.Add(module);
             }
@@ -283,8 +293,9 @@ namespace LMS.Data
             return modules;
         }
 
-        private static ICollection<Activity> GetActivites(int nrActivities, DateTime moduleStart, DateTime moduleEnd,
-            IEnumerable<ActivityType> activityTypes)
+        private static ICollection<Activity> GetActivites(int nrActivities,
+            DateTime moduleStart, DateTime moduleEnd, IEnumerable<ActivityType> activityTypes,
+            IEnumerable<IdentityUser> teachers, IEnumerable<IdentityUser> students)
         {
             var activites = new List<Activity>();
 
@@ -307,6 +318,27 @@ namespace LMS.Data
                     EndDate = activityEndDate,
                     ActivityType = activityTypes.ElementAt(Random.Shared.Next(activityTypes.Count()))
                 };
+
+                var nrOfDocuments = Random.Shared.Next(8);
+
+                for (var j = 0; j < nrOfDocuments; j++)
+                {
+                    IdentityUser docOwner;
+
+                    if (Random.Shared.Next(2) == 0)
+                        docOwner = teachers.ElementAt(Random.Shared.Next(teachers.Count()));
+                    else
+                        docOwner = students.ElementAt(Random.Shared.Next(students.Count()));
+
+                    activity.Documents.Add(new Document()
+                    {
+                        Name = faker!.Lorem.Word(),
+                        Description = faker!.Lorem.Sentence(),
+                        Timestamp = faker.Date.Recent(10),
+                        FilePath = faker.Internet.UrlRootedPath(".pdf"),
+                        Owner = docOwner
+                    });
+                }
 
                 activityStartDate = activityEndDate;
 
