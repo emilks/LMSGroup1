@@ -25,7 +25,8 @@ namespace LMS.Data.Data
             );
 
             modelBuilder.Entity<Course>().HasData(
-                new Course { Id = 1, Name = "Kurs 1", Description = "En kurs", StartDate = DateTime.Now, EndDate = DateTime.Now }
+                new Course { Id = 1, Name = "Kurs 1", Description = "En kurs", StartDate = DateTime.Now, EndDate = DateTime.Now },
+                new Course { Id = 2, Name = "Kurs 2", Description = "En annan kurs", StartDate = DateTime.Now, EndDate = DateTime.Now }
             );
 
             modelBuilder.Entity<Module>().HasData(
@@ -40,6 +41,15 @@ namespace LMS.Data.Data
                     StartDate = DateTime.Now,
                     EndDate = DateTime.Now,
                     CourseId = 1
+                },
+                new Module
+                {
+                    Id = 3,
+                    Name = "Modul 3",
+                    Description = "Tredje modulen",
+                    StartDate = DateTime.Now,
+                    EndDate = DateTime.Now,
+                    CourseId = 2
                 }
             );
 

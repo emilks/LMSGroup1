@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LMS.Core.Entities;
 using LMS.Data.Data;
+using LMS.Web.ViewModels;
 
 namespace LMS.Web.Controllers
 {
@@ -159,5 +160,30 @@ namespace LMS.Web.Controllers
         {
           return (_context.Course?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+
+        // GET: Courses
+        public async Task<IActionResult> MainClassIndex()
+        {
+            var model = _context.Course!.Include(x => x.Modules).Select(v => new MainClassIndexViewModel
+            {
+                Name = v.Name,
+                Description = v.Description,
+                StartDate = v.StartDate,
+                EndDate = v.EndDate,
+                moduleNames = v.Modules.Select(x => x.Name)//,
+                //Modules = v.Modules.Select(c => new { c.Name, c.Description })
+                //            .AsEnumerable()
+                //            .ToList()
+               });
+
+            return View(await model.ToListAsync());
+
+
+            //return _context.Course != null ?
+            //            View(await _context.Course.ToListAsync()) :
+            //            Problem("Entity set 'ApplicationDbContext.Course'  is null.");
+        }
+
     }
 }
