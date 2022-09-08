@@ -55,13 +55,9 @@ namespace LMS.Data
 
             var activityTypes = GetActivityTypes();
             await db.AddRangeAsync(activityTypes);
+
             var courses = GetCourses(5, 3, 6, activityTypes, teachers, students);
             await db.AddRangeAsync(courses);
-
-            // TODO: Lägg till seeddata för dokument
-
-            //var documents = await GetDocuments(80, courses, teachers, students);
-            //await db.AddRangeAsync(documents);
 
             await db.SaveChangesAsync();
         }
@@ -91,7 +87,7 @@ namespace LMS.Data
             {
                 UserName = "teacher@lms.se",
                 Email = "teacher@lms.se",
-                FirstName = faker.Name.FirstName(),
+                FirstName = faker!.Name.FirstName(),
                 LastName = faker.Name.LastName()
             };
 
@@ -285,7 +281,8 @@ namespace LMS.Data
 
                 moduleStartDate = moduleEndDate;
 
-                module.Activities = GetActivites(nrActivities, module.StartDate, module.EndDate, activityTypes, teachers, students);
+                module.Activities = GetActivites(nrActivities, module.StartDate, module.EndDate,
+                    activityTypes, teachers, students);
 
                 modules.Add(module);
             }
