@@ -7,10 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 using Activity = LMS.Core.Entities.Activity;
+using Module = LMS.Core.Entities.Module;
 
 namespace LMS.Data
 {
@@ -38,7 +40,7 @@ namespace LMS.Data
             await db.SaveChangesAsync();
         }
 
-        private static IEnumerable<Course> GetCourses(int nrCourses, int nrModulesPerCourse, int nrActivitiesPerModule)
+        private static IEnumerable<Course> GetCourses(int nrCourses, int nrModules, int nrActivities)
         {
             var courses = new List<Course>();
 
@@ -48,10 +50,11 @@ namespace LMS.Data
                 {
                     Name = faker!.Company.CatchPhrase(),
                     Description = faker!.Lorem.Paragraph(),
-                    StartDate = DateTime.Now.AddDays(faker!.Random.Int(-5, -5)),
-                    EndDate = DateTime.Now.AddDays(6 + faker!.Random.Int(-5, -5)),
-                    Modules = GetModules(nrModulesPerCourse, nrActivitiesPerModule)
+                    StartDate = DateTime.Now.AddDays(Random.Shared.Next(40) + Random.Shared.Next(40)),
+                    EndDate = DateTime.Now.AddDays(40 + Random.Shared.Next(40))
                 };
+
+                course.Modules = GetModules(nrModules, nrActivities, course.StartDate, course.EndDate);
 
                 courses.Add(course);
             }
@@ -59,30 +62,44 @@ namespace LMS.Data
             return courses;
         }
 
-        private static ICollection<Module> GetModules(int nrModulesPerCourse, int nrActivitiesPerModule)
+        private static ICollection<Module> GetModules(int nrModules, int nrActivities, DateTime courseStart, DateTime courseEnd)
         {
             var modules = new List<Module>();
 
-            for (var i = 0; i < nrModulesPerCourse; i++)
+            var moduleStartDate = courseStart;
+
+            for (var i = 0; i < nrModules; i++)
             {
-                modules.Add(new Module()
+                var maxModuleDaysLen = courseEnd.Subtract(moduleStartDate).Days;
+
+                if (maxModuleDaysLen <= 0)
+                    break;
+
+                var moduleEndDate = courseStart.AddDays(5 + Random.Shared.Next(maxModuleDaysLen));
+
+                var module = new Module
                 {
                     Name = faker!.Company.CatchPhrase(),
                     Description = faker!.Lorem.Paragraph(),
-                    StartDate = DateTime.Now.AddDays(faker!.Random.Int(-5, -5)),
-                    EndDate = DateTime.Now.AddDays(6 + faker!.Random.Int(-5, -5)),
-                    Activities = GetActivites(nrActivitiesPerModule)
-                });
+                    StartDate = moduleStartDate,
+                    EndDate = moduleEndDate
+                };
+
+                moduleStartDate = moduleEndDate;
+
+                module.Activities = GetActivites(nrActivities, module.StartDate, module.EndDate);
+
+                modules.Add(module);
             }
 
             return modules;
         }
 
-        private static ICollection<Activity> GetActivites(int nrActivitiesPerModule)
+        private static ICollection<Activity> GetActivites(int nrActivities, DateTime moduleStart, DateTime moduleEnd)
         {
             var activites = new List<Activity>();
 
-            for (var i = 0; i < nrActivitiesPerModule; i++)
+            for (var i = 0; i < nrActivities; i++)
             {
                 activites.Add(new Activity()
                 {
