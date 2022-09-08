@@ -49,12 +49,16 @@ namespace LMS.Data
 
             await AddToRolesAsync(teacher, new[] { "Teacher" });
 
+            // TODO: Lägg till studenter + ev. flera teachers
+
             faker = new Faker("sv");
 
             var activityTypes = GetActivityTypes();
             await db.AddRangeAsync(activityTypes);
             var courses = GetCourses(5, 3, 6, activityTypes);
             await db.AddRangeAsync(courses);
+
+            // TODO: Lägg till seeddata för dokument
 
             await db.SaveChangesAsync();
         }
