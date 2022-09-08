@@ -1,4 +1,5 @@
-﻿namespace LMS.Web.ViewModels
+﻿#nullable disable
+namespace LMS.Web.ViewModels
 {
     public class MainClassIndexViewModel
     {
