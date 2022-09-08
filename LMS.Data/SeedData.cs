@@ -10,16 +10,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Activity = LMS.Core.Entities.Activity;
+
 namespace LMS.Data
 {
     public class SeedData
     {
-        private static ApplicationDbContext db;
+        private static ApplicationDbContext? db;
         private static Faker? faker;
 
         public static async Task InitAsync(ApplicationDbContext context)
         {
-            if (context is null) throw new ArgumentNullException(nameof(context));
+            if (context is null)
+                throw new ArgumentNullException(nameof(context));
+            
             db = context;
 
             if (db.Course != null)
@@ -27,17 +31,18 @@ namespace LMS.Data
 
             faker = new Faker("sv");
 
-            var coursesWithModules = GetCoursesWithModules(5,3);
-            await db.AddRangeAsync(coursesWithModules);
+            var courses = GetCourses(5, 3, 6);
+
+            await db.AddRangeAsync(courses);
 
             await db.SaveChangesAsync();
         }
 
-        private static IEnumerable<Course> GetCoursesWithModules(int nrOfCourses, int nrOfModules)
+        private static IEnumerable<Course> GetCourses(int nrCourses, int nrModulesPerCourse, int nrActivitiesPerModule)
         {
             var courses = new List<Course>();
 
-            for (var i = 0; i < nrOfCourses; i++)
+            for (var i = 0; i < nrCourses; i++)
             {
                 var course = new Course
                 {
@@ -45,7 +50,7 @@ namespace LMS.Data
                     Description = faker!.Lorem.Paragraph(),
                     StartDate = DateTime.Now.AddDays(faker!.Random.Int(-5, -5)),
                     EndDate = DateTime.Now.AddDays(6 + faker!.Random.Int(-5, -5)),
-                    Modules = GetModules(nrOfModules)
+                    Modules = GetModules(nrModulesPerCourse, nrActivitiesPerModule)
                 };
 
                 courses.Add(course);
@@ -54,13 +59,32 @@ namespace LMS.Data
             return courses;
         }
 
-        private static ICollection<Module> GetModules(int nrOfModules)
+        private static ICollection<Module> GetModules(int nrModulesPerCourse, int nrActivitiesPerModule)
         {
             var modules = new List<Module>();
 
-            for (var i = 0; i < nrOfModules; i++)
+            for (var i = 0; i < nrModulesPerCourse; i++)
             {
                 modules.Add(new Module()
+                {
+                    Name = faker!.Company.CatchPhrase(),
+                    Description = faker!.Lorem.Paragraph(),
+                    StartDate = DateTime.Now.AddDays(faker!.Random.Int(-5, -5)),
+                    EndDate = DateTime.Now.AddDays(6 + faker!.Random.Int(-5, -5)),
+                    Activities = GetActivites(nrActivitiesPerModule)
+                });
+            }
+
+            return modules;
+        }
+
+        private static ICollection<Activity> GetActivites(int nrActivitiesPerModule)
+        {
+            var activites = new List<Activity>();
+
+            for (var i = 0; i < nrActivitiesPerModule; i++)
+            {
+                activites.Add(new Activity()
                 {
                     Name = faker!.Company.CatchPhrase(),
                     Description = faker!.Lorem.Paragraph(),
@@ -69,7 +93,7 @@ namespace LMS.Data
                 });
             }
 
-            return modules;
+            return activites;
         }
     }
 }
