@@ -171,18 +171,10 @@ namespace LMS.Web.Controllers
                 Description = v.Description,
                 StartDate = v.StartDate,
                 EndDate = v.EndDate,
-                moduleNames = v.Modules.Select(x => x.Name)//,
-                //Modules = v.Modules.Select(c => new { c.Name, c.Description })
-                //            .AsEnumerable()
-                //            .ToList()
-               });
+                Modules = v.Modules.Select(c => new ModuleViewModel {Name=  c.Name, Description = c.Description })
+            });
 
             return View(await model.ToListAsync());
-
-
-            //return _context.Course != null ?
-            //            View(await _context.Course.ToListAsync()) :
-            //            Problem("Entity set 'ApplicationDbContext.Course'  is null.");
         }
 
     }
