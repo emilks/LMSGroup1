@@ -18,7 +18,7 @@ namespace LMS.Web.Extensions
 
                 try
                 {
-                    await SeedData.InitAsync(db);
+                    await SeedData.InitAsync(db, serviceProvider);
                 }
                 catch (Exception e)
                 {

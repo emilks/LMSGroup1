@@ -4,6 +4,7 @@ using LMS.Core.Entities;
 using LMS.Data.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,8 +22,10 @@ namespace LMS.Data
     {
         private static ApplicationDbContext? db;
         private static Faker? faker;
+        private static RoleManager<IdentityRole> roleManager = default!;
+        private static UserManager<IdentityUser> userManager = default!;
 
-        public static async Task InitAsync(ApplicationDbContext context)
+        public static async Task InitAsync(ApplicationDbContext context, IServiceProvider services)
         {
             if (context is null)
                 throw new ArgumentNullException(nameof(context));
@@ -31,6 +34,20 @@ namespace LMS.Data
 
             if (db.Course != null)
                 if (await db.Course.AnyAsync()) return;
+
+            roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+            ArgumentNullException.ThrowIfNull(roleManager);
+
+            userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+            ArgumentNullException.ThrowIfNull(userManager);
+
+            var roleNames = new[] { "Student", "Teacher" };
+
+            await AddRolesAsync(roleNames);
+
+            var teacher = await AddTeacherAsync("teacher@lms.se", "a");
+
+            await AddToRolesAsync(teacher, new[] { "Teacher" });
 
             faker = new Faker("sv");
 
@@ -41,6 +58,49 @@ namespace LMS.Data
 
             await db.SaveChangesAsync();
         }
+
+        private static async Task AddRolesAsync(string[] roleNames)
+        {
+            foreach (var roleName in roleNames)
+            {
+                if (await roleManager.RoleExistsAsync(roleName)) continue;
+                var role = new IdentityRole { Name = roleName };
+                var result = await roleManager.CreateAsync(role);
+
+                if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+            }
+        }
+
+        private static async Task<TeacherUser> AddTeacherAsync(string teacherEmail, string teacherPW)
+        {
+            var found = await userManager.FindByEmailAsync(teacherEmail);
+
+            if (found != null) return null!;
+
+            var teacher = new TeacherUser
+            {
+                UserName = teacherEmail,
+                Email = teacherEmail,
+                FirstName = "Admin",
+                //TimeOfRegistration = DateTime.Now
+            };
+
+            var result = await userManager.CreateAsync(teacher, teacherPW);
+            if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+
+            return teacher;
+        }
+
+        private static async Task AddToRolesAsync(IdentityUser user, string[] roleNames)
+        {
+            foreach (var role in roleNames)
+            {
+                if (await userManager.IsInRoleAsync(user, role)) continue;
+                var result = await userManager.AddToRoleAsync(user, role);
+                if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+            }
+        }
+
 
         private static IEnumerable<ActivityType> GetActivityTypes()
         {
@@ -54,8 +114,7 @@ namespace LMS.Data
             return activityTypes;
         }
 
-        private static IEnumerable<Course> GetCourses(int nrCourses,
-            int nrModules, int nrActivities, IEnumerable<ActivityType> activityTypes)
+        private static IEnumerable<Course> GetCourses(int nrCourses, int nrModules, int nrActivities, IEnumerable<ActivityType> activityTypes)
         {
             var courses = new List<Course>();
 
@@ -65,7 +124,8 @@ namespace LMS.Data
                 {
                     Name = faker!.Company.CatchPhrase(),
                     Description = faker!.Lorem.Paragraph(),
-                    StartDate = DateTime.Now.AddDays(Random.Shared.Next(40) + Random.Shared.Next(40)),
+                    StartDate = DateTime.Now.AddDays(
+                        Random.Shared.Next(40) + Random.Shared.Next(40)),
                     EndDate = DateTime.Now.AddDays(40 + Random.Shared.Next(40))
                 };
 
@@ -78,8 +138,8 @@ namespace LMS.Data
             return courses;
         }
 
-        private static ICollection<Module> GetModules(int nrModules, int nrActivities,
-            DateTime courseStart, DateTime courseEnd, IEnumerable<ActivityType> activityTypes)
+        private static ICollection<Module> GetModules(int nrModules, int nrActivities, DateTime courseStart, DateTime courseEnd,
+            IEnumerable<ActivityType> activityTypes)
         {
             var modules = new List<Module>();
 
@@ -112,8 +172,8 @@ namespace LMS.Data
             return modules;
         }
 
-        private static ICollection<Activity> GetActivites(int nrActivities,
-            DateTime moduleStart, DateTime moduleEnd, IEnumerable<ActivityType> activityTypes)
+        private static ICollection<Activity> GetActivites(int nrActivities, DateTime moduleStart, DateTime moduleEnd,
+            IEnumerable<ActivityType> activityTypes)
         {
             var activites = new List<Activity>();
 
