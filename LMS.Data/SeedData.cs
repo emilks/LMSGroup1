@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -99,15 +100,28 @@ namespace LMS.Data
         {
             var activites = new List<Activity>();
 
+            var activityStartDate = moduleStart;
+
             for (var i = 0; i < nrActivities; i++)
             {
-                activites.Add(new Activity()
+                var maxActivityDaysLen = moduleEnd.Subtract(activityStartDate).Days;
+
+                if (maxActivityDaysLen <= 0)
+                    break;
+
+                var activityEndDate = moduleStart.AddDays(1 + Random.Shared.Next(maxActivityDaysLen));
+
+                var activity = new Activity
                 {
                     Name = faker!.Company.CatchPhrase(),
                     Description = faker!.Lorem.Paragraph(),
-                    StartDate = DateTime.Now.AddDays(faker!.Random.Int(-5, -5)),
-                    EndDate = DateTime.Now.AddDays(6 + faker!.Random.Int(-5, -5)),
-                });
+                    StartDate = activityStartDate,
+                    EndDate = activityEndDate,
+                };
+
+                activityStartDate = activityEndDate;
+
+                activites.Add(activity);
             }
 
             return activites;
