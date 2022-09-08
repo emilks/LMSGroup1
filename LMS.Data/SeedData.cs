@@ -26,7 +26,7 @@ namespace LMS.Data
         {
             if (context is null)
                 throw new ArgumentNullException(nameof(context));
-            
+
             db = context;
 
             if (db.Course != null)
@@ -34,14 +34,28 @@ namespace LMS.Data
 
             faker = new Faker("sv");
 
-            var courses = GetCourses(5, 3, 6);
-
+            var activityTypes = GetActivityTypes();
+            await db.AddRangeAsync(activityTypes);
+            var courses = GetCourses(5, 3, 6, activityTypes);
             await db.AddRangeAsync(courses);
 
             await db.SaveChangesAsync();
         }
 
-        private static IEnumerable<Course> GetCourses(int nrCourses, int nrModules, int nrActivities)
+        private static IEnumerable<ActivityType> GetActivityTypes()
+        {
+            var activityTypes = new List<ActivityType>();
+
+            activityTypes.Add(new ActivityType() { ActivityName = "E-Learning" });
+            activityTypes.Add(new ActivityType() { ActivityName = "Föreläsning" });
+            activityTypes.Add(new ActivityType() { ActivityName = "Övning" });
+            activityTypes.Add(new ActivityType() { ActivityName = "Inlämning" });
+
+            return activityTypes;
+        }
+
+        private static IEnumerable<Course> GetCourses(int nrCourses,
+            int nrModules, int nrActivities, IEnumerable<ActivityType> activityTypes)
         {
             var courses = new List<Course>();
 
@@ -55,7 +69,8 @@ namespace LMS.Data
                     EndDate = DateTime.Now.AddDays(40 + Random.Shared.Next(40))
                 };
 
-                course.Modules = GetModules(nrModules, nrActivities, course.StartDate, course.EndDate);
+                course.Modules = GetModules(nrModules, nrActivities,
+                    course.StartDate, course.EndDate, activityTypes);
 
                 courses.Add(course);
             }
@@ -63,7 +78,8 @@ namespace LMS.Data
             return courses;
         }
 
-        private static ICollection<Module> GetModules(int nrModules, int nrActivities, DateTime courseStart, DateTime courseEnd)
+        private static ICollection<Module> GetModules(int nrModules, int nrActivities,
+            DateTime courseStart, DateTime courseEnd, IEnumerable<ActivityType> activityTypes)
         {
             var modules = new List<Module>();
 
@@ -88,7 +104,7 @@ namespace LMS.Data
 
                 moduleStartDate = moduleEndDate;
 
-                module.Activities = GetActivites(nrActivities, module.StartDate, module.EndDate);
+                module.Activities = GetActivites(nrActivities, module.StartDate, module.EndDate, activityTypes);
 
                 modules.Add(module);
             }
@@ -96,7 +112,8 @@ namespace LMS.Data
             return modules;
         }
 
-        private static ICollection<Activity> GetActivites(int nrActivities, DateTime moduleStart, DateTime moduleEnd)
+        private static ICollection<Activity> GetActivites(int nrActivities,
+            DateTime moduleStart, DateTime moduleEnd, IEnumerable<ActivityType> activityTypes)
         {
             var activites = new List<Activity>();
 
@@ -117,6 +134,7 @@ namespace LMS.Data
                     Description = faker!.Lorem.Paragraph(),
                     StartDate = activityStartDate,
                     EndDate = activityEndDate,
+                    ActivityType = activityTypes.ElementAt(Random.Shared.Next(activityTypes.Count()))
                 };
 
                 activityStartDate = activityEndDate;
