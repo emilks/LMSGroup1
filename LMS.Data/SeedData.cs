@@ -50,7 +50,7 @@ namespace LMS.Data
             var teachers = await GetTeacherUsersAsync(10);
             await AddToRolesAsync(teachers, new[] { "Teacher" });
 
-            var students = await GetStudentUsersAsync(50);
+            var students = await GetStudentUsersAsync(80);
             await AddToRolesAsync(students, new[] { "Student" });
 
             var activityTypes = GetActivityTypes();
