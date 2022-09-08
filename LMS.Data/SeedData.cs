@@ -45,9 +45,13 @@ namespace LMS.Data
 
             await AddRolesAsync(roleNames);
 
-            var teacher = await AddTeacherAsync("teacher@lms.se", "a");
+            //var teacher = await AddTeacherAsync("teacher@lms.se", "a");
 
-            await AddToRolesAsync(teacher, new[] { "Teacher" });
+            var teachers = await GetUsersAsync();
+
+            //await AddToRolesAsync(teacher, new[] { "Teacher" });
+
+            await AddToRolesAsync(teachers, new[] { "Teacher" });
 
             // TODO: Lägg till studenter + ev. flera teachers
 
@@ -75,35 +79,77 @@ namespace LMS.Data
             }
         }
 
-        private static async Task<TeacherUser> AddTeacherAsync(string teacherEmail, string teacherPW)
+        private static async Task<IdentityUser> GetUsersAsync(int nrOfUsers)
         {
-            var found = await userManager.FindByEmailAsync(teacherEmail);
+            var users = new List<IdentityUser>();
 
-            if (found != null) return null!;
-
-            var teacher = new TeacherUser
+            for (var i = 0; i < nrOfUsers; i++)
             {
-                UserName = teacherEmail,
-                Email = teacherEmail,
-                FirstName = "Admin",
-                //TimeOfRegistration = DateTime.Now
-            };
+                var email = faker.Internet.Email();
+                var found = await userManager.FindByEmailAsync(email);
 
-            var result = await userManager.CreateAsync(teacher, teacherPW);
-            if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+                if (found != null) return null!;
 
-            return teacher;
-        }
+                var teacher = new TeacherUser
+                {
+                    UserName = email,
+                    Email = email,
+                    FirstName = faker.Name.FirstName(),
+                    LastName = faker.Name.LastName()
+                    //TimeOfRegistration = DateTime.Now
+                };
 
-        private static async Task AddToRolesAsync(IdentityUser user, string[] roleNames)
-        {
-            foreach (var role in roleNames)
-            {
-                if (await userManager.IsInRoleAsync(user, role)) continue;
-                var result = await userManager.AddToRoleAsync(user, role);
+                var password = "a";
+
+                var result = await userManager.CreateAsync(teacher, password);
                 if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
             }
+
+            return users;
         }
+
+        private static async Task AddToRolesAsync(IEnumerable<IdentityUser> users, string[] roleNames)
+        {
+            foreach (var user in users)
+            {
+                foreach (var role in roleNames)
+                {
+                    if (await userManager.IsInRoleAsync(user, role)) continue;
+                    var result = await userManager.AddToRoleAsync(user, role);
+                    if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+                }
+            }
+        }
+
+        //private static async Task<TeacherUser> AddTeacherAsync(string teacherEmail, string teacherPW)
+        //{
+        //    var found = await userManager.FindByEmailAsync(teacherEmail);
+
+        //    if (found != null) return null!;
+
+        //    var teacher = new TeacherUser
+        //    {
+        //        UserName = teacherEmail,
+        //        Email = teacherEmail,
+        //        FirstName = "Admin",
+        //        //TimeOfRegistration = DateTime.Now
+        //    };
+
+        //    var result = await userManager.CreateAsync(teacher, teacherPW);
+        //    if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+
+        //    return teacher;
+        //}
+
+        //private static async Task AddToRolesAsync(IdentityUser user, string[] roleNames)
+        //{
+        //    foreach (var role in roleNames)
+        //    {
+        //        if (await userManager.IsInRoleAsync(user, role)) continue;
+        //        var result = await userManager.AddToRoleAsync(user, role);
+        //        if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
+        //    }
+        //}
 
 
         private static IEnumerable<ActivityType> GetActivityTypes()
