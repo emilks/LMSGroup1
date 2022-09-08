@@ -47,7 +47,7 @@ namespace LMS.Data
 
             await AddRolesAsync(roleNames);
 
-            var teachers = await GetTeacherUsersAsync(5);
+            var teachers = await GetTeacherUsersAsync(10);
             await AddToRolesAsync(teachers, new[] { "Teacher" });
 
             var students = await GetStudentUsersAsync(50);
@@ -96,6 +96,8 @@ namespace LMS.Data
             if (!result.Succeeded)
                 throw new Exception(string.Join("\n", result.Errors));
 
+            users.Add(testTeacher);
+
             for (var i = 0; i < nrOfUsers; i++)
             {
                 var email = faker.Internet.Email();
@@ -140,6 +142,8 @@ namespace LMS.Data
 
             if (!result.Succeeded)
                 throw new Exception(string.Join("\n", result.Errors));
+
+            users.Add(testStudent);
 
             for (var i = 0; i < nrOfUsers; i++)
             {
@@ -209,6 +213,18 @@ namespace LMS.Data
             return result;
         }
 
+        private static bool TeacherIsFree(IEnumerable<Course> courses, IdentityUser u)
+        {
+            var result = true;
+
+            foreach (var c in courses)
+            {
+                if (c.Teachers.Contains(u))
+                    result = false;
+            }
+            return result;
+        }
+
         private static IEnumerable<Course> GetCourses(int nrCourses, int nrModules, int nrActivities,
             IEnumerable<ActivityType> activityTypes, IEnumerable<IdentityUser> teachers, IEnumerable<IdentityUser> students)
         {
@@ -227,17 +243,6 @@ namespace LMS.Data
 
                 course.Modules = GetModules(nrModules, nrActivities,
                     course.StartDate, course.EndDate, activityTypes, teachers, students);
-
-                var nrOfTeachers = 1 + Random.Shared.Next(3);
-
-                for (var j = 0; j < nrOfTeachers; j++)
-                {
-                    TeacherUser teacher = teachers.ElementAt(Random.Shared.Next(teachers.Count())) as TeacherUser;
-                    course.Teachers.Add(teacher);
-                }
-
-                
-
 
                 var nrOfDocuments = Random.Shared.Next(8);
 
@@ -260,6 +265,27 @@ namespace LMS.Data
 
             foreach (var course in courses)
             {
+
+                var nrOfTeachers = 1 + Random.Shared.Next(3);
+
+                for (var j = 0; j < nrOfTeachers; j++)
+                {
+
+                    foreach (var t in teachers)
+                    {
+
+                        if (TeacherIsFree(courses, t))
+                        {
+                            var castedTeacher = t as TeacherUser;
+                            if (castedTeacher != null)
+                            {
+                                course.Teachers.Add(castedTeacher);
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 var nrOfStudents = 15 + Random.Shared.Next(15);
 
                 for (var j = 0; j < nrOfStudents; j++)
