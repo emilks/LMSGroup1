@@ -7,17 +7,21 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LMS.Core.Entities;
 using LMS.Data.Data;
-using LMS.Web.ViewModels;
+using AutoMapper;
+using LMS.Core.ViewModels;
 
 namespace LMS.Web.Controllers
 {
     public class CoursesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper mapper;
 
-        public CoursesController(ApplicationDbContext context)
+        public CoursesController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            this.mapper = mapper;
+
         }
 
         // GET: Courses
@@ -165,16 +169,10 @@ namespace LMS.Web.Controllers
         // GET: Courses
         public async Task<IActionResult> MainClassIndex()
         {
-            var model = _context.Course!.Include(x => x.Modules).Select(v => new MainClassIndexViewModel
-            {
-                Name = v.Name,
-                Description = v.Description,
-                StartDate = v.StartDate,
-                EndDate = v.EndDate,
-                Modules = v.Modules.Select(c => new ModuleViewModel {Name=  c.Name, Description = c.Description })
-            });
+            var viewModel = await mapper.ProjectTo<MainClassIndexViewModel>(_context.Course.Include(x => x.Modules)!)
+                .ToListAsync();
 
-            return View(await model.ToListAsync());
+            return View(viewModel);
         }
 
     }
