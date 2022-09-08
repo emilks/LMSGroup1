@@ -216,6 +216,23 @@ namespace LMS.Data
                 course.Modules = GetModules(nrModules, nrActivities,
                     course.StartDate, course.EndDate, activityTypes, teachers, students);
 
+                var nrOfTeachers = 1 + Random.Shared.Next(3);
+
+                for (var j = 0; j < nrOfTeachers; j++)
+                {
+                    TeacherUser teacher = teachers.ElementAt(Random.Shared.Next(teachers.Count())) as TeacherUser;
+                    course.Teachers.Add(teacher);
+                }
+
+                var nrOfStudents = 15 + Random.Shared.Next(15);
+
+                for (var j = 0; j < nrOfStudents; j++)
+                {
+                    StudentUser student = students.ElementAt(Random.Shared.Next(students.Count())) as StudentUser;
+                    course.Students.Add(student);
+                }
+
+
                 var nrOfDocuments = Random.Shared.Next(8);
 
                 for (var j = 0; j < nrOfDocuments; j++)
