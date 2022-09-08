@@ -27,30 +27,49 @@ namespace LMS.Data
 
             faker = new Faker("sv");
 
-            var courses = GetCoursesAsync(5);
-            await db.AddRangeAsync(courses);
+            var coursesWithModules = GetCoursesWithModules(5,3);
+            await db.AddRangeAsync(coursesWithModules);
 
             await db.SaveChangesAsync();
         }
 
-        private static IEnumerable<Course> GetCoursesAsync(int amount)
+        private static IEnumerable<Course> GetCoursesWithModules(int nrOfCourses, int nrOfModules)
         {
             var courses = new List<Course>();
 
-            for (var i = 0; i < amount; i++)
+            for (var i = 0; i < nrOfCourses; i++)
             {
                 var course = new Course
                 {
                     Name = faker!.Company.CatchPhrase(),
                     Description = faker!.Lorem.Paragraph(),
                     StartDate = DateTime.Now.AddDays(faker!.Random.Int(-5, -5)),
-                    EndDate = DateTime.Now.AddDays(6 + faker!.Random.Int(-5, -5))
+                    EndDate = DateTime.Now.AddDays(6 + faker!.Random.Int(-5, -5)),
+                    Modules = GetModules(nrOfModules)
                 };
 
                 courses.Add(course);
             }
 
             return courses;
+        }
+
+        private static ICollection<Module> GetModules(int nrOfModules)
+        {
+            var modules = new List<Module>();
+
+            for (var i = 0; i < nrOfModules; i++)
+            {
+                modules.Add(new Module()
+                {
+                    Name = faker!.Company.CatchPhrase(),
+                    Description = faker!.Lorem.Paragraph(),
+                    StartDate = DateTime.Now.AddDays(faker!.Random.Int(-5, -5)),
+                    EndDate = DateTime.Now.AddDays(6 + faker!.Random.Int(-5, -5)),
+                });
+            }
+
+            return modules;
         }
     }
 }
