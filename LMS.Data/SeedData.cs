@@ -50,7 +50,7 @@ namespace LMS.Data
             var teachers = await GetTeacherUsersAsync(5);
             await AddToRolesAsync(teachers, new[] { "Teacher" });
 
-            var students = await GetStudentUsersAsync(5);
+            var students = await GetStudentUsersAsync(50);
             await AddToRolesAsync(students, new[] { "Student" });
 
             var activityTypes = GetActivityTypes();
@@ -197,6 +197,18 @@ namespace LMS.Data
             return activityTypes;
         }
 
+        private static bool StudentIsFree(IEnumerable<Course> courses, IdentityUser u)
+        {
+            var result = true;
+
+            foreach (var c in courses)
+            {
+                if (c.Students.Contains(u))
+                    result = false;
+            }
+            return result;
+        }
+
         private static IEnumerable<Course> GetCourses(int nrCourses, int nrModules, int nrActivities,
             IEnumerable<ActivityType> activityTypes, IEnumerable<IdentityUser> teachers, IEnumerable<IdentityUser> students)
         {
@@ -224,13 +236,7 @@ namespace LMS.Data
                     course.Teachers.Add(teacher);
                 }
 
-                var nrOfStudents = 15 + Random.Shared.Next(15);
-
-                for (var j = 0; j < nrOfStudents; j++)
-                {
-                    StudentUser student = students.ElementAt(Random.Shared.Next(students.Count())) as StudentUser;
-                    course.Students.Add(student);
-                }
+                
 
 
                 var nrOfDocuments = Random.Shared.Next(8);
@@ -250,6 +256,28 @@ namespace LMS.Data
                 }
 
                 courses.Add(course);
+            }
+
+            foreach (var course in courses)
+            {
+                var nrOfStudents = 15 + Random.Shared.Next(15);
+
+                for (var j = 0; j < nrOfStudents; j++)
+                {
+                    foreach (var student in students)
+                    {
+
+                        if (StudentIsFree(courses, student))
+                        {
+                            var castedStudent = student as StudentUser;
+                            if (castedStudent != null)
+                            {
+                                course.Students.Add(castedStudent);
+                                break;
+                            }
+                        }
+                    }
+                }
             }
 
             return courses;
