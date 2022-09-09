@@ -41,9 +41,9 @@ namespace LMS.Data.Repositories
             return await db.Course.Include(c => c.Students)
                                   .Include(c => c.Teachers)
                                   .Include(c => c.Documents)
-                                  .Include(c => c.Modules)//.Select(m => m.Documents))
-                                  .ThenInclude(m => m.Documents)
-                                  //.ThenInclude(m => m.Activities)
+                                  .Include(c => c.Modules).ThenInclude(m => m.Documents)
+                                  .Include(c => c.Modules).ThenInclude(m => m.Activities)
+                                  .ThenInclude(a => a.Documents)                                  
                                   .FirstOrDefaultAsync(c => c.Id == id);
         }
     }
