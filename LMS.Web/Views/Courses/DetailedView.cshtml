@@ -4,4 +4,40 @@
     ViewData["Title"] = "DetailedView";
 }
 
-<h1>Kursnamn</h1>
+<div class="container-fluid">
+    <div class="row">
+        @*Nedan information skall bytas ut mot automatiskt genererad information baserat på tidigare val*@
+        <div class="col-2">
+            <img src="~/images/workshop.jpg" class="img courseimg" alt="workshop" />
+        </div>
+        <div class="col-2">
+            <h3>Kursnamn</h3>
+            <p>Kursen handlar om hur mycket man kan göra utan att trilla ned från en stol medan man befinner sig på havet i en båt</p>
+        </div>
+        <div class="col-1">
+            <h5>Deltagare</h5>
+            <p class="smalltext12">Antal deltagare: 14</p>
+        <button class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
+        <button class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
+        </div>
+        <div class="col-1">
+            <h5>Uppgifter</h5>
+            <p class="smalltext12">Pågående uppgifter: 2</p>
+        <button class="btn btn-lg btn-primary smalltext12 w-100">Se uppgifter</button>
+        <button class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Skapa uppgift</button>
+        </div>
+        <div class="col-1">
+            <h5>Kursdokument</h5>
+            <p class="smalltext12">Antal dokument: 7</p>
+        <button class="btn btn-lg btn-primary smalltext12 w-100">Se dokument</button>
+        <button class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
+        </div>
+        <div class="col-1">
+            <h5>Inlämningar</h5>
+            <p class="smalltext12">Antal inlämnade: 4</p>
+        <button class="btn btn-lg btn-primary smalltext12 w-100">Se inlämnade</button>
+        <button class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lämna in</button>
+        </div>
+
+    </div>
+</div>
