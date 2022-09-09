@@ -29,7 +29,7 @@ namespace LMS.Core.Entities
         public DateTime EndDate { get; set; }
 
         // Foreign keys
-        //public int CourseId { get; set; }
+        public int CourseId { get; set; }
 
         // Navigation props
         public ICollection<Activity> Activities { get; set; } = new List<Activity>();
