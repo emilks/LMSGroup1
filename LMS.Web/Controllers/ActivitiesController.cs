@@ -56,7 +56,7 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate")] Activity activity)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,ModuleId")] Activity activity)
         {
             if (ModelState.IsValid)
             {
@@ -158,6 +158,35 @@ namespace LMS.Web.Controllers
         private bool ActivityExists(int id)
         {
           return (_context.Activity?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        public async Task<IActionResult> VerifyStartDate(DateTime startDate, int moduleId)
+        {
+            if (_context.Module == null)
+                return Json("Entity set 'ApplicationDbContext.Module'  is null.");
+
+            var module = await _context.Module.Include(c => c.Activities).FirstOrDefaultAsync(c => c.Id == moduleId);
+
+            if (module == null)
+                return Json("Ogiltigt modul-ID.");
+
+            if (DateTime.Compare(startDate, module.StartDate) < 0)
+                return Json($"Modulens startdatum måste ligga efter modulens startdatum: {module.StartDate.ToShortDateString()}");
+            else if (DateTime.Compare(startDate, module.EndDate) > 0)
+                return Json($"Modulens startdatum måste ligga innan modulens slutdatum: {module.EndDate.ToShortDateString()}");
+
+            var activities = module.Activities;
+
+            foreach (var activity in activities)
+                if (DateTime.Compare(startDate, activity.StartDate) > 0 && DateTime.Compare(startDate, activity.EndDate) < 0)
+                    return Json($"Startdatum ogiltigt, överlappar en annnan aktivitet med tidsspann {activity.StartDate.ToShortDateString()} - {activity.EndDate.ToShortDateString()}");
+
+            return Json(true);
+        }
+
+        public async Task<IActionResult> VerifyEndDate(DateTime startDate, int moduleId)
+        {
+            return Json(true);
         }
     }
 }

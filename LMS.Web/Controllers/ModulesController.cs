@@ -22,9 +22,9 @@ namespace LMS.Web.Controllers
         // GET: Modules
         public async Task<IActionResult> Index()
         {
-              return _context.Module != null ? 
-                          View(await _context.Module.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Module'  is null.");
+            return _context.Module != null ?
+                        View(await _context.Module.ToListAsync()) :
+                        Problem("Entity set 'ApplicationDbContext.Module'  is null.");
         }
 
         // GET: Modules/Details/5
@@ -150,29 +150,25 @@ namespace LMS.Web.Controllers
             {
                 _context.Module.Remove(@module);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ModuleExists(int id)
         {
-          return (_context.Module?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Module?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         public async Task<IActionResult> VerifyStartDate(DateTime startDate, int courseId)
         {
             if (_context.Course == null)
-            {
                 return Json("Entity set 'ApplicationDbContext.Course'  is null.");
-            }
 
             var course = await _context.Course.Include(c => c.Modules).FirstOrDefaultAsync(c => c.Id == courseId);
 
             if (course == null)
-            {
                 return Json("Ogiltigt kurs-ID.");
-            }
 
             if (DateTime.Compare(startDate, course.StartDate) < 0)
                 return Json($"Modulens startdatum måste ligga efter kursens startdatum: {course.StartDate.ToShortDateString()}");
@@ -185,6 +181,11 @@ namespace LMS.Web.Controllers
                 if (DateTime.Compare(startDate, module.StartDate) > 0 && DateTime.Compare(startDate, module.EndDate) < 0)
                     return Json($"Startdatum ogiltigt, överlappar en annnan modul med tidsspann {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}");
 
+            return Json(true);
+        }
+
+        public async Task<IActionResult> VerifyEndDate(DateTime startDate, int courseId)
+        {
             return Json(true);
         }
     }
