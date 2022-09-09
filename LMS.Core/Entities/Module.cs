@@ -16,11 +16,11 @@ namespace LMS.Core.Entities
         public int Id { get; set; }
 
         [Required]
-        [StringLength(40, MinimumLength = 3)]
+        [StringLength(100, MinimumLength = 3)]
         public string Name { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(80, MinimumLength = 3)]
+        [StringLength(500, MinimumLength = 3)]
         public string Description { get; set; } = string.Empty;
 
         [DisplayName("Start date")]
@@ -28,6 +28,7 @@ namespace LMS.Core.Entities
         public DateTime StartDate { get; set; }
 
         [DisplayName("End date")]
+        [Remote(action: "VerifyEndDate", controller: "Modules", AdditionalFields = "CourseId")]
         public DateTime EndDate { get; set; }
 
         // Foreign keys
