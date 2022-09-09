@@ -56,10 +56,11 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate")] Module @module)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate")] Module @module, int courseId)
         {
             if (ModelState.IsValid)
             {
+                module.Course = await _context.Course.FindAsync(courseId);
                 _context.Add(@module);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
