@@ -159,5 +159,10 @@ namespace LMS.Web.Controllers
         {
           return (_context.Course?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        public IActionResult DetailedView()
+        {
+            return View();
+        }
     }
 }

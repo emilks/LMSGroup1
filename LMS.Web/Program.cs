@@ -1,4 +1,6 @@
+using LMS.Core.Repositories;
 using LMS.Data.Data;
+using LMS.Data.Repositories;
 using LMS.Web.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
@@ -48,9 +51,16 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+//Forces user to see login screen unless logged in
+
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapDefaultControllerRoute().RequireAuthorization();
+//});
+
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Courses}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();
