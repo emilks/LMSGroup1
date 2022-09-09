@@ -162,21 +162,27 @@ namespace LMS.Web.Controllers
 
         public async Task<IActionResult> VerifyStartDate(DateTime startDate, int courseId)
         {
-            var course = await _context.Course.FindAsync(courseId);
+            if (_context.Course == null)
+            {
+                return Json("Entity set 'ApplicationDbContext.Course'  is null.");
+            }
 
-            if (startDate < course.StartDate)
+            var course = await _context.Course.Include(c => c.Modules).FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (course == null)
             {
+                return Json("Ogiltigt kurs-ID.");
+            }
+
+            if (DateTime.Compare(startDate, course.StartDate) < 0)
                 return Json($"Modulens startdatum måste ligga efter kursens startdatum: {course.StartDate.ToShortDateString()}");
-            }
-            else if (startDate > course.EndDate)
-            {
+            else if (DateTime.Compare(startDate, course.EndDate) > 0)
                 return Json($"Modulens startdatum måste ligga innan kursens slutdatum: {course.EndDate.ToShortDateString()}");
-            }
 
             var modules = course.Modules;
 
             foreach (var module in modules)
-                if (startDate > module.StartDate && startDate < module.EndDate)
+                if (DateTime.Compare(startDate, module.StartDate) > 0 && DateTime.Compare(startDate, module.EndDate) < 0)
                     return Json($"Startdatum ogiltigt, överlappar en annnan modul med tidsspann {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}");
 
             return Json(true);
