@@ -17,27 +17,197 @@
         <div class="col-1">
             <h5>Deltagare</h5>
             <p class="smalltext12">Antal deltagare: 14</p>
-        <button class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
-        <button class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
+        <button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
+        <button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
         </div>
         <div class="col-1">
             <h5>Uppgifter</h5>
             <p class="smalltext12">Pågående uppgifter: 2</p>
-        <button class="btn btn-lg btn-primary smalltext12 w-100">Se uppgifter</button>
-        <button class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Skapa uppgift</button>
+        <button data-bs-toggle="modal" data-bs-target="#seeTasks" class="btn btn-lg btn-primary smalltext12 w-100">Se uppgifter</button>
+        <button data-bs-toggle="modal" data-bs-target="#addTasks" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Skapa uppgift</button>
         </div>
         <div class="col-1">
             <h5>Kursdokument</h5>
             <p class="smalltext12">Antal dokument: 7</p>
-        <button class="btn btn-lg btn-primary smalltext12 w-100">Se dokument</button>
-        <button class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
+        <button data-bs-toggle="modal" data-bs-target="#seeDocuments" class="btn btn-lg btn-primary smalltext12 w-100">Se dokument</button>
+        <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
         </div>
         <div class="col-1">
             <h5>Inlämningar</h5>
             <p class="smalltext12">Antal inlämnade: 4</p>
-        <button class="btn btn-lg btn-primary smalltext12 w-100">Se inlämnade</button>
-        <button class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lämna in</button>
+        <button data-bs-toggle="modal" data-bs-target="#seeTurnedIn" class="btn btn-lg btn-primary smalltext12 w-100">Se inlämnade</button>
+        <button data-bs-toggle="modal" data-bs-target="#turnIn" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lämna in</button>
         </div>
 
     </div>
+</div>
+
+<!-- Modals -->
+
+<!-- Se deltagare -->
+<div class="modal fade" id="seeStudents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Se deltagare</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Hello
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        @*<button type="button" class="btn btn-primary">Save changes</button>*@
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lägg till deltagare -->
+<div class="modal fade" id="addStudents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Lägg till deltagare</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Hello
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Lägg till</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Se uppgifter -->
+<div class="modal fade" id="seeTasks" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Se uppgifter</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Hello
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+        @*<button type="button" class="btn btn-primary">Save changes</button>*@
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Skapa uppgift -->
+<div class="modal fade" id="addTasks" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Skapa uppgift</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Hello
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+        <button type="button" class="btn btn-primary">Skapa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Se dokument -->
+<div class="modal fade" id="seeDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Se dokument</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Hello
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+        @*<button type="button" class="btn btn-primary">Save changes</button>*@
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ladda upp dokument -->
+<div class="modal fade" id="addDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Ladda upp dokument</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Hello
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+        <button type="button" class="btn btn-primary">Ladda upp</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Se inlämnade -->
+<div class="modal fade" id="seeTurnedIn" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Se inlämnad</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Hello
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+        @*<button type="button" class="btn btn-primary">Save changes</button>*@
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lämna in -->
+<div class="modal fade" id="turnIn" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Lämna in</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Hello
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+        <button type="button" class="btn btn-primary">Lämna in</button>
+      </div>
+    </div>
+  </div>
 </div>
