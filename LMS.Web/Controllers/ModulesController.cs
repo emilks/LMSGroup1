@@ -159,5 +159,27 @@ namespace LMS.Web.Controllers
         {
           return (_context.Module?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        public async Task<IActionResult> VerifyStartDate(DateTime startDate, int courseId)
+        {
+            var course = await _context.Course.FindAsync(courseId);
+
+            if (startDate < course.StartDate)
+            {
+                return Json($"Modulens startdatum måste ligga efter kursens startdatum: {course.StartDate.ToShortDateString()}");
+            }
+            else if (startDate > course.EndDate)
+            {
+                return Json($"Modulens startdatum måste ligga innan kursens slutdatum: {course.EndDate.ToShortDateString()}");
+            }
+
+            var modules = course.Modules;
+
+            foreach (var module in modules)
+                if (startDate > module.StartDate && startDate < module.EndDate)
+                    return Json($"Startdatum ogiltigt, överlappar en annnan modul med tidsspann {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}");
+
+            return Json(true);
+        }
     }
 }

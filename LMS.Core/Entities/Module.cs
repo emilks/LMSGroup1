@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -23,6 +24,7 @@ namespace LMS.Core.Entities
         public string Description { get; set; } = string.Empty;
 
         [DisplayName("Start date")]
+        [Remote(action: "VerifyStartDate", controller: "Modules", AdditionalFields ="CourseId")]
         public DateTime StartDate { get; set; }
 
         [DisplayName("End date")]
