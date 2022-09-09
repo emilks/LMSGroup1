@@ -17,11 +17,8 @@ namespace LMS.Core.Entities
         public DateTime EndDate { get; set; }
 
         // Navigation props
-        public int ModuleId { get; set; }
         public Module Module { get; set; }
         public ICollection<Document> Documents { get; set; } = new List<Document>();
-
-        public int ActivityTypeId { get; set; }
         public ActivityType ActivityType { get; set; }
     }
 }
