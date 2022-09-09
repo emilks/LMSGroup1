@@ -1,6 +1,6 @@
 ﻿using LMS.Core.Entities;
 
-namespace LMS.Web.ViewModels
+namespace LMS.Core.ViewModels
 {
     public class CourseContactsViewModel
     {

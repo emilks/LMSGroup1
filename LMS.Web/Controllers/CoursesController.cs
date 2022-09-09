@@ -3,7 +3,6 @@ using LMS.Core.Entities;
 using LMS.Core.Repositories;
 using LMS.Core.ViewModels;
 using LMS.Data.Data;
-using LMS.Web.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,13 +29,7 @@ namespace LMS.Web.Controllers
                 return Problem($"The course with id: {id} could not be found.");
             }
 
-            // TODO: automapper
-            var vm = new CourseContactsViewModel() {
-                Id = course.Id,
-                Name = course.Name,
-                Students = course.Students,
-                Teachers = course.Teachers
-            };
+            var vm = mapper.Map<CourseContactsViewModel>(course);
 
             return View(vm);
         }
