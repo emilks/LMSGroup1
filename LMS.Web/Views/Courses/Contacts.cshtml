@@ -1,0 +1,78 @@
+﻿@model LMS.Web.ViewModels.CourseContactsViewModel
+
+<h1>Kontakter: @Model.Name</h1>
+
+<h3>Lärare</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Teachers[0].FirstName)*@
+                Förnamn
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Description)*@
+                Efternamn
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.StartDate)*@
+                E-Post
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Teachers) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+
+<h3>Elever</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Teachers[0].FirstName)*@
+                Förnamn
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.Description)*@
+                Efternamn
+            </th>
+            <th>
+                @*@Html.DisplayNameFor(model => model.StartDate)*@
+                E-Post
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Students) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
