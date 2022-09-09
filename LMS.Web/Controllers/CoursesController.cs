@@ -37,8 +37,12 @@ namespace LMS.Web.Controllers
         // GET: Courses
         public async Task<IActionResult> Index()
         {
-            var viewModel = await mapper.ProjectTo<MainCourseIndexViewModel>(_context.Course.Include(x => x.Modules)!)
-              .ToListAsync();
+            var courses = await uow.CourseRepository.GetCourses(includeModules: true);
+            if(courses == null) {
+                return View();
+            }
+
+            var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>(courses.AsQueryable());
 
             return View(viewModel);
         }
