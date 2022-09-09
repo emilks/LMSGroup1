@@ -6,5 +6,6 @@ namespace LMS.Core.Repositories
     {
         Task<IEnumerable<StudentUser>?> GetCourseStudents(int? id);
         Task<IEnumerable<TeacherUser>?> GetCourseTeachers(int? id);
+        Task<Course?> GetCourseWithContacts(int? id);
     }
 }

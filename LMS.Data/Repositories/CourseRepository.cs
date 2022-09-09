@@ -41,5 +41,15 @@ namespace LMS.Data.Repositories
 
             return course.Students;
         }
+
+        public async Task<Course?> GetCourseWithContacts(int? id) {
+            if (db.Course == null || id == null) {
+                return null;
+            }
+
+            return await db.Course.Include(c => c.Students)
+                                  .Include(c => c.Teachers)
+                                  .FirstOrDefaultAsync(c => c.Id == id);
+        }
     }
 }
