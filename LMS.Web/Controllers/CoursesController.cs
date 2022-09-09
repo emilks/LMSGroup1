@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using LMS.Core.Entities;
-using LMS.Data.Data;
-using AutoMapper;
+using LMS.Core.Repositories;
 using LMS.Core.ViewModels;
+using LMS.Data.Data;
+using LMS.Web.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Web.Controllers
 {
@@ -16,12 +13,32 @@ namespace LMS.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper mapper;
+        private readonly IUnitOfWork uow;
 
-        public CoursesController(ApplicationDbContext context, IMapper mapper)
+        public CoursesController(ApplicationDbContext context, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _context = context;
             this.mapper = mapper;
+            uow = unitOfWork;
 
+        }
+
+        // GET: Courses/Contacts/5
+        public async Task<IActionResult> Contacts(int? id) {
+            var course = await uow.CourseRepository.GetCourseWithContacts(id);
+            if (course == null) {
+                return Problem($"The course with id: {id} could not be found.");
+            }
+
+            // TODO: automapper
+            var vm = new CourseContactsViewModel() {
+                Id = course.Id,
+                Name = course.Name,
+                Students = course.Students,
+                Teachers = course.Teachers
+            };
+
+            return View(vm);
         }
 
         // GET: Courses
