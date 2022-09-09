@@ -6,5 +6,6 @@ namespace LMS.Core.Repositories
     {
         Task<IEnumerable<Course>?> GetCourses(bool includeModules = false);
         Task<Course?> GetCourseWithContacts(int? id);
+        Task<Course?> GetCourseFull(int? id);
     }
 }
