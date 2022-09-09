@@ -27,7 +27,7 @@ namespace LMS.Web.Controllers
         // GET: Courses
         public async Task<IActionResult> Index()
         {
-            var viewModel = await mapper.ProjectTo<MainCourseIndexViewModel>(_context.Course.Include(x => x.Modules)!)
+            var viewModel = await mapper.ProjectTo<MainCourseIndexViewModel>(_context.Course.OrderBy(x => x.StartDate).Include(x => x.Modules)!)
               .ToListAsync();
 
             return View(viewModel);
