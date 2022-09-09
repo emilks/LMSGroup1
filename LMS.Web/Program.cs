@@ -1,3 +1,4 @@
+using LMS.Data;
 using LMS.Core.Repositories;
 using LMS.Data.Data;
 using LMS.Data.Repositories;
@@ -26,6 +27,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddAutoMapper(typeof(MapperProfile));
 
 var app = builder.Build();
 

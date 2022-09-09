@@ -7,24 +7,30 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LMS.Core.Entities;
 using LMS.Data.Data;
+using AutoMapper;
+using LMS.Core.ViewModels;
 
 namespace LMS.Web.Controllers
 {
     public class CoursesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper mapper;
 
-        public CoursesController(ApplicationDbContext context)
+        public CoursesController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            this.mapper = mapper;
+
         }
 
         // GET: Courses
         public async Task<IActionResult> Index()
         {
-              return _context.Course != null ? 
-                          View(await _context.Course.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Course'  is null.");
+            var viewModel = await mapper.ProjectTo<MainCourseIndexViewModel>(_context.Course.Include(x => x.Modules)!)
+              .ToListAsync();
+
+            return View(viewModel);
         }
 
         // GET: Courses/Details/5
@@ -160,9 +166,5 @@ namespace LMS.Web.Controllers
           return (_context.Course?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        public IActionResult DetailedView()
-        {
-            return View();
-        }
     }
 }
