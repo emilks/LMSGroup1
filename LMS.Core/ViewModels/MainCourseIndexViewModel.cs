@@ -3,7 +3,7 @@ using LMS;
 
 namespace LMS.Core.ViewModels
 {
-    public class MainClassIndexViewModel
+    public class MainCourseIndexViewModel
     {
         public string Name { get; set; }
         public string Description { get; set; }

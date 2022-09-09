@@ -13,7 +13,7 @@ namespace LMS.Data
     {
         public MapperProfile()
         {
-            CreateMap<Course, MainClassIndexViewModel>();
+            CreateMap<Course, MainCourseIndexViewModel>();
             //    .ForMember(dest => dest.Modules, from => from.MapFrom(
             //        g => g.Modules.Select(c => new ModuleViewModel { Name = c.Name, Description = c.Description })));
 

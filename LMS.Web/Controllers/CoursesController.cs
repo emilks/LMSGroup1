@@ -27,9 +27,10 @@ namespace LMS.Web.Controllers
         // GET: Courses
         public async Task<IActionResult> Index()
         {
-              return _context.Course != null ? 
-                          View(await _context.Course.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Course'  is null.");
+            var viewModel = await mapper.ProjectTo<MainCourseIndexViewModel>(_context.Course.Include(x => x.Modules)!)
+              .ToListAsync();
+
+            return View(viewModel);
         }
 
         // GET: Courses/Details/5
@@ -163,16 +164,6 @@ namespace LMS.Web.Controllers
         private bool CourseExists(int id)
         {
           return (_context.Course?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-
-
-        // GET: Courses
-        public async Task<IActionResult> MainClassIndex()
-        {
-            var viewModel = await mapper.ProjectTo<MainClassIndexViewModel>(_context.Course.Include(x => x.Modules)!)
-                .ToListAsync();
-
-            return View(viewModel);
         }
 
     }
