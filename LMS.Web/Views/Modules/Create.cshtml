@@ -13,11 +13,9 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                CourseId: (temporary)
-                <input name="courseId" class="form-control" />
-@*                <label asp-for="CourseId" class="control-label">(temporary)</label>
+                <label asp-for="CourseId" class="control-label">CourseId (temporary)</label>
                 <input asp-for="CourseId" class="form-control" />
-                <span asp-validation-for="CourseId" class="text-danger"></span>*@
+                <span asp-validation-for="CourseId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
