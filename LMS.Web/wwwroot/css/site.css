@@ -1,16 +1,16 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
@@ -22,37 +22,45 @@ body {
     background-attachment: fixed;
     overflow-x: hidden;
 }
+
 .sectioncolors {
     background-color: #2E0289;
     color: white;
 }
+
 footer {
     bottom: 0;
     position: fixed;
     width: 100%;
 }
+
 .pagecolors {
     background-color: rgb(193, 193, 193, 0.7);
 }
+
 header {
     top: 0;
     position: fixed;
     width: 100%;
     z-index: 1;
 }
+
 .main {
     margin-top: 180px;
     overflow: hidden;
     /*overflow-y: scroll;*/
 }
+
 a.whitenav:link, a.whitenav:visited {
     color: white;
     text-decoration: none;
 }
+
 a.whitenav:hover, a.whitenav:active {
     color: rgb(193, 193, 193, 0.7);
     text-decoration: none;
 }
+
 a.blacknav:link, a.blacknav:visited {
     color: black;
     text-decoration: none;
@@ -62,6 +70,7 @@ a.blacknav:hover, a.blacknav:active {
     color: #2E0289;
     text-decoration: none;
 }
+
 .logoimg {
     height: 50px;
 }
@@ -72,6 +81,7 @@ a.blacknav:hover, a.blacknav:active {
 .whitetext {
     color: white;
 }
+
 .btn-primary, .btn-primary:active, .btn-primary:visited {
     background-color: #2E0289 !important;
     border: hidden;

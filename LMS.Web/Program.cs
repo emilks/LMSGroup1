@@ -1,6 +1,8 @@
+using LMS.Data;
 using LMS.Core.Repositories;
 using LMS.Data.Data;
 using LMS.Data.Repositories;
+using LMS.Web.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,7 +28,11 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddAutoMapper(typeof(MapperProfile));
+
 var app = builder.Build();
+
+await app.SeedDataAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
