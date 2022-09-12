@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using LMS.Core.Entities;
 using LMS.Core.ViewModels;
 
@@ -21,6 +16,8 @@ namespace LMS.Data
             // .ForMember(dest => dest.ShowHistory, opt => opt.Ignore())
             //    .ForMember(dest => dest.GymClasses, from => from.MapFrom(g => g.ToList()));
             CreateMap<Module, ModuleViewModel>().ReverseMap();
+
+            CreateMap<Course, CourseContactsViewModel>();
         }
     }
 }
