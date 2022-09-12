@@ -180,5 +180,9 @@ namespace LMS.Web.Controllers
           return (_context.Course?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
+        public IActionResult CreatePartial()
+        {
+            return PartialView();
+        }
     }
 }
