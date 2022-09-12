@@ -31,11 +31,9 @@ namespace LMS.Web.Services
             else if (startDate > course.EndDate)
                 return $"Modulens startdatum måste ligga innan kursens slutdatum: {course.EndDate.ToShortDateString()}";
 
-            var modules = course.Modules;
-
-            foreach (var module in modules)
-                if (startDate > module.StartDate && startDate < module.EndDate)
-                    return $"Startdatum ogiltigt, överlappar annan modul med tidsspann: {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}";
+            var overlap = course.Modules.FirstOrDefault(m => startDate > m.StartDate && startDate < m.EndDate);
+            if (overlap != null)
+                return $"Startdatum ogiltigt, överlappar annan modul med tidsspann: {overlap.StartDate.ToShortDateString()} - {overlap.EndDate.ToShortDateString()}";
 
             return "true";
         }
@@ -58,12 +56,9 @@ namespace LMS.Web.Services
             if (endDate < startDate)
                 return $"Modulens slutdatum måste ligga efter modulens startdatum: {startDate.ToShortDateString()}";
 
-            var modules = course.Modules;
-
-            foreach (var module in modules)
-                if (endDate > module.StartDate && endDate < module.EndDate)
-                    return $"Slutdatum ogiltigt, överlappar annan modul med tidsspann: {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}";
-
+            var overlap = course.Modules.FirstOrDefault(m => endDate > m.StartDate && endDate < m.EndDate);
+            if (overlap != null)
+                return $"Startdatum ogiltigt, överlappar annan modul med tidsspann: {overlap.StartDate.ToShortDateString()} - {overlap.EndDate.ToShortDateString()}";
 
             return "true";
         }
@@ -83,11 +78,9 @@ namespace LMS.Web.Services
             else if (startDate > module.EndDate)
                 return $"Modulens startdatum måste ligga innan modulens slutdatum: {module.EndDate.ToShortDateString()}";
 
-            var activities = module.Activities;
-
-            foreach (var activity in activities)
-                if (startDate > activity.StartDate && startDate < activity.EndDate)
-                    return $"Startdatum ogiltigt, överlappar en annnan aktivitet med tidsspann {activity.StartDate.ToShortDateString()} - {activity.EndDate.ToShortDateString()}";
+            var overlap = module.Activities.FirstOrDefault(a => startDate > a.StartDate && startDate < a.EndDate);
+            if (overlap != null)
+                return $"Startdatum ogiltigt, överlappar annan aktivitet med tidsspann: {overlap.StartDate.ToShortDateString()} - {overlap.EndDate.ToShortDateString()}";
 
             return "true";
         }
@@ -110,11 +103,9 @@ namespace LMS.Web.Services
             if (endDate < startDate)
                 return $"Aktivitetens slutdatum måste ligga efter aktivitetens startdatum: {startDate.ToShortDateString()}";
 
-            var activities = module.Activities;
-
-            foreach (var activity in activities)
-                if (endDate > activity.StartDate && endDate < activity.EndDate)
-                    return $"Slutdatum ogiltigt, överlappar en annnan aktivitet med tidsspann {activity.StartDate.ToShortDateString()} - {activity.EndDate.ToShortDateString()}";
+            var overlap = module.Activities.FirstOrDefault(a => endDate > a.StartDate && endDate < a.EndDate);
+            if (overlap != null)
+                return $"Slutdatum ogiltigt, överlappar annan aktivitet med tidsspann: {overlap.StartDate.ToShortDateString()} - {overlap.EndDate.ToShortDateString()}";
 
             return "true";
         }
