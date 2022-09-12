@@ -1,16 +1,19 @@
-﻿using LMS.Data.Data;
+﻿using LMS.Core.Entities;
+using LMS.Core.Repositories;
+using LMS.Data.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Web.Services
 {
     public class DateValidationService : IDateValidationService
     {
-
         private readonly ApplicationDbContext _context;
+        private readonly IUnitOfWork _uow;
 
-        public DateValidationService(ApplicationDbContext context)
+        public DateValidationService(ApplicationDbContext context, IUnitOfWork uow)
         {
             _context = context;
+            _uow = uow;
         }
 
         public async Task<string> ValidateModuleStartDate(DateTime startDate, int courseId)
@@ -23,15 +26,15 @@ namespace LMS.Web.Services
             if (course == null)
                 return "Ogiltigt kurs-ID.";
 
-            if (DateTime.Compare(startDate, course.StartDate) < 0)
+            if (startDate < course.StartDate)
                 return $"Modulens startdatum måste ligga efter kursens startdatum: {course.StartDate.ToShortDateString()}";
-            else if (DateTime.Compare(startDate, course.EndDate) > 0)
+            else if (startDate > course.EndDate)
                 return $"Modulens startdatum måste ligga innan kursens slutdatum: {course.EndDate.ToShortDateString()}";
 
             var modules = course.Modules;
 
             foreach (var module in modules)
-                if (DateTime.Compare(startDate, module.StartDate) > 0 && DateTime.Compare(startDate, module.EndDate) < 0)
+                if (startDate > module.StartDate && startDate < module.EndDate)
                     return $"Startdatum ogiltigt, överlappar annan modul med tidsspann: {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}";
 
             return "true";
@@ -47,18 +50,18 @@ namespace LMS.Web.Services
             if (course == null)
                 return "Ogiltigt kurs-ID.";
 
-            if (DateTime.Compare(endDate, course.StartDate) < 0)
+            if (endDate < course.StartDate)
                 return $"Modulens slutdatum måste ligga efter kursens startdatum: {course.StartDate.ToShortDateString()}";
-            else if (DateTime.Compare(endDate, course.EndDate) > 0)
+            else if (endDate > course.EndDate)
                 return $"Modulens slutdatum måste ligga innan kursens slutdatum: {course.EndDate.ToShortDateString()}";
 
-            if (DateTime.Compare(endDate, startDate) < 0)
+            if (endDate < startDate)
                 return $"Modulens slutdatum måste ligga efter modulens startdatum: {startDate.ToShortDateString()}";
 
             var modules = course.Modules;
 
             foreach (var module in modules)
-                if (DateTime.Compare(endDate, module.StartDate) > 0 && DateTime.Compare(endDate, module.EndDate) < 0)
+                if (endDate > module.StartDate && endDate < module.EndDate)
                     return $"Slutdatum ogiltigt, överlappar annan modul med tidsspann: {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}";
 
 
@@ -75,15 +78,15 @@ namespace LMS.Web.Services
             if (module == null)
                 return "Ogiltigt modul-ID.";
 
-            if (DateTime.Compare(startDate, module.StartDate) < 0)
+            if (startDate < module.StartDate)
                 return $"Modulens startdatum måste ligga efter modulens startdatum: {module.StartDate.ToShortDateString()}";
-            else if (DateTime.Compare(startDate, module.EndDate) > 0)
+            else if (startDate > module.EndDate)
                 return $"Modulens startdatum måste ligga innan modulens slutdatum: {module.EndDate.ToShortDateString()}";
 
             var activities = module.Activities;
 
             foreach (var activity in activities)
-                if (DateTime.Compare(startDate, activity.StartDate) > 0 && DateTime.Compare(startDate, activity.EndDate) < 0)
+                if (startDate > activity.StartDate && startDate < activity.EndDate)
                     return $"Startdatum ogiltigt, överlappar en annnan aktivitet med tidsspann {activity.StartDate.ToShortDateString()} - {activity.EndDate.ToShortDateString()}";
 
             return "true";
@@ -99,18 +102,18 @@ namespace LMS.Web.Services
             if (module == null)
                 return "Ogiltigt modul-ID.";
 
-            if (DateTime.Compare(endDate, module.StartDate) < 0)
+            if (endDate < module.StartDate)
                 return $"Aktivitetens slutdatum måste ligga efter modulens startdatum: {module.StartDate.ToShortDateString()}";
-            else if (DateTime.Compare(endDate, module.EndDate) > 0)
+            else if (endDate > module.EndDate)
                 return $"Aktivitetens slutdatum måste ligga innan modulens slutdatum: {module.EndDate.ToShortDateString()}";
 
-            if (DateTime.Compare(endDate, startDate) < 0)
+            if (endDate < startDate)
                 return $"Aktivitetens slutdatum måste ligga efter aktivitetens startdatum: {startDate.ToShortDateString()}";
 
             var activities = module.Activities;
 
             foreach (var activity in activities)
-                if (DateTime.Compare(endDate, activity.StartDate) > 0 && DateTime.Compare(startDate, activity.EndDate) < 0)
+                if (endDate > activity.StartDate && endDate < activity.EndDate)
                     return $"Slutdatum ogiltigt, överlappar en annnan aktivitet med tidsspann {activity.StartDate.ToShortDateString()} - {activity.EndDate.ToShortDateString()}";
 
             return "true";
