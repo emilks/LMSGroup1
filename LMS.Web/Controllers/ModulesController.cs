@@ -179,13 +179,36 @@ namespace LMS.Web.Controllers
 
             foreach (var module in modules)
                 if (DateTime.Compare(startDate, module.StartDate) > 0 && DateTime.Compare(startDate, module.EndDate) < 0)
-                    return Json($"Startdatum ogiltigt, överlappar en annnan modul med tidsspann {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}");
+                    return Json($"Startdatum ogiltigt, överlappar en annnan modul med tidsspann: {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}");
 
             return Json(true);
         }
 
-        public async Task<IActionResult> VerifyEndDate(DateTime startDate, int courseId)
+        public async Task<IActionResult> VerifyEndDate(DateTime endDate, int courseId, DateTime startDate)
         {
+            if (_context.Course == null)
+                return Json("Entity set 'ApplicationDbContext.Course'  is null.");
+
+            var course = await _context.Course.Include(c => c.Modules).FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (course == null)
+                return Json("Ogiltigt kurs-ID.");
+
+            if (DateTime.Compare(endDate, course.StartDate) < 0)
+                return Json($"Modulens slutdatum måste ligga efter kursens startdatum: {course.StartDate.ToShortDateString()}");
+            else if (DateTime.Compare(endDate, course.EndDate) > 0)
+                return Json($"Modulens slutdatum måste ligga innan kursens slutdatum: {course.EndDate.ToShortDateString()}");
+
+            if (DateTime.Compare(endDate, startDate) < 0)
+                return Json($"Modulens slutdatum måste ligga efter modulens startdatum: {startDate.ToShortDateString()}");
+
+            var modules = course.Modules;
+
+            foreach (var module in modules)
+                if (DateTime.Compare(endDate, module.StartDate) > 0 && DateTime.Compare(endDate, module.EndDate) < 0)
+                    return Json($"Slutdatum ogiltigt, överlappar en annnan modul med tidsspann: {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}");
+
+
             return Json(true);
         }
     }

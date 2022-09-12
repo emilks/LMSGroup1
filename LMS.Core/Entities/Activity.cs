@@ -28,7 +28,7 @@ namespace LMS.Core.Entities
         public DateTime StartDate { get; set; }
 
         [DisplayName("End date")]
-        [Remote(action: "VerifyEndDate", controller: "Activities", AdditionalFields = "ModuleId")]
+        [Remote(action: "VerifyEndDate", controller: "Activities", AdditionalFields = "ModuleId,StartDate")]
         public DateTime EndDate { get; set; }
 
         // Foreign keys

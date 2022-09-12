@@ -184,7 +184,7 @@ namespace LMS.Web.Controllers
             return Json(true);
         }
 
-        public async Task<IActionResult> VerifyEndDate(DateTime startDate, int moduleId)
+        public async Task<IActionResult> VerifyEndDate(DateTime endDate, int moduleId, DateTime startDate)
         {
             return Json(true);
         }
