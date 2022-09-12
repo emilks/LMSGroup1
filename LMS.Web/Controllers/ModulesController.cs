@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LMS.Core.Entities;
 using LMS.Data.Data;
+using LMS.Web.Services;
 
 namespace LMS.Web.Controllers
 {
     public class ModulesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDateValidationService _dateValidationService;
 
-        public ModulesController(ApplicationDbContext context)
+        public ModulesController(ApplicationDbContext context, IDateValidationService dateValidationService)
         {
             _context = context;
+            _dateValidationService = dateValidationService;
         }
 
         // GET: Modules
@@ -162,54 +165,12 @@ namespace LMS.Web.Controllers
 
         public async Task<IActionResult> VerifyStartDate(DateTime startDate, int courseId)
         {
-            if (_context.Course == null)
-                return Json("Entity set 'ApplicationDbContext.Course'  is null.");
-
-            var course = await _context.Course.Include(c => c.Modules).FirstOrDefaultAsync(c => c.Id == courseId);
-
-            if (course == null)
-                return Json("Ogiltigt kurs-ID.");
-
-            if (DateTime.Compare(startDate, course.StartDate) < 0)
-                return Json($"Modulens startdatum måste ligga efter kursens startdatum: {course.StartDate.ToShortDateString()}");
-            else if (DateTime.Compare(startDate, course.EndDate) > 0)
-                return Json($"Modulens startdatum måste ligga innan kursens slutdatum: {course.EndDate.ToShortDateString()}");
-
-            var modules = course.Modules;
-
-            foreach (var module in modules)
-                if (DateTime.Compare(startDate, module.StartDate) > 0 && DateTime.Compare(startDate, module.EndDate) < 0)
-                    return Json($"Startdatum ogiltigt, överlappar annan modul med tidsspann: {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}");
-
-            return Json(true);
+            return Json(await _dateValidationService.ValidateModuleStartDate(startDate, courseId));
         }
 
-        public async Task<IActionResult> VerifyEndDate(DateTime endDate, int courseId, DateTime startDate)
+        public async Task<IActionResult> VerifyEndDate(DateTime endDate, DateTime startDate, int courseId)
         {
-            if (_context.Course == null)
-                return Json("Entity set 'ApplicationDbContext.Course'  is null.");
-
-            var course = await _context.Course.Include(c => c.Modules).FirstOrDefaultAsync(c => c.Id == courseId);
-
-            if (course == null)
-                return Json("Ogiltigt kurs-ID.");
-
-            if (DateTime.Compare(endDate, course.StartDate) < 0)
-                return Json($"Modulens slutdatum måste ligga efter kursens startdatum: {course.StartDate.ToShortDateString()}");
-            else if (DateTime.Compare(endDate, course.EndDate) > 0)
-                return Json($"Modulens slutdatum måste ligga innan kursens slutdatum: {course.EndDate.ToShortDateString()}");
-
-            if (DateTime.Compare(endDate, startDate) < 0)
-                return Json($"Modulens slutdatum måste ligga efter modulens startdatum: {startDate.ToShortDateString()}");
-
-            var modules = course.Modules;
-
-            foreach (var module in modules)
-                if (DateTime.Compare(endDate, module.StartDate) > 0 && DateTime.Compare(endDate, module.EndDate) < 0)
-                    return Json($"Slutdatum ogiltigt, överlappar annan modul med tidsspann: {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}");
-
-
-            return Json(true);
+            return Json(await _dateValidationService.ValidateModuleEndDate(endDate, startDate, courseId));
         }
     }
 }

@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LMS.Core.Entities;
 using LMS.Data.Data;
+using LMS.Web.Services;
 
 namespace LMS.Web.Controllers
 {
     public class ActivitiesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDateValidationService _dateValidationService;
 
-        public ActivitiesController(ApplicationDbContext context)
+        public ActivitiesController(ApplicationDbContext context, IDateValidationService dateValidationService)
         {
             _context = context;
+            _dateValidationService = dateValidationService;
         }
 
         // GET: Activities
@@ -162,53 +165,12 @@ namespace LMS.Web.Controllers
 
         public async Task<IActionResult> VerifyStartDate(DateTime startDate, int moduleId)
         {
-            if (_context.Module == null)
-                return Json("Entity set 'ApplicationDbContext.Module'  is null.");
-
-            var module = await _context.Module.Include(c => c.Activities).FirstOrDefaultAsync(c => c.Id == moduleId);
-
-            if (module == null)
-                return Json("Ogiltigt modul-ID.");
-
-            if (DateTime.Compare(startDate, module.StartDate) < 0)
-                return Json($"Modulens startdatum måste ligga efter modulens startdatum: {module.StartDate.ToShortDateString()}");
-            else if (DateTime.Compare(startDate, module.EndDate) > 0)
-                return Json($"Modulens startdatum måste ligga innan modulens slutdatum: {module.EndDate.ToShortDateString()}");
-
-            var activities = module.Activities;
-
-            foreach (var activity in activities)
-                if (DateTime.Compare(startDate, activity.StartDate) > 0 && DateTime.Compare(startDate, activity.EndDate) < 0)
-                    return Json($"Startdatum ogiltigt, överlappar en annnan aktivitet med tidsspann {activity.StartDate.ToShortDateString()} - {activity.EndDate.ToShortDateString()}");
-
-            return Json(true);
+            return Json(await _dateValidationService.ValidateActivityStartDate(startDate, moduleId));
         }
 
-        public async Task<IActionResult> VerifyEndDate(DateTime endDate, int moduleId, DateTime startDate)
+        public async Task<IActionResult> VerifyEndDate(DateTime endDate, DateTime startDate, int moduleId)
         {
-            if (_context.Module == null)
-                return Json("Entity set 'ApplicationDbContext.Module'  is null.");
-
-            var module = await _context.Module.Include(c => c.Activities).FirstOrDefaultAsync(c => c.Id == moduleId);
-
-            if (module == null)
-                return Json("Ogiltigt modul-ID.");
-
-            if (DateTime.Compare(endDate, module.StartDate) < 0)
-                return Json($"Aktivitetens slutdatum måste ligga efter modulens startdatum: {module.StartDate.ToShortDateString()}");
-            else if (DateTime.Compare(endDate, module.EndDate) > 0)
-                return Json($"Aktivitetens slutdatum måste ligga innan modulens slutdatum: {module.EndDate.ToShortDateString()}");
-
-            if (DateTime.Compare(endDate, startDate) < 0)
-                return Json($"Aktivitetens slutdatum måste ligga efter aktivitetens startdatum: {startDate.ToShortDateString()}");
-
-            var activities = module.Activities;
-
-            foreach (var activity in activities)
-                if (DateTime.Compare(endDate, activity.StartDate) > 0 && DateTime.Compare(startDate, activity.EndDate) < 0)
-                    return Json($"Slutdatum ogiltigt, överlappar en annnan aktivitet med tidsspann {activity.StartDate.ToShortDateString()} - {activity.EndDate.ToShortDateString()}");
-
-            return Json(true);
+            return Json(await _dateValidationService.ValidateActivityEndDate(endDate, startDate, moduleId));
         }
     }
 }
