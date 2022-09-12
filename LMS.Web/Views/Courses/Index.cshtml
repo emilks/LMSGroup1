@@ -4,12 +4,14 @@
 
 <p>
     <a asp-action="Create" class="btn btn-primary btn-sm">Lägg till kurs</a><br />
+    <button data-bs-toggle="modal" id="btnCreateCourse" data-bs-target="#addCourse" class="btn btn-sm btn-primary smalltext12">Lägg till kurs</button>
+
 
     <a asp-controller="Courses" asp-action="DetailedView">Kursmodul ADMIN</a>@*endast länk för framtagande av modulen*@
 </p>
 
 
-<div class="container shadow w-75 py-2">
+<div class="container-fluid shadow w-75 py-2">
     <div class="table-responsive">
         <table class="table accordion">
             <thead>
@@ -75,3 +77,50 @@
         </table>
     </div>
 </div>
+
+
+
+
+
+<!-- Lägg till deltagare -->
+<div class="modal fade" id="addCourse" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Lägg till deltagare</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="ModalBody">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Lägg till</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+<script>
+
+$(function () {
+        $("body").on('click', '#btnCreateCourse', function () {
+        //$("#myModel").modal("hide");
+        console.log("Har den startat?");
+        //var id = $(this).attr('data-id');
+ 
+        $.ajax({
+            url: 'Courses/CreatePartial',
+            //data: { id },
+            success: function (response) {
+                $("#ModalBody").html(response);
+                $("#addCourse").modal("show");
+            }
+        });
+    });
+});
+</script>
+}
