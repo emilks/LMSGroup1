@@ -179,7 +179,7 @@ namespace LMS.Web.Controllers
 
             foreach (var module in modules)
                 if (DateTime.Compare(startDate, module.StartDate) > 0 && DateTime.Compare(startDate, module.EndDate) < 0)
-                    return Json($"Startdatum ogiltigt, överlappar en annnan modul med tidsspann: {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}");
+                    return Json($"Startdatum ogiltigt, överlappar annan modul med tidsspann: {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}");
 
             return Json(true);
         }
@@ -206,7 +206,7 @@ namespace LMS.Web.Controllers
 
             foreach (var module in modules)
                 if (DateTime.Compare(endDate, module.StartDate) > 0 && DateTime.Compare(endDate, module.EndDate) < 0)
-                    return Json($"Slutdatum ogiltigt, överlappar en annnan modul med tidsspann: {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}");
+                    return Json($"Slutdatum ogiltigt, överlappar annan modul med tidsspann: {module.StartDate.ToShortDateString()} - {module.EndDate.ToShortDateString()}");
 
 
             return Json(true);

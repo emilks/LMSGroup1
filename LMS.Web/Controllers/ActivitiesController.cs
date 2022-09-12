@@ -186,6 +186,28 @@ namespace LMS.Web.Controllers
 
         public async Task<IActionResult> VerifyEndDate(DateTime endDate, int moduleId, DateTime startDate)
         {
+            if (_context.Module == null)
+                return Json("Entity set 'ApplicationDbContext.Module'  is null.");
+
+            var module = await _context.Module.Include(c => c.Activities).FirstOrDefaultAsync(c => c.Id == moduleId);
+
+            if (module == null)
+                return Json("Ogiltigt modul-ID.");
+
+            if (DateTime.Compare(endDate, module.StartDate) < 0)
+                return Json($"Aktivitetens slutdatum måste ligga efter modulens startdatum: {module.StartDate.ToShortDateString()}");
+            else if (DateTime.Compare(endDate, module.EndDate) > 0)
+                return Json($"Aktivitetens slutdatum måste ligga innan modulens slutdatum: {module.EndDate.ToShortDateString()}");
+
+            if (DateTime.Compare(endDate, startDate) < 0)
+                return Json($"Aktivitetens slutdatum måste ligga efter aktivitetens startdatum: {startDate.ToShortDateString()}");
+
+            var activities = module.Activities;
+
+            foreach (var activity in activities)
+                if (DateTime.Compare(endDate, activity.StartDate) > 0 && DateTime.Compare(startDate, activity.EndDate) < 0)
+                    return Json($"Slutdatum ogiltigt, överlappar en annnan aktivitet med tidsspann {activity.StartDate.ToShortDateString()} - {activity.EndDate.ToShortDateString()}");
+
             return Json(true);
         }
     }
