@@ -168,7 +168,6 @@ namespace LMS.Web.Controllers
 
         public IActionResult CreatePartial()
         {
-            var test = true;
             return PartialView();
         }
     }
