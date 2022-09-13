@@ -1,5 +1,6 @@
 ﻿using LMS.Core.Entities;
 using LMS.Core.Repositories;
+using LMS.Core.Services;
 using LMS.Data.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,8 +13,8 @@ namespace LMS.Web.Services
 
         public DateValidationService(ApplicationDbContext context, IUnitOfWork uow)
         {
-            _context = context;
-            _uow = uow;
+            _context = context; // Remove context and use only uow
+            _uow = uow; // Currently unused
         }
 
         public async Task<string> ValidateModuleStartDate(DateTime startDate, int courseId)
@@ -32,6 +33,7 @@ namespace LMS.Web.Services
                 return $"Modulens startdatum måste ligga innan kursens slutdatum: {course.EndDate.ToShortDateString()}";
 
             var overlap = course.Modules.FirstOrDefault(m => startDate > m.StartDate && startDate < m.EndDate);
+
             if (overlap != null)
                 return $"Startdatum ogiltigt, överlappar annan modul med tidsspann: {overlap.StartDate.ToShortDateString()} - {overlap.EndDate.ToShortDateString()}";
 

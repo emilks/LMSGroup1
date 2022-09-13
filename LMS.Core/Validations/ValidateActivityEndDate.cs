@@ -1,10 +1,10 @@
 ﻿using LMS.Core.Entities;
-using LMS.Web.Services;
+using LMS.Core.Services;
 using System.ComponentModel.DataAnnotations;
 
-namespace LMS.Web.Validations
+namespace LMS.Core.Validations
 {
-    public class ValidateModuleEndDate : ValidationAttribute
+    public class ValidateActivityEndDate : ValidationAttribute
     {
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
@@ -13,11 +13,11 @@ namespace LMS.Web.Validations
                 var validationService = (IDateValidationService)validationContext
                          .GetService(typeof(IDateValidationService))!;
 
-                var module = validationContext.ObjectInstance as Module;
+                var activity = validationContext.ObjectInstance as Activity;
 
-                if (module is not null)
+                if (activity is not null)
                 {
-                    var result = validationService.ValidateModuleEndDate(input, module.StartDate, module.CourseId).Result;
+                    var result = validationService.ValidateActivityEndDate(input, activity.StartDate, activity.ModuleId).Result;
 
                     if (result == "true")
                         return ValidationResult.Success;

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LMS.Core.Validations;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,6 +26,7 @@ namespace LMS.Core.Entities
 
         [DisplayName("Start date")]
         [Remote(action: "VerifyStartDate", controller: "Modules", AdditionalFields ="CourseId")]
+        [ValidateModuleStartDate]
         public DateTime StartDate { get; set; }
 
         [DisplayName("End date")]

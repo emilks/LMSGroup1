@@ -1,4 +1,4 @@
-﻿namespace LMS.Web.Services
+﻿namespace LMS.Core.Services
 {
     public interface IDateValidationService
     {

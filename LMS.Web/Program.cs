@@ -6,6 +6,7 @@ using LMS.Web.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using LMS.Web.Services;
+using LMS.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
