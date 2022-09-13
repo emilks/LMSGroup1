@@ -7,24 +7,28 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LMS.Core.Entities;
 using LMS.Data.Data;
+using LMS.Web.Services;
+using LMS.Core.Services;
 
 namespace LMS.Web.Controllers
 {
     public class ModulesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDateValidationService _dateValidationService;
 
-        public ModulesController(ApplicationDbContext context)
+        public ModulesController(ApplicationDbContext context, IDateValidationService dateValidationService)
         {
             _context = context;
+            _dateValidationService = dateValidationService;
         }
 
         // GET: Modules
         public async Task<IActionResult> Index()
         {
-              return _context.Module != null ? 
-                          View(await _context.Module.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Module'  is null.");
+            return _context.Module != null ?
+                        View(await _context.Module.ToListAsync()) :
+                        Problem("Entity set 'ApplicationDbContext.Module'  is null.");
         }
 
         // GET: Modules/Details/5
@@ -56,7 +60,7 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate")] Module @module)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,CourseId")] Module @module)
         {
             if (ModelState.IsValid)
             {
@@ -150,14 +154,24 @@ namespace LMS.Web.Controllers
             {
                 _context.Module.Remove(@module);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ModuleExists(int id)
         {
-          return (_context.Module?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Module?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        public async Task<IActionResult> VerifyStartDate(DateTime startDate, int courseId)
+        {
+            return Json(await _dateValidationService.ValidateModuleStartDate(startDate, courseId));
+        }
+
+        public async Task<IActionResult> VerifyEndDate(DateTime endDate, DateTime startDate, int courseId)
+        {
+            return Json(await _dateValidationService.ValidateModuleEndDate(endDate, startDate, courseId));
         }
     }
 }

@@ -1,5 +1,9 @@
-﻿using System;
+﻿using LMS.Core.Validations;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,10 +15,27 @@ namespace LMS.Core.Entities
     public class Activity
     {
         public int Id { get; set; }
+
+        [Required]
+        [StringLength(100, MinimumLength = 3)]
         public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(500, MinimumLength = 3)]
         public string Description { get; set; } = string.Empty;
+
+        [DisplayName("Start date")]
+        [Remote(action: "VerifyStartDate", controller: "Activities", AdditionalFields = "ModuleId")]
+        [ValidateActivityStartDate]
         public DateTime StartDate { get; set; }
+
+        [DisplayName("End date")]
+        [Remote(action: "VerifyEndDate", controller: "Activities", AdditionalFields = "StartDate,ModuleId")]
+        [ValidateActivityEndDate]
         public DateTime EndDate { get; set; }
+
+        // Foreign keys
+        public int ModuleId { get; set; }
 
         // Navigation props
         public Module Module { get; set; }
