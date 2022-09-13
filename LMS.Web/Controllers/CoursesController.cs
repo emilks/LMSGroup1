@@ -3,11 +3,13 @@ using LMS.Core.Entities;
 using LMS.Core.Repositories;
 using LMS.Core.ViewModels;
 using LMS.Data.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Web.Controllers
 {
+    [Authorize]
     public class CoursesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -34,6 +36,7 @@ namespace LMS.Web.Controllers
             return View(vm);
         }
 
+        [Authorize(Roles ="Teacher")]
         // GET: Courses
         public async Task<IActionResult> Index()
         {

@@ -18,7 +18,7 @@ namespace LMS.Data.Repositories
                 return null;
             }
             if (includeModules) {
-                return await db.Course.Include(c => c.Modules).ToListAsync();
+                return await db.Course.Include(c => c.Modules).OrderBy(c => c.StartDate).ToListAsync();
             }
             return await db.Course.ToListAsync();
         }
