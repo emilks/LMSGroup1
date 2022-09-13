@@ -74,7 +74,10 @@ a.blacknav:hover, a.blacknav:active {
 .logoimg {
     height: 50px;
 }
-
+.courseimg {
+    width: 100%;
+    height: 160px;
+}
 .whitetext {
     color: white;
 }
@@ -83,8 +86,16 @@ a.blacknav:hover, a.blacknav:active {
     background-color: #2E0289 !important;
     border: hidden;
 }
-
-    .btn-primary:hover {
-        background-color: #1f015c !important;
-        border: hidden;
-    }
+.btn-primary:hover {
+    background-color: #1f015c !important;
+    border: hidden;
+}
+.smalltext12 {
+    font-size: 12px;
+}
+.rounded-xl {
+    border-radius: 1.5rem;
+}
+.largetext20 {
+    font-size: 16px;
+}

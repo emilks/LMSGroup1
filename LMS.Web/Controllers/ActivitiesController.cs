@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LMS.Core.Entities;
 using LMS.Data.Data;
+using LMS.Web.Services;
+using LMS.Core.Services;
 
 namespace LMS.Web.Controllers
 {
     public class ActivitiesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IDateValidationService _dateValidationService;
 
-        public ActivitiesController(ApplicationDbContext context)
+        public ActivitiesController(ApplicationDbContext context, IDateValidationService dateValidationService)
         {
             _context = context;
+            _dateValidationService = dateValidationService;
         }
 
         // GET: Activities
@@ -56,7 +60,7 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate")] Activity activity)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,ModuleId")] Activity activity)
         {
             if (ModelState.IsValid)
             {
@@ -158,6 +162,16 @@ namespace LMS.Web.Controllers
         private bool ActivityExists(int id)
         {
           return (_context.Activity?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        public async Task<IActionResult> VerifyStartDate(DateTime startDate, int moduleId)
+        {
+            return Json(await _dateValidationService.ValidateActivityStartDate(startDate, moduleId));
+        }
+
+        public async Task<IActionResult> VerifyEndDate(DateTime endDate, DateTime startDate, int moduleId)
+        {
+            return Json(await _dateValidationService.ValidateActivityEndDate(endDate, startDate, moduleId));
         }
     }
 }
