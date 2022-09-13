@@ -4,6 +4,7 @@ using LMS.Core.Repositories;
 using LMS.Core.ViewModels;
 using LMS.Data.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,13 +16,14 @@ namespace LMS.Web.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IMapper mapper;
         private readonly IUnitOfWork uow;
+        private readonly UserManager<IdentityUser> userManager;
 
-        public CoursesController(ApplicationDbContext context, IMapper mapper, IUnitOfWork unitOfWork)
+        public CoursesController(ApplicationDbContext context, IMapper mapper, IUnitOfWork unitOfWork, UserManager<IdentityUser> userManager)
         {
             _context = context;
             this.mapper = mapper;
             uow = unitOfWork;
-
+            this.userManager = userManager;
         }
 
         // GET: Courses/Contacts/5
@@ -189,6 +191,7 @@ namespace LMS.Web.Controllers
         }
         public async Task<IActionResult> DetailedView(int? id)
         {
+            
             var course = await uow.CourseRepository.GetCourseFull(id);
 
             var viewModel = mapper.ProjectTo<ModuleViewModel>(course.Modules.AsQueryable());
@@ -202,6 +205,19 @@ namespace LMS.Web.Controllers
             //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>(courses.AsQueryable());
 
             return View(viewModel);
+        }
+
+        public async Task<IActionResult> MyCourse()
+        {
+            var userId = userManager.GetUserId(User);
+
+            var courseId = _context.Course.Include(e => e.Students)
+                .Where(e => e.Students.Any(f => f.Id.Equals(userId)))
+                .FirstOrDefault();
+            //.Select(e => e.Id);
+            var test = courseId.Id;
+
+            return RedirectToAction("DetailedView", new { id = 1 });
         }
 
     }
