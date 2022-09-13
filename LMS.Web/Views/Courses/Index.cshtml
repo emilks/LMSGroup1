@@ -3,11 +3,7 @@
 <h1>Kurser</h1>
 
 <p>
-    <a asp-action="Create" class="btn btn-primary btn-sm">Lägg till kurs</a><br />
     <button data-bs-toggle="modal" id="btnCreateCourse" data-bs-target="#modalPartial" class="btn btn-sm btn-primary smalltext12">Lägg till kurs</button>
-
-
-    <a asp-controller="Courses" asp-action="DetailedView">Kursmodul ADMIN</a>@*endast länk för framtagande av modulen*@
 </p>
 
 
@@ -16,8 +12,8 @@
         <table class="table accordion">
             <thead>
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Kurs</th>
+                    <th scope="col"></th>
+                    <th scope="col">Kursnamn</th>
                     <th scope="col"></th>
                     <th scope="col"></th>
                     <th scope="col"></th>
@@ -31,7 +27,7 @@
                 {
                     <tr >
                         <th scope="row">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Öppna</a> 
+                            <a asp-action="DetailedView" asp-route-id="@item.Id" class="btn btn-primary btn-sm">Öppna</a> 
                             <i class="bi bi-chevron-down"></i>
                         </th>
                         <td data-bs-toggle="collapse" data-bs-target="#r_@i">@Html.DisplayFor(modelItem => item.Name)</td>
@@ -53,13 +49,13 @@
                             " id="r_@i" data-bs-parent=".table" data-target=".table">
                         <td></td>
                         <td colspan="4">
-                            @Html.DisplayFor(modelItem => item.Description)
+                            <span class="fw-bold fst-italic">Beskrivning: </span>@Html.DisplayFor(modelItem => item.Description)
                             <br>
-                            <strong>Moduler:</strong><br>
+                            <span class="fw-bold">Moduler:</span><br>
                             @foreach (var modul in item.Modules)
                             {
                                 <div>
-                                    <div class="bg-light d-flex justify-content-between">
+                                    <div class="sectioncolors d-flex justify-content-between">
                                         <div>
                                             @Html.DisplayFor(modelItem => modul.Name)
                                         </div>
@@ -74,7 +70,7 @@
                                         </div>
                                     </div>
                                     <div>
-                                        @Html.DisplayFor(modelItem => modul.Description)
+                                        <span class="fw-bold fst-italic">Beskrivning: </span>@Html.DisplayFor(modelItem => modul.Description)
                                     </div>
                                 </div>
                             }

@@ -184,9 +184,21 @@ namespace LMS.Web.Controllers
         {
             return PartialView();
         }
-        public async Task<IActionResult> DetailedView()
+        public async Task<IActionResult> DetailedView(int? id)
         {
-            return View();
+            var course = await uow.CourseRepository.GetCourseFull(id);
+
+            var viewModel = mapper.ProjectTo<ModuleViewModel>(course.Modules.AsQueryable());
+            //var modules = await _context.Module.
+            //var courses = await uow.CourseRepository.GetCourses(includeModules: true);
+            //if (courses == null)
+            //{
+            //    return View();
+            //}
+
+            //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>(courses.AsQueryable());
+
+            return View(viewModel);
         }
 
     }
