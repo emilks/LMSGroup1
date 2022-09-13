@@ -76,9 +76,9 @@ namespace LMS.Web.Services
                 return "Ogiltigt modul-ID.";
 
             if (startDate < module.StartDate)
-                return $"Modulens startdatum måste ligga efter modulens startdatum: {module.StartDate.ToShortDateString()}";
+                return $"Aktivitetens startdatum måste ligga efter modulens startdatum: {module.StartDate.ToShortDateString()}";
             else if (startDate > module.EndDate)
-                return $"Modulens startdatum måste ligga innan modulens slutdatum: {module.EndDate.ToShortDateString()}";
+                return $"Aktivitetens startdatum måste ligga innan modulens slutdatum: {module.EndDate.ToShortDateString()}";
 
             var overlap = module.Activities.FirstOrDefault(a => startDate > a.StartDate && startDate < a.EndDate);
             if (overlap != null)
