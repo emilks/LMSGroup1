@@ -13,33 +13,38 @@ namespace LMS.Data.Repositories
             this.db = context;
         }
 
-        /*
-         * find course by id, maybe a course name is better?
-         */
-        public async Task<IEnumerable<TeacherUser>?> GetCourseTeachers(int? id) {
-            if (db.Course == null || id == null) {
+        public async Task<IEnumerable<Course>?> GetCourses(bool includeModules = false) {
+            if(db.Course == null) {
                 return null;
             }
-
-            var course = await db.Course.Include(c => c.Teachers).FirstOrDefaultAsync(c => c.Id == id);
-            if (course == null) {
-                return null;
+            if (includeModules) {
+                return await db.Course.Include(c => c.Modules).ToListAsync();
             }
-
-            return course.Teachers;
+            return await db.Course.ToListAsync();
         }
 
-        public async Task<IEnumerable<StudentUser>?> GetCourseStudents(int? id) {
+        public async Task<Course?> GetCourseWithContacts(int? id) {
             if (db.Course == null || id == null) {
                 return null;
             }
 
-            var course = await db.Course.Include(c => c.Students).FirstOrDefaultAsync(c => c.Id == id);
-            if (course == null) {
+            return await db.Course.Include(c => c.Students)
+                                  .Include(c => c.Teachers)
+                                  .FirstOrDefaultAsync(c => c.Id == id);
+        }
+
+        public async Task<Course?> GetCourseFull(int? id) {
+            if(db.Course == null || id == null) {
                 return null;
             }
 
-            return course.Students;
+            return await db.Course.Include(c => c.Students)
+                                  .Include(c => c.Teachers)
+                                  .Include(c => c.Documents)
+                                  .Include(c => c.Modules).ThenInclude(m => m.Documents)
+                                  .Include(c => c.Modules).ThenInclude(m => m.Activities)
+                                  .ThenInclude(a => a.Documents)                                  
+                                  .FirstOrDefaultAsync(c => c.Id == id);
         }
     }
 }
