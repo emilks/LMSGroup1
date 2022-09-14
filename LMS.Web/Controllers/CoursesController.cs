@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LMS.Web.Controllers
 {
@@ -38,10 +39,14 @@ namespace LMS.Web.Controllers
             return View(vm);
         }
 
-        [Authorize(Roles ="Teacher")]
         // GET: Courses
         public async Task<IActionResult> Index()
         {
+            if (User.IsInRole("Student"))
+            {
+                return RedirectToAction("DetailedView");
+            }
+
             var courses = await uow.CourseRepository.GetCourses(includeModules: true);
             if(courses == null) {
                 return View();
@@ -191,7 +196,22 @@ namespace LMS.Web.Controllers
         }
         public async Task<IActionResult> DetailedView(int? id)
         {
-            
+            if (User.IsInRole("Student"))
+            {
+                var userId = userManager.GetUserId(User);
+
+                var courseId = _context.Course.Include(e => e.Students)
+                    .Where(e => e.Students.Any(f => f.Id.Equals(userId)))
+                    .FirstOrDefault();
+                
+                id = courseId?.Id;
+                if (courseId == null)
+                {
+                    id = 1;
+                }
+            }
+
+
             var course = await uow.CourseRepository.GetCourseFull(id);
 
             var viewModel = mapper.ProjectTo<ModuleViewModel>(course.Modules.AsQueryable());
@@ -217,7 +237,7 @@ namespace LMS.Web.Controllers
             //.Select(e => e.Id);
             var test = courseId.Id;
 
-            return RedirectToAction("DetailedView", new { id = 1 });
+            return RedirectToAction("DetailedView", new { id = test });
         }
 
     }
