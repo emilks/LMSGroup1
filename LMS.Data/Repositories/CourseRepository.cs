@@ -18,9 +18,9 @@ namespace LMS.Data.Repositories
                 return null;
             }
             if (includeModules) {
-                return await db.Course.Include(c => c.Modules).ToListAsync();
+                return await db.Course.Include(c => c.Modules.OrderBy(m => m.StartDate)).OrderBy(c => c.StartDate).ToListAsync();
             }
-            return await db.Course.ToListAsync();
+            return await db.Course.OrderBy(c => c.StartDate).ToListAsync();
         }
 
         public async Task<Course?> GetCourseWithContacts(int? id) {
@@ -42,7 +42,8 @@ namespace LMS.Data.Repositories
                                   .Include(c => c.Teachers)
                                   .Include(c => c.Documents)
                                   .Include(c => c.Modules).ThenInclude(m => m.Documents)
-                                  .Include(c => c.Modules).ThenInclude(m => m.Activities)
+                                  .Include(c => c.Modules.OrderBy(m => m.StartDate))
+                                  .ThenInclude(m => m.Activities.OrderBy(a => a.StartDate))
                                   .ThenInclude(a => a.Documents)                                  
                                   .FirstOrDefaultAsync(c => c.Id == id);
         }
