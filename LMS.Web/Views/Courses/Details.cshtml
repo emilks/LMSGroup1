@@ -7,7 +7,7 @@
 <h1>Details</h1>
 
 <div>
-    <h4>Course</h4>
+    <h4>@Model.Name</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -35,8 +35,19 @@
             @Html.DisplayFor(model => model.EndDate)
         </dd>
     </dl>
+
+
+    @*test*@
+    <p>Kursdokument</p>
+    <ul>
+    @foreach (var item in Model.Documents) {
+        <filehelper file-name="@item" ></filehelper>
+    }
+    </ul>
 </div>
+
 <div>
+
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

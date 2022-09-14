@@ -8,6 +8,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Assets\**" />
+    <Compile Remove="Views\Assets\**" />
+    <Compile Remove="wwwroot\NewFolder1\**" />
+    <Content Remove="Assets\**" />
+    <Content Remove="Views\Assets\**" />
+    <Content Remove="wwwroot\NewFolder1\**" />
+    <EmbeddedResource Remove="Assets\**" />
+    <EmbeddedResource Remove="Views\Assets\**" />
+    <EmbeddedResource Remove="wwwroot\NewFolder1\**" />
+    <None Remove="Assets\**" />
+    <None Remove="Views\Assets\**" />
+    <None Remove="wwwroot\NewFolder1\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\images\file-earmark.svg" />
+    <Content Remove="wwwroot\images\filetype-doc.svg" />
+    <Content Remove="wwwroot\images\pencil.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="6.7.0" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.8" />
@@ -29,7 +50,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="wwwroot\images\file-earmark.svg" />
+    <None Include="wwwroot\images\filetype-doc.svg" />
     <None Include="wwwroot\images\Logo-LMS.jpg" />
+    <None Include="wwwroot\images\pencil.svg" />
   </ItemGroup>
 
 </Project>
