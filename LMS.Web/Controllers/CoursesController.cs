@@ -55,8 +55,10 @@ namespace LMS.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Course
-                .FirstOrDefaultAsync(m => m.Id == id);
+            //var course = await _context.Course
+            //    .FirstOrDefaultAsync(m => m.Id == id);
+            var course = await uow.CourseRepository.GetCourseFull(id);
+
             if (course == null)
             {
                 return NotFound();
