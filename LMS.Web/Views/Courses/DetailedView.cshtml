@@ -127,12 +127,14 @@
         <br />
         i++;
     }
+    <!-- Partiell Vy: Lägg till modul -->
     <div class="ml-4">
         <button @*data-bs-toggle="modal" id="btnCreateCourse" data-bs-target="#modalPartial"*@ class="btn btn-sm btn-primary smalltext12 mb-4" data-bs-toggle="collapse" data-bs-target="#collapseAddModule" aria-expanded="false" aria-controls="collapseAddModule">Lägg till modul</button>
         <div class="collapse" id="collapseAddModule">
-            <partial name="~/Views/Modules/CreatePartial.cshtml" model="new Module() {CourseId = 2}" />
+            <partial name="~/Views/Modules/CreatePartial.cshtml" model="new ModuleCreateViewModel() {Course = Model }" />
         </div>
     </div>
+
 </div>
 
 

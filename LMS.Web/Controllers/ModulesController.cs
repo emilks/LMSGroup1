@@ -9,6 +9,8 @@ using LMS.Core.Entities;
 using LMS.Data.Data;
 using LMS.Web.Services;
 using LMS.Core.Services;
+using Microsoft.CodeAnalysis;
+using System.Runtime.Intrinsics.X86;
 
 namespace LMS.Web.Controllers
 {
@@ -164,9 +166,11 @@ namespace LMS.Web.Controllers
         {
             return (_context.Module?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-
-        public async Task<IActionResult> VerifyStartDate(DateTime startDate, int courseId)
+        public async Task<IActionResult> VerifyStartDate([Bind(Prefix = "Module.StartDate")] DateTime startDate)
         {
+            string courseIdStr = TempData["CourseId"].ToString();
+            TempData.Keep("CourseId");
+            int courseId = int.Parse(courseIdStr);
             return Json(await _dateValidationService.ValidateModuleStartDate(startDate, courseId));
         }
 
