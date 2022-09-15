@@ -1,8 +1,9 @@
 ﻿@model LMS.Core.Entities.Module
+
 @{
 }
 <div>
-    <form asp-action="Create">
+    <form asp-controller="Modules" asp-action="Create">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
             <label asp-for="@Model.CourseId" class="control-label">CourseId (temporary)</label>
@@ -21,12 +22,12 @@
         </div>
         <div class="form-group">
             <label asp-for="StartDate" class="control-label"></label>
-            <input asp-for="StartDate" class="form-control" />
+            <input asp-for="StartDate" class="form-control" value="" />
             <span asp-validation-for="StartDate" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="EndDate" class="control-label"></label>
-            <input asp-for="EndDate" class="form-control" />
+            <input asp-for="EndDate" class="form-control" value="" />
             <span asp-validation-for="EndDate" class="text-danger"></span>
         </div>
         <div class="form-group mt-4">
@@ -34,6 +35,11 @@
         </div>
     </form>
 </div>
+
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 
 @section Scripts {
     @{
