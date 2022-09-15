@@ -20,6 +20,8 @@ namespace LMS.Data
             CreateMap<Course, CourseContactsViewModel>();
 
             CreateMap<Activity, ActivityViewModel>();
+
+            CreateMap<Course, CourseViewModel>();
         }
     }
 }
