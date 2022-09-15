@@ -17,10 +17,10 @@
         <div class="row justify-content-center bg-white">
         <div class="col-9 my-2">
         <a class="navbar-brand m-3 blacknav" asp-area="" asp-controller="Courses" asp-action="Index"><img src="~/images/Logo-LMS.jpg" class="img logoimg" alt="Logo" /></a></div>
-        <div class="col-3 c">
+        <div class="col-3 right">
         @if (SignInManager.IsSignedIn(User))
             {
-                <span class="alignright">Inloggad som: @User.Identity?.Name</span>
+                <span class="smalltext12">Inloggad som: @User.Identity?.Name</span>
             }
         else
             {
