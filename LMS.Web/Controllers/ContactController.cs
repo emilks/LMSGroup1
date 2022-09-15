@@ -3,6 +3,8 @@ using LMS.Core.Repositories;
 using LMS.Core.ViewModels;
 using LMS.Data.Data;
 using Microsoft.AspNetCore.Mvc;
+using LMS.Core.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Web.Controllers
 {
@@ -29,6 +31,66 @@ namespace LMS.Web.Controllers
             var vm = mapper.ProjectTo<ContactsViewModel>(course.AsQueryable());
 
             return View(vm);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("FirstName,LastName,Email")] TeacherUser @teacher)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(@teacher);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(@teacher);
+        }
+
+        public async Task<IActionResult> Edit()
+        {
+            if (id == null || _context.Activity == null)
+            {
+                return NotFound();
+            }
+
+            var activity = await _context.Activity.FindAsync(id);
+            if (activity == null)
+            {
+                return NotFound();
+            }
+            return View(activity);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("FirstName,LastName,Email")] TeacherUser teacher)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(teacher);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ActivityExists(teacher.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(teacher);
         }
 
         //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
