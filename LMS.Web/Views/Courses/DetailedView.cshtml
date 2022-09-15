@@ -1,4 +1,4 @@
-﻿@model MainCourseIndexViewModel
+﻿@model CourseViewModel
 
 @{
     ViewData["Title"] = "DetailedView";
@@ -248,12 +248,12 @@ $(function () {
         </button>
       </div>
       <div class="modal-body">
-        <ul>
+@*        <ul>
             @foreach (var document in Model.Documents) {
                 <filehelper document="@document" ></filehelper>
             }
         </ul>
-      </div>
+*@      </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
         @*<button type="button" class="btn btn-primary">Save changes</button>*@
