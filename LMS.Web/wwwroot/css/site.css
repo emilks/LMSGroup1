@@ -105,3 +105,6 @@ a.blacknav:hover, a.blacknav:active {
 .aligncenter {
     text-align: center;
 }
+div.c {
+    text-align: right;
+}
