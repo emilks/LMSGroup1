@@ -248,7 +248,11 @@ $(function () {
         </button>
       </div>
       <div class="modal-body">
-        Hello
+        <ul>
+            @foreach (var document in Model.Documents) {
+                <filehelper document="@document" ></filehelper>
+            }
+        </ul>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
