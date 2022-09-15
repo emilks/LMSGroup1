@@ -10,10 +10,10 @@ namespace LMS.Core.ViewModels
         public string Name { get; set; }
         public string Description { get; set; }
         [Remote(action: "VerifyStartDate", controller: "Modules")]
-        // Avvaktivera backend-validering tillfälligt
+        // Avvaktivera backend-validering tills svidare
         //[ValidateModuleStartDate]
         public DateTime StartDate { get; set; }
-        // Avvaktivera backend-validering tillfälligt
+        // Avvaktivera backend-validering tills svidare
         //[ValidateModuleEndDate]
         [Remote(action: "VerifyEndDate", controller: "Modules", AdditionalFields = "StartDate,CourseId")]
         public DateTime EndDate { get; set; }
