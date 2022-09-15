@@ -51,7 +51,7 @@ namespace LMS.Web.Controllers
             return View(@teacher);
         }
 
-        public async Task<IActionResult> Edit()
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Activity == null)
             {
@@ -68,18 +68,18 @@ namespace LMS.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("FirstName,LastName,Email")] TeacherUser teacher)
+        public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,Email")] TeacherUser @teacheruser)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(teacher);
+                    _context.Update(@teacheruser);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ActivityExists(teacher.Id))
+                    if (!TeacherExists(@teacheruser.Id))
                     {
                         return NotFound();
                     }
@@ -90,7 +90,12 @@ namespace LMS.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(teacher);
+            return View(teacheruser);
+        }
+
+        private bool TeacherExists(string id)
+        {
+            return (_context.TeacherUser?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
