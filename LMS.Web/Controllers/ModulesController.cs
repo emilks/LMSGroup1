@@ -11,6 +11,8 @@ using LMS.Web.Services;
 using LMS.Core.Services;
 using Microsoft.CodeAnalysis;
 using System.Runtime.Intrinsics.X86;
+using LMS.Core.ViewModels;
+using Bogus;
 
 namespace LMS.Web.Controllers
 {
@@ -62,14 +64,27 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,CourseId")] Module @module)
+        //public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,CourseId")] Module @module)
+        public async Task<IActionResult> Create(ModuleViewModel @module)
         {
+            var tempMap = new Module()
+            {
+                Name = module.Name,
+                Description = module.Description,
+                StartDate = module.StartDate,
+                EndDate = module.EndDate,
+                CourseId = int.Parse(TempData["CourseId"].ToString())
+            };
+
+            TempData.Keep("CourseId");
+
             if (ModelState.IsValid)
             {
-                _context.Add(@module);
+                //_context.Add(@module);
+                _context.Add(tempMap);
                 await _context.SaveChangesAsync();
                 //return RedirectToAction(nameof(Index));
-                return RedirectToAction("DetailedView", "Courses", new {id = module.Course.Id});
+                return RedirectToAction("DetailedView", "Courses", new {id = int.Parse(TempData["CourseId"].ToString()) });
             }
             return View(@module);
         }
@@ -166,7 +181,7 @@ namespace LMS.Web.Controllers
         {
             return (_context.Module?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-        public async Task<IActionResult> VerifyStartDate([Bind(Prefix = "Module.StartDate")] DateTime startDate)
+        public async Task<IActionResult> VerifyStartDate(DateTime startDate)
         {
             string courseIdStr = TempData["CourseId"].ToString();
             TempData.Keep("CourseId");
@@ -174,8 +189,12 @@ namespace LMS.Web.Controllers
             return Json(await _dateValidationService.ValidateModuleStartDate(startDate, courseId));
         }
 
-        public async Task<IActionResult> VerifyEndDate(DateTime endDate, DateTime startDate, int courseId)
+        public async Task<IActionResult> VerifyEndDate(DateTime endDate,
+            [Bind(Prefix = "StartDate")] DateTime startDate)
         {
+            string courseIdStr = TempData["CourseId"].ToString();
+            TempData.Keep("CourseId");
+            int courseId = int.Parse(courseIdStr);
             return Json(await _dateValidationService.ValidateModuleEndDate(endDate, startDate, courseId));
         }
     }
