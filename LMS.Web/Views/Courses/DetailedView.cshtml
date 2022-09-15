@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ModuleViewModel>
+﻿@model MainCourseIndexViewModel
 
 @{
     ViewData["Title"] = "DetailedView";
@@ -11,8 +11,12 @@
             <img src="~/images/workshop.jpg" class="img courseimg" alt="workshop" />
         </div>
         <div class="col-2">
-            <h3>Kursnamn</h3>
-            <p>Kursen handlar om hur mycket man kan göra utan att trilla ned från en stol medan man befinner sig på havet i en båt</p>
+            <h3>
+                @Html.DisplayFor(model => model.Name)
+            </h3>
+            <p>
+                @Html.DisplayFor(model => model.Description)
+            </p>
         </div>
         <div class="col-1">
             <h5>Deltagare</h5>
@@ -48,7 +52,7 @@
                 @{
                     int i = 0;
                 }
-                @foreach (var item in Model)
+                @foreach (var item in Model.Modules)
                 {
                 <div class="card rounded-xl border-2">
                 <div class="table-responsive">
@@ -124,6 +128,7 @@
                 }
 
 </div>
+
 
 @section scripts{
 <script>

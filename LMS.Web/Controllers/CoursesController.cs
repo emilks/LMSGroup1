@@ -55,8 +55,10 @@ namespace LMS.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Course
-                .FirstOrDefaultAsync(m => m.Id == id);
+            //var course = await _context.Course
+            //    .FirstOrDefaultAsync(m => m.Id == id);
+            var course = await uow.CourseRepository.GetCourseFull(id);
+
             if (course == null)
             {
                 return NotFound();
@@ -188,7 +190,7 @@ namespace LMS.Web.Controllers
         {
             var course = await uow.CourseRepository.GetCourseFull(id);
 
-            var viewModel = mapper.ProjectTo<ModuleViewModel>(course.Modules.AsQueryable());
+            //var viewModel = mapper.ProjectTo<ModuleViewModel>(course.Modules.AsQueryable());
             //var modules = await _context.Module.
             //var courses = await uow.CourseRepository.GetCourses(includeModules: true);
             //if (courses == null)
@@ -197,7 +199,8 @@ namespace LMS.Web.Controllers
             //}
 
             //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>(courses.AsQueryable());
-
+            var viewModel = mapper.Map<MainCourseIndexViewModel>(course);
+            //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>((IQueryable)course);
             return View(viewModel);
         }
 
