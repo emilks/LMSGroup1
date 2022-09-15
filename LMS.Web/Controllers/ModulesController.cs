@@ -66,7 +66,8 @@ namespace LMS.Web.Controllers
             {
                 _context.Add(@module);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                //return RedirectToAction(nameof(Index));
+                return RedirectToAction("DetailedView", "Courses", new {id = module.Course.Id});
             }
             return View(@module);
         }
