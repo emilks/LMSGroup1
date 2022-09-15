@@ -60,10 +60,10 @@ app.UseAuthorization();
 
 //Forces user to see login screen unless logged in
 
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapDefaultControllerRoute().RequireAuthorization();
-//});
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapDefaultControllerRoute().RequireAuthorization();
+});
 
 app.MapControllerRoute(
     name: "default",

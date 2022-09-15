@@ -18,19 +18,26 @@
             <h5>Deltagare</h5>
             <p class="smalltext12">Antal deltagare: 14</p>
         <button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
-        <button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
+            @if (User.IsInRole("Teacher"))
+            {
+                <button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
+            }
         </div>
         <div class="col-1">
             <h5>Uppgifter</h5>
             <p class="smalltext12">Pågående uppgifter: 2</p>
         <button data-bs-toggle="modal" data-bs-target="#seeTasks" class="btn btn-lg btn-primary smalltext12 w-100">Se uppgifter</button>
-        <button data-bs-toggle="modal" data-bs-target="#addTasks" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Skapa uppgift</button>
+            @if (User.IsInRole("Teacher")){
+                <button data-bs-toggle="modal" data-bs-target="#addTasks" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Skapa uppgift</button>
+            }
         </div>
         <div class="col-1">
             <h5>Kursdokument</h5>
             <p class="smalltext12">Antal dokument: 7</p>
         <button data-bs-toggle="modal" data-bs-target="#seeDocuments" class="btn btn-lg btn-primary smalltext12 w-100">Se dokument</button>
-        <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
+            @if (User.IsInRole("Teacher")){
+                <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
+            }
         </div>
         <div class="col-1">
             <h5>Inlämningar</h5>
@@ -104,8 +111,10 @@
                                 <div class="mt-3 col-1"></div>
                                 <div class="mt-3 col-3">
                                     <span class="largetext20">Aktivitetsdokument </span>
-                                    <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Ladda upp</button>
-                                </div>
+                                        @if (User.IsInRole("Teacher")){
+                                            <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Ladda upp</button>
+                                        }
+                                    </div>
                                 <div class="mt-3 col-3">
                                     <span class="largetext20">Inlämnade dokument </span>
                                     <button data-bs-toggle="modal" data-bs-target="#turnIn" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
