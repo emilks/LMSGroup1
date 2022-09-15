@@ -1,10 +1,8 @@
-﻿@model LMS.Core.ViewModels.CourseContactsViewModel
+﻿@model IEnumerable<ContactsViewModel>
 
 @{
     ViewData["Title"] = "Index";
 }
-
-<h1>Kontakter: @Model.Name</h1>
 
 <br />
 <h3>Lärare</h3>
@@ -13,28 +11,25 @@
     <thead>
         <tr>
             <th>
-                @*@Html.DisplayNameFor(model => model.Teachers[0].FirstName)*@
                 Förnamn
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.Description)*@
                 Efternamn
             </th>
             <th>
-                @*@Html.DisplayNameFor(model => model.StartDate)*@
                 E-Post
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Teachers) {
+@foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
+                @Html.DisplayFor(modelItem => item.Firstname)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.LastName)
+                @Html.DisplayFor(modelItem => item.Lastname)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Email)
@@ -45,39 +40,3 @@
 </table>
 
 <br />
-<h3>Elever</h3>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @*@Html.DisplayNameFor(model => model.Teachers[0].FirstName)*@
-                Förnamn
-            </th>
-            <th>
-                @*@Html.DisplayNameFor(model => model.Description)*@
-                Efternamn
-            </th>
-            <th>
-                @*@Html.DisplayNameFor(model => model.StartDate)*@
-                E-Post
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Students) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-        </tr>
-}
-    </tbody>
-</table>

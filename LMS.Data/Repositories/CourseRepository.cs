@@ -47,16 +47,14 @@ namespace LMS.Data.Repositories
                                   .ThenInclude(a => a.Documents)                                  
                                   .FirstOrDefaultAsync(c => c.Id == id);
         }
-        public async Task<TeacherUser?> GetTeacherContacts()
+        public async Task<IEnumerable<TeacherUser?>> GetTeacherContacts()
         {
             if (db.TeacherUser == null)
             {
                 return null;
             }
 
-            return await db.TeacherUser.Include(c => c.FirstName)
-                                  .Include(c => c.LastName)
-                                  .FirstOrDefaultAsync();
+            return await db.TeacherUser.ToListAsync();
         }
     }
 }

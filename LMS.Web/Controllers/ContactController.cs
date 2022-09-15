@@ -8,14 +8,15 @@ namespace LMS.Web.Controllers
 {
     public class ContactController : Controller
     {
-        private readonly ILogger<ContactController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly IMapper mapper;
         private readonly IUnitOfWork uow;
 
-        public ContactController(ILogger<ContactController> logger)
+        public ContactController(ApplicationDbContext context, IMapper mapper, IUnitOfWork unitOfWork)
         {
-            _logger = logger;
+            _context = context;
+            this.mapper = mapper;
+            uow = unitOfWork;
         }
         public async Task<IActionResult> Index()
         {
@@ -25,7 +26,7 @@ namespace LMS.Web.Controllers
                 return Problem($"´No contacts found.");
             }
 
-            var vm = mapper.Map<CourseContactsViewModel>(course);
+            var vm = mapper.ProjectTo<ContactsViewModel>(course.AsQueryable());
 
             return View(vm);
         }
