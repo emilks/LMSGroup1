@@ -21,13 +21,8 @@
         <div class="col-1">
             <h5>Deltagare</h5>
             <p class="smalltext12">Antal deltagare: @Model.Students.Count()</p>
-        <button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
-        <button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
-            <p class="smalltext12">Antal deltagare: 14</p>
         <button data-bs-toggle="modal" data-id="@Model.Id" id="btnListParticipants" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
-        @*<button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>*@
         <button data-bs-toggle="modal" id="btnAddStudent" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
-       @*<button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>*@
         </div>
         <div class="col-1">
             <h5>Uppgifter</h5>
