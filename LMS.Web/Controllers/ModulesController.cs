@@ -165,7 +165,6 @@ namespace LMS.Web.Controllers
                 uow.ModuleRepository.RemoveModule(module);
             }
 
-            //await _context.SaveChangesAsync();
             await uow.CompleteAsync();
             return RedirectToAction(nameof(Index));
         }

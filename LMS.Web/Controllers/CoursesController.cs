@@ -179,7 +179,6 @@ namespace LMS.Web.Controllers
             }
 
             await uow.CompleteAsync();
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
