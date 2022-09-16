@@ -68,6 +68,22 @@ namespace LMS.Web.Controllers
             return View(course);
         }
 
+        // POST: Courses/UploadDocument
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        //public async Task<IActionResult> UploadDocument(DocumentViewModel document) {
+        public async Task<IActionResult> UploadDocument(CourseViewModel model) {
+            if (ModelState.IsValid == false) {
+                return Problem("Could not upload file, model state not valid");
+            }
+
+            // expects an object as id, that's why an anonymous object is used
+            return RedirectToAction("DetailedView", new { id = model.Id }); 
+        }
+        
+
         // GET: Courses/Create
         public IActionResult Create()
         {
@@ -209,14 +225,12 @@ namespace LMS.Web.Controllers
         public async Task<IActionResult> DetailedView(int? id)
         {
             var course = await uow.CourseRepository.GetCourseFull(id);
+            if(course == null) {
+                return Problem($"The course with id: {id} could not be found.");
+            }
 
-            //var viewModel = mapper.ProjectTo<ModuleViewModel>(course.Modules.AsQueryable());
-            //var modules = await _context.Module.
-            //var courses = await uow.CourseRepository.GetCourses(includeModules: true);
-            //if (courses == null)
-            //{
-            //    return View();
-            //}
+            //var viewModel = mapper.Map<MainCourseIndexViewModel>(course);
+            var viewModel = mapper.Map<CourseViewModel>(course);
 
             //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>(courses.AsQueryable());
             var viewModel = mapper.Map<MainCourseIndexViewModel>(course);

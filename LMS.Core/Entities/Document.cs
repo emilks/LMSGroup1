@@ -1,9 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
 
 #nullable disable
 
@@ -21,5 +17,9 @@ namespace LMS.Core.Entities
         public Module? Module { get; set; }
         public Activity? Activity { get; set; }
         public IdentityUser Owner { get; set; }
+
+        public Document() {
+            Timestamp = DateTime.Now;
+        }
     }
 }

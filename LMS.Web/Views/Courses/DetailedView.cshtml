@@ -1,4 +1,4 @@
-﻿@model MainCourseIndexViewModel
+﻿@model CourseViewModel
 
 @{
     ViewData["Title"] = "DetailedView";
@@ -20,6 +20,9 @@
         </div>
         <div class="col-1">
             <h5>Deltagare</h5>
+            <p class="smalltext12">Antal deltagare: @Model.Students.Count()</p>
+        <button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
+        <button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
             <p class="smalltext12">Antal deltagare: 14</p>
         <button data-bs-toggle="modal" data-id="@Model.Id" id="btnListParticipants" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
         @*<button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>*@
@@ -34,9 +37,9 @@
         </div>
         <div class="col-1">
             <h5>Kursdokument</h5>
-            <p class="smalltext12">Antal dokument: 7</p>
-            <button data-bs-toggle="modal" data-bs-target="#seeDocuments" class="btn btn-lg btn-primary smalltext12 w-100">Se dokument</button>
-            <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
+            <p class="smalltext12">Antal dokument: @Model.Documents.Count()</p>
+        <button data-bs-toggle="modal" data-bs-target="#seeDocuments" class="btn btn-lg btn-primary smalltext12 w-100">Se dokument</button>
+        <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
         </div>
         <div class="col-1">
             <h5>Inlämningar</h5>
@@ -225,47 +228,40 @@
         </div>
     </div>
 
-    <!-- Se dokument -->
-    <div class="modal fade" id="seeDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Se dokument</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Hello
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    @*<button type="button" class="btn btn-primary">Save changes</button>*@
-                </div>
-            </div>
-        </div>
+<!-- Se dokument -->
+<div class="modal fade" id="seeDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Kursdokument</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul>
+            @foreach (var document in Model.Documents) {
+                <filehelper document="@document" ></filehelper>
+            }
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+        @*<button type="button" class="btn btn-primary">Save changes</button>*@
+      </div>
     </div>
+  </div>
+</div>
 
-    <!-- Ladda upp dokument -->
-    <div class="modal fade" id="addDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ladda upp dokument</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Hello
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="button" class="btn btn-primary">Ladda upp</button>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- Ladda upp dokument -->
+<div class="modal fade" id="addDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+@*    @{var Model.Documents.Id = Model.Id;}
+    @{var Model.DocumentViewModel = new DocumentViewModel;
+      Model.DocumentViewModel.Id = Model.Id;
+    }
+   <partial name="UploadModalPartial" model="@Model.DocumentViewModel" />*@ 
+    <partial name="UploadModalPartial" />
+</div>
 
     <!-- Se inlämnade -->
     <div class="modal fade" id="seeTurnedIn" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
