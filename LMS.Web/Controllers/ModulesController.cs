@@ -11,6 +11,7 @@ using LMS.Web.Services;
 using LMS.Core.Services;
 using AutoMapper;
 using LMS.Core.Repositories;
+using LMS.Core.ViewModels;
 
 namespace LMS.Web.Controllers
 {
