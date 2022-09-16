@@ -9,14 +9,18 @@ namespace LMS.Core.ViewModels
 {
     public class ModuleViewModel
     {
+        [DisplayName("Modulnamn")]
         public string Name { get; set; }
+        [DisplayName("Beskrivning")]
         public string Description { get; set; }
+        [DisplayName("Startdatum")]
         [Remote(action: "VerifyStartDate", controller: "Modules")]
         [DataType(DataType.Date)]
         // Avvaktivera backend-validering tills svidare
         //[ValidateModuleStartDate]
         public DateTime StartDate { get; set; }
         // Avvaktivera backend-validering tills svidare
+        [DisplayName("Slutdatum")]
         //[ValidateModuleEndDate]
         [DataType(DataType.Date)]
         [Remote(action: "VerifyEndDate", controller: "Modules", AdditionalFields = "StartDate,CourseId")]

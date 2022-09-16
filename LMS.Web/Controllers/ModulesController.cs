@@ -13,6 +13,7 @@ using Microsoft.CodeAnalysis;
 using System.Runtime.Intrinsics.X86;
 using LMS.Core.ViewModels;
 using Bogus;
+using AutoMapper;
 
 namespace LMS.Web.Controllers
 {
@@ -20,11 +21,13 @@ namespace LMS.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IDateValidationService _dateValidationService;
+        private readonly IMapper mapper;
 
-        public ModulesController(ApplicationDbContext context, IDateValidationService dateValidationService)
+        public ModulesController(ApplicationDbContext context, IDateValidationService dateValidationService, IMapper mapper)
         {
             _context = context;
             _dateValidationService = dateValidationService;
+            this.mapper = mapper;
         }
 
         // GET: Modules
@@ -67,21 +70,14 @@ namespace LMS.Web.Controllers
         //public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,CourseId")] Module @module)
         public async Task<IActionResult> Create(ModuleViewModel @module)
         {
-            var tempMap = new Module()
-            {
-                Name = module.Name,
-                Description = module.Description,
-                StartDate = module.StartDate,
-                EndDate = module.EndDate,
-                CourseId = int.Parse(TempData["CourseId"].ToString())
-            };
+            var mapped = mapper.Map<Module>(module);
+            mapped.CourseId = int.Parse(TempData["CourseId"].ToString());
 
             TempData.Keep("CourseId");
 
             if (ModelState.IsValid)
             {
-                //_context.Add(@module);
-                _context.Add(tempMap);
+                _context.Add(mapped);
                 await _context.SaveChangesAsync();
                 //return RedirectToAction(nameof(Index));
                 return RedirectToAction("DetailedView", "Courses", new {id = int.Parse(TempData["CourseId"].ToString()) });
