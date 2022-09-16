@@ -28,9 +28,9 @@ namespace LMS.Web.Controllers
                 return Problem($"´No contacts found.");
             }
 
-            var vm = mapper.ProjectTo<ContactsViewModel>(course.AsQueryable());
+            var vm2 = mapper.Map<IEnumerable<ContactsViewModel>>(course);
 
-            return View(vm);
+            return View(vm2);
         }
 
         public IActionResult Create()
@@ -51,35 +51,39 @@ namespace LMS.Web.Controllers
             return View(@teacher);
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string? id)
         {
-            if (id == null || _context.Activity == null)
+            if (id == null || _context.TeacherUser == null)
             {
                 return NotFound();
             }
 
-            var activity = await _context.Activity.FindAsync(id);
-            if (activity == null)
+            var teacherUser = await _context.TeacherUser.FindAsync(id);
+            if (teacherUser == null)
             {
                 return NotFound();
             }
-            return View(activity);
+            return View(teacherUser);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,Email")] TeacherUser @teacheruser)
+        public async Task<IActionResult> Edit(string id, [Bind("FirstName,LastName,Email")] TeacherUser teacheruser)
         {
+            if (id != teacheruser.Id)
+            {
+                return NotFound();
+            }
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(@teacheruser);
+                    _context.Update(teacheruser);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TeacherExists(@teacheruser.Id))
+                    if (!TeacherExists(teacheruser.Id))
                     {
                         return NotFound();
                     }
@@ -91,6 +95,41 @@ namespace LMS.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(teacheruser);
+        }
+
+        public async Task<IActionResult> Delete(string? id)
+        {
+            if (id == null || _context.TeacherUser == null)
+            {
+                return NotFound();
+            }
+
+            var teacher = await _context.TeacherUser
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (teacher == null)
+            {
+                return NotFound();
+            }
+
+            return View(teacher);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            if (_context.TeacherUser == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.TeacherUser'  is null.");
+            }
+            var teacher = await _context.TeacherUser.FindAsync(id);
+            if (teacher != null)
+            {
+                _context.TeacherUser.Remove(teacher);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         private bool TeacherExists(string id)

@@ -22,6 +22,7 @@ namespace LMS.Data
             CreateMap<Activity, ActivityViewModel>();
 
             CreateMap<ContactsViewModel, TeacherUser>().ReverseMap();
+                //.ForMember(dest => dest.TeacherUserId, from => from.MapFrom(u => u.Id));
         }
     }
 }

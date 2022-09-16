@@ -186,6 +186,19 @@ namespace LMS.Web.Controllers
         {
             return PartialView();
         }
+
+        public async Task<IActionResult> ContactsPartial(int? id)
+        {
+            var course = await uow.CourseRepository.GetCourseWithContacts(id);
+            if (course == null)
+            {
+                return Problem($"The course with id: {id} could not be found.");
+            }
+
+            var vm = mapper.Map<CourseContactsViewModel>(course);
+
+            return PartialView(vm);
+        }
         public async Task<IActionResult> DetailedView(int? id)
         {
             var course = await uow.CourseRepository.GetCourseFull(id);
