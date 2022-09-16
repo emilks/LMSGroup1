@@ -79,6 +79,7 @@ namespace LMS.Web.Controllers
         }
 
         // GET: Courses/Create
+        [Authorize(Roles = "Teacher")]
         public IActionResult Create()
         {
             return View();
@@ -101,6 +102,7 @@ namespace LMS.Web.Controllers
         }
 
         // GET: Courses/Edit/5
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Course == null)
@@ -152,6 +154,7 @@ namespace LMS.Web.Controllers
         }
 
         // GET: Courses/Delete/5
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Course == null)
@@ -199,6 +202,7 @@ namespace LMS.Web.Controllers
           return (_context.Course?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
+        [Authorize(Roles = "Teacher")]
         public IActionResult CreatePartial()
         {
             return PartialView();
@@ -222,7 +226,7 @@ namespace LMS.Web.Controllers
             {
                 return RedirectToAction("MyCourse");
 
-                var userId = userManager.GetUserId(User);
+                /*var userId = userManager.GetUserId(User);
 
                 var courseId = _context.Course.Include(e => e.Students)
                     .Where(e => e.Students.Any(f => f.Id.Equals(userId)))
@@ -232,23 +236,13 @@ namespace LMS.Web.Controllers
                 if (courseId == null)
                 {
                     id = 1;
-                }
+                }*/
             }
-
 
             var course = await uow.CourseRepository.GetCourseFull(id);
 
-            //var viewModel = mapper.ProjectTo<ModuleViewModel>(course.Modules.AsQueryable());
-            //var modules = await _context.Module.
-            //var courses = await uow.CourseRepository.GetCourses(includeModules: true);
-            //if (courses == null)
-            //{
-            //    return View();
-            //}
-
-            //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>(courses.AsQueryable());
             var viewModel = mapper.Map<MainCourseIndexViewModel>(course);
-            //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>((IQueryable)course);
+
             return View(viewModel);
         }
 
@@ -256,9 +250,9 @@ namespace LMS.Web.Controllers
         {
             var userId = userManager.GetUserId(User);
 
-            var courseId = _context.Course.Include(e => e.Students)
+            var courseId = await _context.Course.Include(e => e.Students)
                 .Where(e => e.Students.Any(f => f.Id.Equals(userId)))
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
             //.Select(e => e.Id);
             var test = courseId.Id;
 
