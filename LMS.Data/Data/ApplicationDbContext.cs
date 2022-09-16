@@ -15,5 +15,7 @@ namespace LMS.Data.Data
         public DbSet<Activity>? Activity { get; set; }
         public DbSet<ActivityType>? ActivityType { get; set; }
         public DbSet<Document>? Document { get; set; }
+        public DbSet<StudentUser>? StudentUser { get; set; }
+        public DbSet<TeacherUser>? TeacherUser { get; set; }
     }
 }

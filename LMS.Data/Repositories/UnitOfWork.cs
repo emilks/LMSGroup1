@@ -8,10 +8,12 @@ namespace LMS.Data.Repositories
         private readonly ApplicationDbContext db;
 
         public ICourseRepository CourseRepository { get; }
+        public IModuleRepository ModuleRepository { get; }
 
         public UnitOfWork(ApplicationDbContext context) {
             db = context;
             CourseRepository = new CourseRepository(context);
+            ModuleRepository = new ModuleRepository(context);
         }
 
         public async Task CompleteAsync() {

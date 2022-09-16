@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace LMS.Web.Controllers
@@ -65,8 +66,10 @@ namespace LMS.Web.Controllers
                 return NotFound();
             }
 
-            var course = await _context.Course
-                .FirstOrDefaultAsync(m => m.Id == id);
+            //var course = await _context.Course
+            //    .FirstOrDefaultAsync(m => m.Id == id);
+            var course = await uow.CourseRepository.GetCourseFull(id);
+
             if (course == null)
             {
                 return NotFound();
@@ -175,13 +178,19 @@ namespace LMS.Web.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Course'  is null.");
             }
-            var course = await _context.Course.FindAsync(id);
+
+            var course = await uow.CourseRepository.GetCourseFull(id);
+
             if (course != null)
             {
-                _context.Course.Remove(course);
+                _context.RemoveRange(course.Documents);
+                _context.RemoveRange(course.Modules.SelectMany(m => m.Documents));
+                _context.RemoveRange(course.Modules.SelectMany(m => m.Activities).SelectMany(m => m.Documents));
+
+                uow.CourseRepository.RemoveCourse(course);
             }
-            
-            await _context.SaveChangesAsync();
+
+            await uow.CompleteAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -193,6 +202,19 @@ namespace LMS.Web.Controllers
         public IActionResult CreatePartial()
         {
             return PartialView();
+        }
+
+        public async Task<IActionResult> ContactsPartial(int? id)
+        {
+            var course = await uow.CourseRepository.GetCourseWithContacts(id);
+            if (course == null)
+            {
+                return Problem($"The course with id: {id} could not be found.");
+            }
+
+            var vm = mapper.Map<CourseContactsViewModel>(course);
+
+            return PartialView(vm);
         }
         public async Task<IActionResult> DetailedView(int? id)
         {
@@ -214,7 +236,7 @@ namespace LMS.Web.Controllers
 
             var course = await uow.CourseRepository.GetCourseFull(id);
 
-            var viewModel = mapper.ProjectTo<ModuleViewModel>(course.Modules.AsQueryable());
+            //var viewModel = mapper.ProjectTo<ModuleViewModel>(course.Modules.AsQueryable());
             //var modules = await _context.Module.
             //var courses = await uow.CourseRepository.GetCourses(includeModules: true);
             //if (courses == null)
@@ -223,7 +245,8 @@ namespace LMS.Web.Controllers
             //}
 
             //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>(courses.AsQueryable());
-
+            var viewModel = mapper.Map<MainCourseIndexViewModel>(course);
+            //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>((IQueryable)course);
             return View(viewModel);
         }
 

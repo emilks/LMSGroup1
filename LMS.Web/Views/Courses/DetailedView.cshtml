@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ModuleViewModel>
+﻿@model MainCourseIndexViewModel
 
 @{
     ViewData["Title"] = "DetailedView";
@@ -11,33 +11,32 @@
             <img src="~/images/workshop.jpg" class="img courseimg" alt="workshop" />
         </div>
         <div class="col-2">
-            <h3>Kursnamn</h3>
-            <p>Kursen handlar om hur mycket man kan göra utan att trilla ned från en stol medan man befinner sig på havet i en båt</p>
+            <h3>
+                @Html.DisplayFor(model => model.Name)
+            </h3>
+            <p>
+                @Html.DisplayFor(model => model.Description)
+            </p>
         </div>
         <div class="col-1">
             <h5>Deltagare</h5>
             <p class="smalltext12">Antal deltagare: 14</p>
-        <button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
-            @if (User.IsInRole("Teacher"))
-            {
-                <button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
-            }
+        <button data-bs-toggle="modal" data-id="@Model.Id" id="btnListParticipants" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
+        @*<button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>*@
+        <button data-bs-toggle="modal" id="btnAddStudent" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
+       @*<button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>*@
         </div>
         <div class="col-1">
             <h5>Uppgifter</h5>
             <p class="smalltext12">Pågående uppgifter: 2</p>
         <button data-bs-toggle="modal" data-bs-target="#seeTasks" class="btn btn-lg btn-primary smalltext12 w-100">Se uppgifter</button>
-            @if (User.IsInRole("Teacher")){
-                <button data-bs-toggle="modal" data-bs-target="#addTasks" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Skapa uppgift</button>
-            }
+        <button data-bs-toggle="modal" data-bs-target="#addTasks" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Skapa uppgift</button>
         </div>
         <div class="col-1">
             <h5>Kursdokument</h5>
             <p class="smalltext12">Antal dokument: 7</p>
         <button data-bs-toggle="modal" data-bs-target="#seeDocuments" class="btn btn-lg btn-primary smalltext12 w-100">Se dokument</button>
-            @if (User.IsInRole("Teacher")){
-                <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
-            }
+        <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
         </div>
         <div class="col-1">
             <h5>Inlämningar</h5>
@@ -55,7 +54,7 @@
                 @{
                     int i = 0;
                 }
-                @foreach (var item in Model)
+                @foreach (var item in Model.Modules)
                 {
                 <div class="card rounded-xl border-2">
                 <div class="table-responsive">
@@ -111,10 +110,8 @@
                                 <div class="mt-3 col-1"></div>
                                 <div class="mt-3 col-3">
                                     <span class="largetext20">Aktivitetsdokument </span>
-                                        @if (User.IsInRole("Teacher")){
-                                            <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Ladda upp</button>
-                                        }
-                                    </div>
+                                    <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Ladda upp</button>
+                                </div>
                                 <div class="mt-3 col-3">
                                     <span class="largetext20">Inlämnade dokument </span>
                                     <button data-bs-toggle="modal" data-bs-target="#turnIn" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
@@ -133,27 +130,6 @@
                 }
 
 </div>
-
-@section scripts{
-<script>
-
-$(function () {
-        $("body").on('click', '#btnCreateCourse', function () {
-        //$("#myModel").modal("hide");
-        //var id = $(this).attr('data-id');
- 
-        $.ajax({
-            url: 'Courses/CreatePartial',
-            //data: { id },
-            success: function (response) {
-                $("#ModalContent").html(response);
-                $("#modalPartial").modal("show");
-            }
-        });
-    });
-});
-</script>
-}
 
 <!-- Modals -->
 
@@ -324,5 +300,26 @@ $(function () {
     </div>
   </div>
 </div>
+
+@section scripts{
+<script>
+
+$(function () {
+        $("body").on('click', '#btnListParticipants', function () {
+            var id = $(this).attr('data-id');
+ 
+        $.ajax({
+            data: { id },
+            url: '../ContactsPartial',
+            
+            success: function (response) {
+                $("#ModalContent").html(response);
+                $("#modalPartial").modal("show");
+            }
+        });
+    });
+});
+</script>
+}
 
 
