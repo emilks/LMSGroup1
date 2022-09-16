@@ -3,6 +3,7 @@ using LMS.Core.Entities;
 using LMS.Core.Repositories;
 using LMS.Core.ViewModels;
 using LMS.Data.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -14,13 +15,14 @@ namespace LMS.Web.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IMapper mapper;
         private readonly IUnitOfWork uow;
+        private readonly UserManager<IdentityUser> userManager;
 
-        public CoursesController(ApplicationDbContext context, IMapper mapper, IUnitOfWork unitOfWork)
+        public CoursesController(ApplicationDbContext context, IMapper mapper, IUnitOfWork unitOfWork, UserManager<IdentityUser> um)
         {
             _context = context;
             this.mapper = mapper;
             uow = unitOfWork;
-
+            userManager = um;
         }
 
         // GET: Courses/Contacts/5
@@ -84,7 +86,10 @@ namespace LMS.Web.Controllers
                 Name = model.FileBuffer!.FileName,
                 Description = model.DocumentDescription,
                 FilePath = null, // fix this
-                //Owner = User // userManager
+                Owner = await userManager.GetUserAsync(User), // maybe use a username string?
+                Course = await uow.CourseRepository.GetCourseWithContacts(model.Id), // make 'WithContacts' optional!
+                Module = null, // ??
+                Activity = null // ??
             };
 
             // expects an object as id, that's why an anonymous object is used
