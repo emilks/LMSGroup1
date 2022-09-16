@@ -20,7 +20,7 @@
         </div>
         <div class="col-1">
             <h5>Deltagare</h5>
-            <p class="smalltext12">Antal deltagare: 14</p>
+            <p class="smalltext12">Antal deltagare: @Model.Students.Count()</p>
         <button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
         <button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
         </div>
@@ -32,7 +32,7 @@
         </div>
         <div class="col-1">
             <h5>Kursdokument</h5>
-            <p class="smalltext12">Antal dokument: 7</p>
+            <p class="smalltext12">Antal dokument: @Model.Documents.Count()</p>
         <button data-bs-toggle="modal" data-bs-target="#seeDocuments" class="btn btn-lg btn-primary smalltext12 w-100">Se dokument</button>
         <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
         </div>
@@ -265,7 +265,10 @@ $(function () {
 <!-- Ladda upp dokument -->
 <div class="modal fade" id="addDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 @*    @{var Model.Documents.Id = Model.Id;}
-   <partial name="UploadModalPartial" model="@Model.Documents" />*@ 
+    @{var Model.DocumentViewModel = new DocumentViewModel;
+      Model.DocumentViewModel.Id = Model.Id;
+    }
+   <partial name="UploadModalPartial" model="@Model.DocumentViewModel" />*@ 
     <partial name="UploadModalPartial" />
 </div>
 
