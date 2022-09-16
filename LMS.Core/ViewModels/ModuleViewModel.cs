@@ -2,6 +2,7 @@
 using LMS;
 using LMS.Core.Validations;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace LMS.Core.ViewModels
@@ -20,6 +21,21 @@ namespace LMS.Core.ViewModels
         [DataType(DataType.Date)]
         [Remote(action: "VerifyEndDate", controller: "Modules", AdditionalFields = "StartDate,CourseId")]
         public DateTime EndDate { get; set; }
+
+        [DisplayName("Längd (antal dagar)")]
+        [Remote(action: "VerifyDuration", controller:"Modules", AdditionalFields = "StartDate,CourseId")]
+        public int Duration
+        {
+            get
+            {
+                return (EndDate - StartDate).Days;
+            }
+            set
+            {
+                EndDate = StartDate + TimeSpan.FromDays(value);
+            }
+        }
+
         public IEnumerable<ActivityViewModel> Activities { get; set; }
     }
 }

@@ -65,6 +65,11 @@ namespace LMS.Web.Services
             return "true";
         }
 
+        public async Task<string> ValidateModuleDuration(int duration, DateTime startDate, int courseId)
+        {
+            return await ValidateModuleEndDate(startDate + TimeSpan.FromDays(duration), startDate, courseId);
+        }
+
         public async Task<string> ValidateActivityStartDate(DateTime startDate, int moduleId)
         {
             if (_context.Module == null)

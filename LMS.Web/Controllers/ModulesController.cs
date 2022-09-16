@@ -197,5 +197,14 @@ namespace LMS.Web.Controllers
             int courseId = int.Parse(courseIdStr);
             return Json(await _dateValidationService.ValidateModuleEndDate(endDate, startDate, courseId));
         }
+
+        public async Task<IActionResult> VerifyDuration(int duration,
+            [Bind(Prefix = "StartDate")] DateTime startDate)
+        {
+            string courseIdStr = TempData["CourseId"].ToString();
+            TempData.Keep("CourseId");
+            int courseId = int.Parse(courseIdStr);
+            return Json(await _dateValidationService.ValidateModuleDuration(duration, startDate, courseId));
+        }
     }
 }
