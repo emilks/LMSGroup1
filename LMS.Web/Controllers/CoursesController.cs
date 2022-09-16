@@ -233,7 +233,7 @@ namespace LMS.Web.Controllers
             var viewModel = mapper.Map<CourseViewModel>(course);
 
             //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>(courses.AsQueryable());
-            var viewModel = mapper.Map<MainCourseIndexViewModel>(course);
+            //var viewModel = mapper.Map<MainCourseIndexViewModel>(course);
             //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>((IQueryable)course);
 
             TempData["CourseId"] = id;
