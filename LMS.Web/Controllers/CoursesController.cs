@@ -67,6 +67,22 @@ namespace LMS.Web.Controllers
             return View(course);
         }
 
+        // POST: Courses/UploadDocument
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        //public async Task<IActionResult> UploadDocument(DocumentViewModel document) {
+        public async Task<IActionResult> UploadDocument(CourseViewModel model) {
+            if (ModelState.IsValid == false) {
+                return Problem("Could not upload file, model state not valid");
+            }
+
+            // expects an object as id, that's why an anonymous object is used
+            return RedirectToAction("DetailedView", new { id = model.Id }); 
+        }
+        
+
         // GET: Courses/Create
         public IActionResult Create()
         {

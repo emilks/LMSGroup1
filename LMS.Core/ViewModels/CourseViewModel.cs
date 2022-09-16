@@ -1,13 +1,22 @@
 ﻿using LMS.Core.Entities;
+using Microsoft.AspNetCore.Http;
+using System.ComponentModel;
 
 namespace LMS.Core.ViewModels
 {
     public class CourseViewModel
     {
+        public int Id { get; set; }
+
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+
+        // document properties
+        public IFormFile? FileBuffer { get; set; }
+        [DisplayName("Beskrivning")]
+        public string DocumentDescription { get; set; } = string.Empty;
 
         // Navigation props
         public ICollection<Module> Modules { get; set; } = new List<Module>();
