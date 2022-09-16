@@ -45,7 +45,7 @@ namespace LMS.Web.Controllers
         {
             if (User.IsInRole("Student"))
             {
-                return RedirectToAction("DetailedView");
+                return RedirectToAction("MyCourse");
             }
 
             var courses = await uow.CourseRepository.GetCourses(includeModules: true);
@@ -216,16 +216,18 @@ namespace LMS.Web.Controllers
 
             return PartialView(vm);
         }
-        public async Task<IActionResult> DetailedView(int? id)
+        public async Task<IActionResult> DetailedView(int? id, bool check = false)
         {
-            if (User.IsInRole("Student"))
+            if (User.IsInRole("Student") && check == false)
             {
+                return RedirectToAction("MyCourse");
+
                 var userId = userManager.GetUserId(User);
 
                 var courseId = _context.Course.Include(e => e.Students)
                     .Where(e => e.Students.Any(f => f.Id.Equals(userId)))
                     .FirstOrDefault();
-                
+
                 id = courseId?.Id;
                 if (courseId == null)
                 {
@@ -260,7 +262,7 @@ namespace LMS.Web.Controllers
             //.Select(e => e.Id);
             var test = courseId.Id;
 
-            return RedirectToAction("DetailedView", new { id = test });
+            return RedirectToAction("DetailedView", new { id = test, check = true });
         }
 
     }
