@@ -5,6 +5,7 @@ using LMS.Core.ViewModels;
 using LMS.Data.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace LMS.Web.Controllers
 {
@@ -167,13 +168,19 @@ namespace LMS.Web.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Course'  is null.");
             }
-            var course = await _context.Course.FindAsync(id);
+
+            var course = await uow.CourseRepository.GetCourseFull(id);
+
             if (course != null)
             {
-                _context.Course.Remove(course);
+                _context.RemoveRange(course.Documents);
+                _context.RemoveRange(course.Modules.SelectMany(m => m.Documents));
+                _context.RemoveRange(course.Modules.SelectMany(m => m.Activities).SelectMany(m => m.Documents));
+
+                uow.CourseRepository.RemoveCourse(course);
             }
-            
-            await _context.SaveChangesAsync();
+
+            await uow.CompleteAsync();
             return RedirectToAction(nameof(Index));
         }
 
@@ -185,6 +192,19 @@ namespace LMS.Web.Controllers
         public IActionResult CreatePartial()
         {
             return PartialView();
+        }
+
+        public async Task<IActionResult> ContactsPartial(int? id)
+        {
+            var course = await uow.CourseRepository.GetCourseWithContacts(id);
+            if (course == null)
+            {
+                return Problem($"The course with id: {id} could not be found.");
+            }
+
+            var vm = mapper.Map<CourseContactsViewModel>(course);
+
+            return PartialView(vm);
         }
         public async Task<IActionResult> DetailedView(int? id)
         {

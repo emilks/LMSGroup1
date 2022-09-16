@@ -2,25 +2,26 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
-<ul class="navbar-nav">
+
 @if (SignInManager.IsSignedIn(User))
 {
-    <li class="nav-item">
-        <a  class="nav-link whitenav" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Inloggad som: @User.Identity?.Name!</a>
-    </li>
+    <ul class="navbar-nav">
     <li class="nav-item">
 
-            <a class="nav-link whitenav form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Courses", new { area = "" })">Logout</a>
+            <a class="nav-link whitenav form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Courses", new { area = "" })">Logga ut</a>
 
     </li>
+    </ul>
 }
 else
 {
 @*    <li class="nav-item">
         <a class="nav-link whitenav" asp-area="Identity" asp-page="/Account/Register">Register</a>
     </li>*@
+    <ul class="navbar-nav">
     <li class="nav-item">
-        <a class="nav-link whitenav" asp-area="Identity" asp-page="/Account/Login">Login</a>
+        <a class="nav-link whitenav" asp-area="Identity" asp-page="/Account/Login">Logga in</a>
     </li>
+    </ul>
 }
-</ul>
+

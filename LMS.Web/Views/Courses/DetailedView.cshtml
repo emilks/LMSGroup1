@@ -21,8 +21,10 @@
         <div class="col-1">
             <h5>Deltagare</h5>
             <p class="smalltext12">Antal deltagare: 14</p>
-            <button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
-            <button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
+        <button data-bs-toggle="modal" data-id="@Model.Id" id="btnListParticipants" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
+        @*<button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>*@
+        <button data-bs-toggle="modal" id="btnAddStudent" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
+       @*<button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>*@
         </div>
         <div class="col-1">
             <h5>Uppgifter</h5>
@@ -137,49 +139,28 @@
 
 </div>
 
+<!-- Modals -->
 
-@section scripts{
-    <script>
-
-        $(function () {
-            $("body").on('click', '#btnCreateCourse', function () {
-                //$("#myModel").modal("hide");
-                //var id = $(this).attr('data-id');
-
-                $.ajax({
-                    url: 'Courses/CreatePartial',
-                    //data: { id },
-                    success: function (response) {
-                        $("#ModalContent").html(response);
-                        $("#modalPartial").modal("show");
-                    }
-                });
-            });
-        });
-    </script>
-}
-
-    <!-- Modals -->
-    <!-- Se deltagare -->
-    <div class="modal fade" id="seeStudents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Se deltagare</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Hello
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    @*<button type="button" class="btn btn-primary">Save changes</button>*@
-                </div>
-            </div>
-        </div>
+<!-- Se deltagare -->
+<div class="modal fade" id="seeStudents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Se deltagare</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Hello
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        @*<button type="button" class="btn btn-primary">Save changes</button>*@
+      </div>
     </div>
+  </div>
+</div>
 
     <!-- Lägg till deltagare -->
     <div class="modal fade" id="addStudents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -327,5 +308,26 @@
             </div>
         </div>
     </div>
+
+@section scripts{
+<script>
+
+$(function () {
+        $("body").on('click', '#btnListParticipants', function () {
+            var id = $(this).attr('data-id');
+ 
+        $.ajax({
+            data: { id },
+            url: '../ContactsPartial',
+            
+            success: function (response) {
+                $("#ModalContent").html(response);
+                $("#modalPartial").modal("show");
+            }
+        });
+    });
+});
+</script>
+}
 
 
