@@ -82,15 +82,27 @@ namespace LMS.Web.Controllers
             }
 
             // create file object
+            var documentName = model.FileBuffer!.FileName;
+
             var document = new Document() {
-                Name = model.FileBuffer!.FileName,
+                Name = documentName,
                 Description = model.DocumentDescription,
-                FilePath = null, // fix this
-                Owner = await userManager.GetUserAsync(User), // maybe use a username string?
+                FilePath = $"/files/courses/{model.Name}/{documentName}",
+                Owner = await userManager.GetUserAsync(User), 
                 Course = await uow.CourseRepository.GetCourseWithContacts(model.Id), // make 'WithContacts' optional!
                 Module = null, // ??
                 Activity = null // ??
             };
+
+            // save file
+            // Does not work, permission denied, no write access!
+            Directory.CreateDirectory(document.FilePath);
+            Stream fileStream = new FileStream(document.FilePath, FileMode.Create);
+            await model.FileBuffer.CopyToAsync(fileStream);
+
+            // update data base
+            uow.CourseRepository.AddDocument(document.Course, document);
+            await uow.CompleteAsync();
 
             // expects an object as id, that's why an anonymous object is used
             return RedirectToAction("DetailedView", new { id = model.Id }); 
