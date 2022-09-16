@@ -149,9 +149,10 @@ namespace LMS.Web.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Activity'  is null.");
             }
-            var activity = await _context.Activity.FindAsync(id);
+            var activity = await _context.Activity.Include(a => a.Documents).FirstOrDefaultAsync(a => a.Id == id);
             if (activity != null)
             {
+                _context.RemoveRange(activity.Documents);
                 _context.Activity.Remove(activity);
             }
             

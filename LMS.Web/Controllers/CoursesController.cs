@@ -166,38 +166,20 @@ namespace LMS.Web.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Course'  is null.");
             }
-            //var course = await _context.Course.FindAsync(id);
 
             var course = await uow.CourseRepository.GetCourseFull(id);
 
             if (course != null)
             {
-                foreach(var module in course.Modules)
-                {
-                    foreach(var activity in module.Activities)
-                    {
-                        foreach(var document in activity.Documents)
-                        {
-                            _context.Document.Remove(document);
-                        }
-                        _context.Activity.Remove(activity);
-                    }
-                    foreach (var document in module.Documents)
-                    {
-                        _context.Document.Remove(document);
-                    }
-                    _context.Module.Remove(module);
-                }
-                foreach (var document in course.Documents)
-                {
-                    _context.Document.Remove(document);
-                }
-                _context.Course.Remove(course);
-                //uow.CourseRepository.RemoveCourse(course);
+                _context.RemoveRange(course.Documents);
+                _context.RemoveRange(course.Modules.SelectMany(m => m.Documents));
+                _context.RemoveRange(course.Modules.SelectMany(m => m.Activities).SelectMany(m => m.Documents));
+
+                uow.CourseRepository.RemoveCourse(course);
             }
 
             await uow.CompleteAsync();
-            //await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

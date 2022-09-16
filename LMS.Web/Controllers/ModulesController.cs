@@ -9,6 +9,8 @@ using LMS.Core.Entities;
 using LMS.Data.Data;
 using LMS.Web.Services;
 using LMS.Core.Services;
+using AutoMapper;
+using LMS.Core.Repositories;
 
 namespace LMS.Web.Controllers
 {
@@ -16,11 +18,15 @@ namespace LMS.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IDateValidationService _dateValidationService;
+        private readonly IMapper mapper;
+        private readonly IUnitOfWork uow;
 
-        public ModulesController(ApplicationDbContext context, IDateValidationService dateValidationService)
+        public ModulesController(ApplicationDbContext context, IDateValidationService dateValidationService, IMapper mapper, IUnitOfWork uow)
         {
             _context = context;
             _dateValidationService = dateValidationService;
+            this.mapper = mapper;
+            this.uow = uow;
         }
 
         // GET: Modules
@@ -149,13 +155,18 @@ namespace LMS.Web.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Module'  is null.");
             }
-            var @module = await _context.Module.FindAsync(id);
-            if (@module != null)
+            var module = await uow.ModuleRepository.GetModuleFull(id);
+
+            if (module != null)
             {
-                _context.Module.Remove(@module);
+                _context.RemoveRange(module.Documents);
+                _context.RemoveRange(module.Activities.SelectMany(a => a.Documents));
+
+                uow.ModuleRepository.RemoveModule(module);
             }
 
-            await _context.SaveChangesAsync();
+            //await _context.SaveChangesAsync();
+            await uow.CompleteAsync();
             return RedirectToAction(nameof(Index));
         }
 
