@@ -79,6 +79,14 @@ namespace LMS.Web.Controllers
                 return Problem("Could not upload file, model state not valid");
             }
 
+            // create file object
+            var document = new Document() {
+                Name = model.FileBuffer!.FileName,
+                Description = model.DocumentDescription,
+                FilePath = null, // fix this
+                //Owner = User // userManager
+            };
+
             // expects an object as id, that's why an anonymous object is used
             return RedirectToAction("DetailedView", new { id = model.Id }); 
         }
