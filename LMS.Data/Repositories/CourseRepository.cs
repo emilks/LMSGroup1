@@ -47,5 +47,19 @@ namespace LMS.Data.Repositories
                                   .ThenInclude(a => a.Documents)                                  
                                   .FirstOrDefaultAsync(c => c.Id == id);
         }
+
+        public void RemoveCourse(Course course)
+        {
+            db.Course.Remove(course);
+        }
+        public async Task<IEnumerable<TeacherUser?>> GetTeacherContacts()
+        {
+            if (db.TeacherUser == null)
+            {
+                return null;
+            }
+
+            return await db.TeacherUser.ToListAsync();
+        }
     }
 }
