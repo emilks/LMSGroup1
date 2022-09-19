@@ -19,6 +19,9 @@
             </p>
         </div>
         <div class="col-1">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#editCourse"><img src="~/images/pencil.svg" alt="Edit course" /></a>
+        </div>
+        <div class="col-1">
             <h5>Deltagare</h5>
             <p class="smalltext12">Antal deltagare: @Model.Students.Count()</p>
         <button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
@@ -143,6 +146,11 @@
 </div>
 
 <!-- Modals -->
+
+<!-- Editera kurs -->
+<div class="modal fade" id="editCourse" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <partial name="EditPartial" />
+</div>
 
 <!-- Se deltagare -->
 <div class="modal fade" id="seeStudents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
