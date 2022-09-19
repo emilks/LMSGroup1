@@ -3,6 +3,7 @@ using LMS.Core.Entities;
 using LMS.Core.Repositories;
 using LMS.Core.ViewModels;
 using LMS.Data.Data;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,12 +14,14 @@ namespace LMS.Web.Controllers
 {
     public class CoursesController : Controller
     {
+        private readonly IWebHostEnvironment webHostEnvironment;
         private readonly ApplicationDbContext _context;
         private readonly IMapper mapper;
         private readonly IUnitOfWork uow;
         private readonly UserManager<IdentityUser> userManager;
 
-        public CoursesController(ApplicationDbContext context, IMapper mapper, IUnitOfWork unitOfWork, UserManager<IdentityUser> um) {
+        public CoursesController(IWebHostEnvironment webHostEnvironment, ApplicationDbContext context, IMapper mapper, IUnitOfWork unitOfWork, UserManager<IdentityUser> um) {
+            this.webHostEnvironment = webHostEnvironment;
             _context = context;
             this.mapper = mapper;
             uow = unitOfWork;
@@ -92,11 +95,18 @@ namespace LMS.Web.Controllers
 
             // save file
             // Does not work, permission denied, no write access!
-            var rootPath = Environment.CurrentDirectory;
-            var dir2 = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var documentPath = $"{rootPath}/wwwroot/files/courses/{model.Name}";
-            Directory.CreateDirectory(documentPath);
-            using (Stream fileStream = new FileStream(documentPath, FileMode.Create)) {
+
+            var documentPath = $"files\\courses\\{model.Name}";
+            var path = Path.Combine(webHostEnvironment.WebRootPath, documentPath);
+
+            if(!Directory.Exists(path))
+                Directory.CreateDirectory(documentPath);
+
+            AppDomain.CurrentDomain.SetData(documentPath, path);
+
+            var getPath = Path.Combine(AppDomain.CurrentDomain.GetData(documentPath)?.ToString()!, model.FileBuffer.FileName);
+
+            using (Stream fileStream = new FileStream(getPath, FileMode.Create)) {
 
                 await model.FileBuffer.CopyToAsync(fileStream);
             }
