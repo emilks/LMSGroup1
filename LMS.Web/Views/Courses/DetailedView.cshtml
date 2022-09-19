@@ -19,18 +19,21 @@
             </p>
         </div>
         <div class="col-1">
-            <a href="#" data-bs-toggle="modal" data-bs-target="#editCourse"><img src="~/images/pencil.svg" alt="Edit course" /></a>
+            @if (this.User.IsInRole("Teacher"))
+            {
+                <a href="#" data-bs-toggle="modal" data-bs-target="#editCourse"><img src="~/images/pencil.svg" alt="Edit course" /></a>
+            }
         </div>
         <div class="col-1">
             <h5>Deltagare</h5>
             <p class="smalltext12">Antal deltagare: @Model.Students.Count()</p>
-        <button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
-        <button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
+            <button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
+            <button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
             <p class="smalltext12">Antal deltagare: 14</p>
-        <button data-bs-toggle="modal" data-id="@Model.Id" id="btnListParticipants" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
-        @*<button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>*@
-        <button data-bs-toggle="modal" id="btnAddStudent" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
-       @*<button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>*@
+            <button data-bs-toggle="modal" data-id="@Model.Id" id="btnListParticipants" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
+            @*<button data-bs-toggle="modal" data-bs-target="#seeStudents" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>*@
+            <button data-bs-toggle="modal" id="btnAddStudent" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
+            @*<button data-bs-toggle="modal" data-bs-target="#addStudents" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>*@
         </div>
         <div class="col-1">
             <h5>Uppgifter</h5>
@@ -41,8 +44,8 @@
         <div class="col-1">
             <h5>Kursdokument</h5>
             <p class="smalltext12">Antal dokument: @Model.Documents.Count()</p>
-        <button data-bs-toggle="modal" data-bs-target="#seeDocuments" class="btn btn-lg btn-primary smalltext12 w-100">Se dokument</button>
-        <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
+            <button data-bs-toggle="modal" data-bs-target="#seeDocuments" class="btn btn-lg btn-primary smalltext12 w-100">Se dokument</button>
+            <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
         </div>
         <div class="col-1">
             <h5>Inlämningar</h5>
@@ -57,13 +60,13 @@
 <div class="container-fluid py-2">
     <br />
     <h3>Moduler</h3>
-                @{
-                    int i = 0;
-                }
-                @foreach (var item in Model.Modules)
-                {
-                <div class="card rounded-xl border-2">
-                <div class="table-responsive">
+    @{
+        int i = 0;
+    }
+    @foreach (var item in Model.Modules)
+    {
+        <div class="card rounded-xl border-2">
+            <div class="table-responsive">
                 <table class="table accordion">
                     <tbody>
                         <tr>
@@ -137,16 +140,18 @@
     }
     <!-- Partiell Vy: Lägg till modul -->
     <div class="ml-4">
-        <button @*data-bs-toggle="modal" id="btnCreateCourse" data-bs-target="#modalPartial"*@ class="btn btn-sm btn-primary smalltext12 mb-4" data-bs-toggle="collapse" data-bs-target="#collapseAddModule" aria-expanded="false" aria-controls="collapseAddModule">Lägg till modul</button>
-        <div class="collapse col-sm-4 col-md-2" id="collapseAddModule">
-            <partial name="~/Views/Modules/CreatePartial.cshtml" model="new ModuleViewModel()" />
-        </div>
+        @if (this.User.IsInRole("Teacher"))
+        {
+            <button @*data-bs-toggle="modal" id="btnCreateCourse" data-bs-target="#modalPartial"*@ class="btn btn-sm btn-primary smalltext12 mb-4" data-bs-toggle="collapse" data-bs-target="#collapseAddModule" aria-expanded="false" aria-controls="collapseAddModule">Lägg till modul</button>
+            <div class="collapse col-sm-4 col-md-2" id="collapseAddModule">
+                <partial name="~/Views/Modules/CreatePartial.cshtml" model="new ModuleViewModel()" />
+            </div>
+        }
     </div>
 
 </div>
 
 <!-- Modals -->
-
 <!-- Editera kurs -->
 <div class="modal fade" id="editCourse" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <partial name="EditPartial" />
@@ -154,184 +159,185 @@
 
 <!-- Se deltagare -->
 <div class="modal fade" id="seeStudents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Se deltagare</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        Hello
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        @*<button type="button" class="btn btn-primary">Save changes</button>*@
-      </div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Se deltagare</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Hello
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                @*<button type="button" class="btn btn-primary">Save changes</button>*@
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
-    <!-- Lägg till deltagare -->
-    <div class="modal fade" id="addStudents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Lägg till deltagare</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Hello
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Lägg till</button>
-                </div>
+<!-- Lägg till deltagare -->
+<div class="modal fade" id="addStudents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Lägg till deltagare</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Hello
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Lägg till</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Se uppgifter -->
-    <div class="modal fade" id="seeTasks" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Se uppgifter</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Hello
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    @*<button type="button" class="btn btn-primary">Save changes</button>*@
-                </div>
+<!-- Se uppgifter -->
+<div class="modal fade" id="seeTasks" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Se uppgifter</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Hello
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                @*<button type="button" class="btn btn-primary">Save changes</button>*@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Skapa uppgift -->
-    <div class="modal fade" id="addTasks" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Skapa uppgift</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Hello
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="button" class="btn btn-primary">Skapa</button>
-                </div>
+<!-- Skapa uppgift -->
+<div class="modal fade" id="addTasks" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Skapa uppgift</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Hello
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                <button type="button" class="btn btn-primary">Skapa</button>
             </div>
         </div>
     </div>
+</div>
 
 <!-- Se dokument -->
 <div class="modal fade" id="seeDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Kursdokument</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <ul>
-            @foreach (var document in Model.Documents) {
-                <filehelper document="@document" ></filehelper>
-            }
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-        @*<button type="button" class="btn btn-primary">Save changes</button>*@
-      </div>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Kursdokument</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    @foreach (var document in Model.Documents)
+                    {
+                        <filehelper document="@document"></filehelper>
+                    }
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                @*<button type="button" class="btn btn-primary">Save changes</button>*@
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <!-- Ladda upp dokument -->
 <div class="modal fade" id="addDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-@*    @{var Model.Documents.Id = Model.Id;}
+    @*    @{var Model.Documents.Id = Model.Id;}
     @{var Model.DocumentViewModel = new DocumentViewModel;
-      Model.DocumentViewModel.Id = Model.Id;
+    Model.DocumentViewModel.Id = Model.Id;
     }
-   <partial name="UploadModalPartial" model="@Model.DocumentViewModel" />*@ 
+    <partial name="UploadModalPartial" model="@Model.DocumentViewModel" />*@
     <partial name="UploadModalPartial" />
 </div>
 
-    <!-- Se inlämnade -->
-    <div class="modal fade" id="seeTurnedIn" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Se inlämnad</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Hello
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    @*<button type="button" class="btn btn-primary">Save changes</button>*@
-                </div>
+<!-- Se inlämnade -->
+<div class="modal fade" id="seeTurnedIn" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Se inlämnad</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Hello
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                @*<button type="button" class="btn btn-primary">Save changes</button>*@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Lämna in -->
-    <div class="modal fade" id="turnIn" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Lämna in</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Hello
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-                    <button type="button" class="btn btn-primary">Lämna in</button>
-                </div>
+<!-- Lämna in -->
+<div class="modal fade" id="turnIn" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Lämna in</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Hello
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                <button type="button" class="btn btn-primary">Lämna in</button>
             </div>
         </div>
     </div>
+</div>
 
 @section scripts{
-<script>
+    <script>
 
-$(function () {
-        $("body").on('click', '#btnListParticipants', function () {
-            var id = $(this).attr('data-id');
- 
-        $.ajax({
-            data: { id },
-            url: '../ContactsPartial',
-            
-            success: function (response) {
-                $("#ModalContent").html(response);
-                $("#modalPartial").modal("show");
-            }
+        $(function () {
+            $("body").on('click', '#btnListParticipants', function () {
+                var id = $(this).attr('data-id');
+
+                $.ajax({
+                    data: { id },
+                    url: '../ContactsPartial',
+
+                    success: function (response) {
+                        $("#ModalContent").html(response);
+                        $("#modalPartial").modal("show");
+                    }
+                });
+            });
         });
-    });
-});
-</script>
+    </script>
 }
 
 
