@@ -152,7 +152,8 @@ namespace LMS.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                //return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(DetailedView), new { Id = id});
             }
             return View(course);
         }
