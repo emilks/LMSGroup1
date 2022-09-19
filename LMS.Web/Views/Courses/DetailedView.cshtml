@@ -48,7 +48,21 @@
 
 <div class="container-fluid py-2">
     <br />
+    <div class="container-fluid">
+    <div class="row">
+    <div class="col-4">
     <h3>Moduler</h3>
+    </div>
+    <div class="col-4 aligncenter">
+        <div class="ml-4">
+        <button @*data-bs-toggle="modal" id="btnCreateCourse" data-bs-target="#modalPartial"*@ class="btn btn-primary mb-4" data-bs-toggle="collapse" data-bs-target="#collapseAddModule" aria-expanded="false" aria-controls="collapseAddModule">Lägg till modul</button>
+        <div class="collapse" id="collapseAddModule">
+            <partial name="~/Views/Modules/CreatePartial.cshtml" model="new ModuleViewModel()" />
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
                 @{
                     int i = 0;
                 }
@@ -58,12 +72,13 @@
                 <div class="table-responsive">
                 <table class="table accordion">
                     <tbody>
-                        <tr>
+                        <tr data-bs-toggle="collapse" data-bs-target="#r_@i">
                             <th scope="row">
-                                <i class="bi bi-chevron-down"></i>
+                                <i class="icon-arrow-down arrow up mx-2"></i>
+                                <i class="icon-arrow-up arrow down mx-2"></i>
                             </th>
-                            <td data-bs-toggle="collapse" data-bs-target="#r_@i">
-                                <span class="fw-bold">@Html.DisplayFor(modelItem => item.Name) </span><span> | </span>
+                            <td>
+                                     <span class="fw-bold">@Html.DisplayFor(modelItem => item.Name) </span><span> | </span>
 
                                 @{
                                     string cSDate = item.StartDate.ToString("d");
@@ -127,14 +142,6 @@
         <br />
         i++;
     }
-    <!-- Partiell Vy: Lägg till modul -->
-    <div class="ml-4">
-        <button @*data-bs-toggle="modal" id="btnCreateCourse" data-bs-target="#modalPartial"*@ class="btn btn-sm btn-primary smalltext12 mb-4" data-bs-toggle="collapse" data-bs-target="#collapseAddModule" aria-expanded="false" aria-controls="collapseAddModule">Lägg till modul</button>
-        <div class="collapse col-sm-4 col-md-2" id="collapseAddModule">
-            <partial name="~/Views/Modules/CreatePartial.cshtml" model="new ModuleViewModel()" />
-        </div>
-    </div>
-
 </div>
 
 <!-- Modals -->

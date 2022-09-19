@@ -108,3 +108,26 @@ a.blacknav:hover, a.blacknav:active {
 div.right {
     text-align: right;
 }
+.table tr {
+    cursor: pointer;
+}
+tr.collapsed .icon-arrow-down {
+    display: none;
+}
+tr:not(.collapsed) .icon-arrow-up {
+    display: none;
+}
+.arrow {
+    border: solid black;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+}
+.up {
+    transform: rotate(-135deg);
+    -webkit-transform: rotate(-135deg);
+}
+.down {
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
