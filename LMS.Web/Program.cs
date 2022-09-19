@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using LMS.Web.Services;
 using LMS.Core.Services;
+using FluentAssertions.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,11 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IDateValidationService, DateValidationService>();
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = "/MyAccount";
+});
 
 var app = builder.Build();
 
@@ -64,6 +70,7 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapDefaultControllerRoute().RequireAuthorization();
 });
+
 
 app.MapControllerRoute(
     name: "default",
