@@ -255,7 +255,6 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-        @*<button type="button" class="btn btn-primary">Save changes</button>*@
       </div>
     </div>
   </div>
@@ -263,11 +262,14 @@
 
 <!-- Ladda upp dokument -->
 <div class="modal fade" id="addDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-@*    @{var Model.Documents.Id = Model.Id;}
-    @{var Model.DocumentViewModel = new DocumentViewModel;
-      Model.DocumentViewModel.Id = Model.Id;
+@*    
+    @{
+        var Model.DocumentVM = new DocumentViewModel();
+        Model.DocumentViewModel.ParentId = Model.Id;
     }
-   <partial name="UploadModalPartial" model="@Model.DocumentViewModel" />*@ 
+   <partial name="UploadModalPartial" model="@Model.DocumentViewModel" /> 
+
+*@   
     <partial name="UploadModalPartial" />
 </div>
 

@@ -1,6 +1,7 @@
 ﻿using LMS.Core.Entities;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace LMS.Core.ViewModels
 {
@@ -17,6 +18,9 @@ namespace LMS.Core.ViewModels
         public IFormFile? FileBuffer { get; set; }
         [DisplayName("Beskrivning")]
         public string DocumentDescription { get; set; } = string.Empty;
+
+        // alternativ 2
+        public DocumentViewModel? DocumentVM { get; set; }
 
         // Navigation props
         public ICollection<Module> Modules { get; set; } = new List<Module>();
