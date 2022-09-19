@@ -100,12 +100,7 @@ namespace LMS.Web.Controllers
                 Directory.CreateDirectory(documentPath);
             }
 
-            AppDomain.CurrentDomain.SetData(documentPath, path);
-
-            var getPath = Path.Combine(AppDomain.CurrentDomain.GetData(documentPath)?.ToString()!, model.FileBuffer.FileName);
-
-            using (Stream fileStream = new FileStream(getPath, FileMode.Create)) {
-
+            using (Stream fileStream = new FileStream(Path.Combine(path, documentName), FileMode.Create)) {
                 await model.FileBuffer.CopyToAsync(fileStream);
             }
 
