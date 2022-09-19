@@ -74,7 +74,6 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //public async Task<IActionResult> UploadDocument(DocumentViewModel document) {
         public async Task<IActionResult> UploadDocument(CourseViewModel model) {
             if (ModelState.IsValid == false) {
                 return Problem("Could not upload file, model state not valid");
@@ -94,13 +93,12 @@ namespace LMS.Web.Controllers
             };
 
             // save file
-            // Does not work, permission denied, no write access!
-
             var documentPath = $"files\\courses\\{model.Name}";
             var path = Path.Combine(webHostEnvironment.WebRootPath, documentPath);
 
-            if(!Directory.Exists(path))
+            if (!Directory.Exists(path)) {
                 Directory.CreateDirectory(documentPath);
+            }
 
             AppDomain.CurrentDomain.SetData(documentPath, path);
 
