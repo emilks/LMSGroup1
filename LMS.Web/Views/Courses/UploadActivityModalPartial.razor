@@ -1,0 +1,37 @@
+﻿@model CourseViewModel
+
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Ladda upp dokument</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+                
+        <form asp-action="UploadDocument" enctype="multipart/form-data" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Name" />
+
+            <div class="form-group mb-4">
+                <input asp-for="@Model.FileBuffer" id="file" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps" type="file" />
+            </div>
+
+            <div class="form-group">
+                <label asp-for="@Model.DocumentDescription" class="control-label"></label>
+                <input asp-for="@Model.DocumentDescription" class="form-control" />
+                <span asp-validation-for="@Model.DocumentDescription" class="text-danger"></span>
+            </div>
+
+            <div class="modal-footer form-group">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
+                <button name="submit" type="submit" class="btn btn-primary">Ladda upp</button>
+            </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+

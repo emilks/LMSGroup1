@@ -81,11 +81,12 @@ namespace LMS.Web.Controllers
 
             // create file object
             var documentName = model.FileBuffer!.FileName;
+            var documentPath = $"files/courses/{model.Name}";
 
             var document = new Document() {
                 Name = documentName,
                 Description = model.DocumentDescription,
-                FilePath = $"/files/courses/{model.Name}/{documentName}",
+                FilePath = $"{documentPath}/{documentName}",
                 Owner = await userManager.GetUserAsync(User),
                 Course = await uow.CourseRepository.GetCourseWithContacts(model.Id), // make 'WithContacts' optional!
                 Module = null, // ??
@@ -93,7 +94,6 @@ namespace LMS.Web.Controllers
             };
 
             // save file
-            var documentPath = $"files\\courses\\{model.Name}";
             var path = Path.Combine(webHostEnvironment.WebRootPath, documentPath);
 
             if (!Directory.Exists(path)) {
