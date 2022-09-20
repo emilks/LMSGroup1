@@ -11,6 +11,8 @@ namespace LMS.Core.ViewModels
         public string Name { get; set; }
         [DisplayName("Beskrivning")]
         public string Description { get; set; }
+        [DisplayName("Aktivitetstyp")]
+        public int ActivityTypeId { get; set; }
         [DisplayName("Startdatum")]
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }

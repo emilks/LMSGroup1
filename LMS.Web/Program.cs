@@ -31,6 +31,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IDateValidationService, DateValidationService>();
+builder.Services.AddScoped<IActivityTypeService, ActivityTypeService>();
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 
