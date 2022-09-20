@@ -1,13 +1,18 @@
-﻿#nullable disable
-using LMS;
-using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace LMS.Core.ViewModels
 {
-    public class ActivityViewModel
+    internal class ActivityCreateViewModel
     {
+        public int CourseId { get; set; }
         public int ModuleId { get; set; }
+
 
         [DisplayName("Aktivitetsnamn")]
         public string Name { get; set; }
@@ -30,6 +35,12 @@ namespace LMS.Core.ViewModels
             {
                 EndDate = StartDate + TimeSpan.FromDays(value);
             }
+        }
+
+        public void ActivityViewModel(int courseId, int moduleId)
+        {
+            CourseId = courseId;
+            ModuleId = moduleId;
         }
     }
 }
