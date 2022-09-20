@@ -333,7 +333,7 @@ namespace LMS.Data
                     }
                 }
 
-                var nrOfStudents = 15 + random.Next(15);
+                var nrOfStudents = 10 + random.Next(10);
 
                 for (var j = 0; j < nrOfStudents; j++)
                 {
