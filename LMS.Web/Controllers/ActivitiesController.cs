@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using LMS.Core.Entities;
-using LMS.Data.Data;
-using LMS.Web.Services;
+﻿using LMS.Core.Entities;
+using LMS.Core.Repositories;
 using LMS.Core.Services;
 using LMS.Core.ViewModels;
+using LMS.Data.Data;
 using Microsoft.AspNetCore.Identity;
-using LMS.Core.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Web.Controllers
 {
