@@ -59,9 +59,9 @@ namespace LMS.Data
             await db.AddRangeAsync(activityTypes);
 
             var courses = GetCourses(
-                nrCourses: 5,
+                nrCourses: 4,
                 nrModulesPerCourse: 3,
-                nrActivitiesPerModule: 6,
+                nrActivitiesPerModule: 4,
                 activityTypes, teachers, students
                 );
 
@@ -291,18 +291,21 @@ namespace LMS.Data
                     course.EndDate,
                     activityTypes, teachers, students);
 
-                var nrOfDocuments = random.Next(8);
+                var nrOfDocuments = 3 + random.Next(2);
 
                 for (var j = 0; j < nrOfDocuments; j++)
                 {
                     IdentityUser docOwner = teachers.ElementAt(random.Next(teachers.Count()));
 
+                    var filePath = faker.Internet.UrlRootedPath("pdf");
+                    var fileName = filePath.Split("/").Last();
+
                     course.Documents.Add(new Document()
                     {
-                        Name = faker!.Lorem.Word(),
+                        Name = fileName,
                         Description = faker!.Lorem.Sentence(),
                         Timestamp = faker.Date.Recent(10),
-                        FilePath = faker.Internet.UrlRootedPath(".pdf"),
+                        FilePath = filePath,
                         Owner = docOwner
                     });
                 }
@@ -371,7 +374,7 @@ namespace LMS.Data
                 if (maxModuleDaysLen <= 0)
                     break;
 
-                var moduleEndDate = moduleStartDate.AddDays(5 + random.Next(maxModuleDaysLen));
+                var moduleEndDate = moduleStartDate.AddDays(10 + random.Next(maxModuleDaysLen));
 
                 if (moduleEndDate > courseEnd)
                     break;
@@ -384,18 +387,21 @@ namespace LMS.Data
                     EndDate = moduleEndDate
                 };
 
-                var nrOfDocuments = random.Next(8);
+                var nrOfDocuments = 3 + random.Next(2);
 
                 for (var j = 0; j < nrOfDocuments; j++)
                 {
                     IdentityUser docOwner = teachers.ElementAt(random.Next(teachers.Count()));
 
+                    var filePath = faker.Internet.UrlRootedPath("pdf");
+                    var fileName = filePath.Split("/").Last();
+
                     module.Documents.Add(new Document()
                     {
-                        Name = faker!.Lorem.Word(),
+                        Name = fileName,
                         Description = faker!.Lorem.Sentence(),
                         Timestamp = faker.Date.Recent(10),
-                        FilePath = faker.Internet.UrlRootedPath(".pdf"),
+                        FilePath = filePath,
                         Owner = docOwner
                     });
                 }
@@ -442,7 +448,7 @@ namespace LMS.Data
                     ActivityType = activityTypes.ElementAt(random.Next(activityTypes.Count()))
                 };
 
-                var nrOfDocuments = random.Next(8);
+                var nrOfDocuments = 3 + random.Next(2);
 
                 for (var j = 0; j < nrOfDocuments; j++)
                 {
@@ -453,12 +459,16 @@ namespace LMS.Data
                     else
                         docOwner = students.ElementAt(random.Next(students.Count()));
 
+                    var filePath = faker.Internet.UrlRootedPath("pdf");
+                    var fileName = filePath.Split("/").Last();
+
                     activity.Documents.Add(new Document()
                     {
-                        Name = faker!.Lorem.Word(),
+
+                        Name = fileName,
                         Description = faker!.Lorem.Sentence(),
                         Timestamp = faker.Date.Recent(10),
-                        FilePath = faker.Internet.UrlRootedPath(".pdf"),
+                        FilePath = filePath,
                         Owner = docOwner
                     });
                 }
