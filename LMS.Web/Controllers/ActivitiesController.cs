@@ -9,6 +9,9 @@ using LMS.Core.Entities;
 using LMS.Data.Data;
 using LMS.Web.Services;
 using LMS.Core.Services;
+using LMS.Core.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using LMS.Core.Repositories;
 
 namespace LMS.Web.Controllers
 {
@@ -16,11 +19,60 @@ namespace LMS.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IDateValidationService _dateValidationService;
+        private readonly UserManager<IdentityUser> userManager;
+        private readonly IUnitOfWork uow;
+        private readonly IWebHostEnvironment webHostEnvironment;
 
-        public ActivitiesController(ApplicationDbContext context, IDateValidationService dateValidationService)
+        public ActivitiesController(IWebHostEnvironment webHostEnvironment, IUnitOfWork unitOfWork, ApplicationDbContext context, IDateValidationService dateValidationService, UserManager<IdentityUser> um)
         {
             _context = context;
             _dateValidationService = dateValidationService;
+            userManager = um;
+            uow = unitOfWork;
+            this.webHostEnvironment = webHostEnvironment;
+        }
+
+        // POST: Activities/UploadDocument
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadDocument(CourseViewModel model) {
+            if (ModelState.IsValid == false) {
+                return Problem("Could not upload file, model state not valid");
+            }
+
+            // create file object
+            var documentName = model.FileBuffer!.FileName;
+            var documentPath = $"files/courses/{model.Name}";
+
+            var document = new Document() {
+                Name = documentName,
+                Description = model.DocumentDescription,
+                FilePath = $"{documentPath}/{documentName}",
+                Owner = await userManager.GetUserAsync(User),
+                Course = await uow.CourseRepository.GetCourseWithContacts(model.Id), // make 'WithContacts' optional!
+                Module = null, // ??
+                Activity = null // ??
+            };
+
+            // save file
+            var path = Path.Combine(webHostEnvironment.WebRootPath, documentPath);
+
+            if (!Directory.Exists(path)) {
+                Directory.CreateDirectory(documentPath);
+            }
+
+            using (Stream fileStream = new FileStream(Path.Combine(path, documentName), FileMode.Create)) {
+                await model.FileBuffer.CopyToAsync(fileStream);
+            }
+
+            // update data base
+            uow.CourseRepository.AddDocument(document.Course, document);
+            await uow.CompleteAsync();
+
+            // expects an object as id, that's why an anonymous object is used
+            return RedirectToAction("DetailedView", new { id = model.Id });
         }
 
         // GET: Activities
