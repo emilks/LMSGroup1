@@ -11,5 +11,8 @@ namespace LMS.Core.Entities
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
+
+        // Foreign keys
+        public int? CourseId { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using LMS.Core.Entities;
 using LMS.Core.Repositories;
 using LMS.Core.ViewModels;
 using LMS.Data.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -14,13 +15,14 @@ namespace LMS.Web.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IMapper mapper;
         private readonly IUnitOfWork uow;
+        private readonly UserManager<IdentityUser> userManager;
 
-        public CoursesController(ApplicationDbContext context, IMapper mapper, IUnitOfWork unitOfWork)
+        public CoursesController(ApplicationDbContext context, IMapper mapper, IUnitOfWork unitOfWork, UserManager<IdentityUser> userManager)
         {
             _context = context;
             this.mapper = mapper;
             uow = unitOfWork;
-
+            this.userManager = userManager;
         }
 
         // GET: Courses/Contacts/5
@@ -239,6 +241,31 @@ namespace LMS.Web.Controllers
             TempData["CourseId"] = id;
 
             return View(viewModel);
+        }
+
+        public IActionResult AddStudentsPartial()
+        {
+            return PartialView();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddStudentsPartial(StudentUserViewModel @student)
+        {
+            var mapped = mapper.Map<StudentUser>(student);
+
+            mapped.CourseId = int.Parse(TempData["CourseId"].ToString());
+
+            TempData.Keep("CourseId");
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(mapped);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("DetailedView", "Courses", new { id = int.Parse(TempData["CourseId"].ToString()) });
+            }
+            return View(@student);
         }
 
     }
