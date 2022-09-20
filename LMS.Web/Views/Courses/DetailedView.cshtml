@@ -349,24 +349,6 @@ $(function () {
 });
 </script>
 
-    <script>
-
-        $(function () {
-            $("body").on('click', '#btnDeleteModule', function () {
-                var id = $(this).attr('data-id');
-                console.log("Test");
-                $.ajax({
-                    data: { id },
-                    url: '../../Modules/DeletePartial',
-
-                    success: function (response) {
-                        $("#ModalContent").html(response);
-                        $("#modalPartial").modal("show");
-                    }
-                });
-            });
-        });
-    </script>
 }
 
 
