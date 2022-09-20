@@ -13,12 +13,12 @@ namespace LMS.Web.Extensions
                 var serviceProvider = scope.ServiceProvider;
                 var db = serviceProvider.GetRequiredService<ApplicationDbContext>();
 
-                //db.Database.EnsureDeleted();
-                //db.Database.Migrate();
+                db.Database.EnsureDeleted();
+                db.Database.Migrate();
 
                 try
                 {
-                    await SeedData.InitAsync(db, serviceProvider);
+                    await SeedData.InitAsync(serviceProvider);
                 }
                 catch (Exception e)
                 {

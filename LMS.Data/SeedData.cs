@@ -24,16 +24,17 @@ namespace LMS.Data
         private static Faker? faker;
         private static RoleManager<IdentityRole> roleManager = default!;
         private static UserManager<IdentityUser> userManager = default!;
+        private readonly static string testPassword = "a";
 
-        public static async Task InitAsync(ApplicationDbContext context, IServiceProvider services)
+        public static async Task InitAsync(IServiceProvider services)
         {
-            if (context is null)
-                throw new ArgumentNullException(nameof(context));
+            db = services.GetRequiredService<ApplicationDbContext>();
 
-            db = context;
+            if (db is null)
+                throw new ArgumentNullException(nameof(db));
 
-            if (db.Course != null)
-                if (await db.Course.AnyAsync()) return;
+            if (await DbMissingTablesOrHasData())
+                return;
 
             roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             ArgumentNullException.ThrowIfNull(roleManager);
@@ -56,10 +57,44 @@ namespace LMS.Data
             var activityTypes = GetActivityTypes();
             await db.AddRangeAsync(activityTypes);
 
-            var courses = GetCourses(5, 3, 6, activityTypes, teachers, students);
+            var courses = GetCourses(
+                nrCourses: 5,
+                nrModulesPerCourse: 3,
+                nrActivitiesPerModule: 6,
+                activityTypes, teachers, students
+                );
+
             await db.AddRangeAsync(courses);
 
             await db.SaveChangesAsync();
+        }
+
+        private async static Task<bool> DbMissingTablesOrHasData()
+        {
+            ArgumentNullException.ThrowIfNull(db);
+
+            if (db.Course != null && await db.Course.AnyAsync())
+                return true;
+
+            if (db.Module != null && await db.Module.AnyAsync())
+                return true;
+
+            if (db.Activity != null && await db.Activity.AnyAsync())
+                return true;
+
+            if (db.Document != null && await db.Document.AnyAsync())
+                return true;
+
+            if (db.ActivityType != null && await db.ActivityType.AnyAsync())
+                return true;
+
+            if (db.Users != null && await db.Users.AnyAsync())
+                return true;
+
+            if (db.Roles != null && await db.Roles.AnyAsync())
+                return true;
+
+            return false;
         }
 
         private static async Task AddRolesAsync(string[] roleNames)
@@ -77,12 +112,8 @@ namespace LMS.Data
             }
         }
 
-        private static async Task<IEnumerable<IdentityUser>> GetTeacherUsersAsync(int nrOfUsers)
+        private static async Task<IdentityUser> GetTestTeacher()
         {
-            var users = new List<IdentityUser>();
-
-            var password = "a";
-
             var testTeacher = new TeacherUser()
             {
                 UserName = "teacher@lms.se",
@@ -91,16 +122,41 @@ namespace LMS.Data
                 LastName = faker.Name.LastName()
             };
 
-            var result = await userManager.CreateAsync(testTeacher, password);
+            var result = await userManager.CreateAsync(testTeacher, testPassword);
 
             if (!result.Succeeded)
                 throw new Exception(string.Join("\n", result.Errors));
 
-            users.Add(testTeacher);
+            return testTeacher;
+        }
+
+        private static async Task<IdentityUser> GetTestStudent()
+        {
+            var testStudent = new StudentUser
+            {
+                UserName = "student@lms.se",
+                Email = "student@lms.se",
+                FirstName = faker.Name.FirstName(),
+                LastName = faker.Name.LastName()
+            };
+
+            var result = await userManager.CreateAsync(testStudent, testPassword);
+
+            if (!result.Succeeded)
+                throw new Exception(string.Join("\n", result.Errors));
+
+            return testStudent;
+        }
+
+        private static async Task<IEnumerable<IdentityUser>> GetTeacherUsersAsync(int nrOfUsers)
+        {
+            var users = new List<IdentityUser>();
 
             for (var i = 0; i < nrOfUsers; i++)
             {
-                var email = faker.Internet.Email();
+                var person = new Person("sv");
+
+                var email = person.Email;
                 var found = await userManager.FindByEmailAsync(email);
 
                 if (found != null) return null!;
@@ -109,16 +165,17 @@ namespace LMS.Data
                 {
                     UserName = email,
                     Email = email,
-                    FirstName = faker.Name.FirstName(),
-                    LastName = faker.Name.LastName()
-                    //TimeOfRegistration = DateTime.Now
+                    FirstName = person.FirstName,
+                    LastName = person.LastName
                 };
 
                 users.Add(teacher);
 
-                result = await userManager.CreateAsync(teacher, password);
+                var result = await userManager.CreateAsync(teacher, testPassword);
                 if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
             }
+
+            users.Add(await GetTestTeacher());
 
             return users;
         }
@@ -127,27 +184,11 @@ namespace LMS.Data
         {
             var users = new List<IdentityUser>();
 
-            var password = "a";
-
-            var testStudent = new StudentUser
-            {
-                UserName = "student@lms.se",
-                Email = "student@lms.se",
-                FirstName = faker.Name.FirstName(),
-                LastName = faker.Name.LastName()
-                //TimeOfRegistration = DateTime.Now
-            };
-
-            var result = await userManager.CreateAsync(testStudent, password);
-
-            if (!result.Succeeded)
-                throw new Exception(string.Join("\n", result.Errors));
-
-            users.Add(testStudent);
-
             for (var i = 0; i < nrOfUsers; i++)
             {
-                var email = faker.Internet.Email();
+                var person = new Person("sv");
+
+                var email = person.Email;
                 var found = await userManager.FindByEmailAsync(email);
 
                 if (found != null) return null!;
@@ -156,18 +197,19 @@ namespace LMS.Data
                 {
                     UserName = email,
                     Email = email,
-                    FirstName = faker.Name.FirstName(),
-                    LastName = faker.Name.LastName()
-                    //TimeOfRegistration = DateTime.Now
+                    FirstName = person.FirstName,
+                    LastName = person.LastName
                 };
 
                 users.Add(student);
 
-                result = await userManager.CreateAsync(student, password);
+                var result = await userManager.CreateAsync(student, testPassword);
 
                 if (!result.Succeeded)
                     throw new Exception(string.Join("\n", result.Errors));
             }
+
+            users.Add(await GetTestStudent());
 
             return users;
         }
@@ -225,7 +267,7 @@ namespace LMS.Data
             return result;
         }
 
-        private static IEnumerable<Course> GetCourses(int nrCourses, int nrModules, int nrActivities,
+        private static IEnumerable<Course> GetCourses(int nrCourses, int nrModulesPerCourse, int nrActivitiesPerModule,
             IEnumerable<ActivityType> activityTypes, IEnumerable<IdentityUser> teachers, IEnumerable<IdentityUser> students)
         {
             var courses = new List<Course>();
@@ -241,7 +283,7 @@ namespace LMS.Data
                     EndDate = DateTime.Now.AddDays(40 + Random.Shared.Next(40))
                 };
 
-                course.Modules = GetModules(nrModules, nrActivities,
+                course.Modules = GetModules(nrModulesPerCourse, nrActivitiesPerModule,
                     course.StartDate, course.EndDate, activityTypes, teachers, students);
 
                 var nrOfDocuments = Random.Shared.Next(8);
