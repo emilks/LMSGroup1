@@ -175,6 +175,23 @@ namespace LMS.Web.Controllers
             return View(course);
         }
 
+        public async Task<IActionResult> DeletePartial(int? id)
+        {
+            if (id == null || _context.Course == null)
+            {
+                return NotFound();
+            }
+
+            var course = await _context.Course
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            return PartialView(course);
+        }
+
         // POST: Courses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
