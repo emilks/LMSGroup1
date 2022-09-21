@@ -9,6 +9,10 @@ using LMS.Core.Entities;
 using LMS.Data.Data;
 using LMS.Web.Services;
 using LMS.Core.Services;
+using LMS.Core.ViewModels;
+using AutoMapper;
+using System.Diagnostics;
+using Activity = LMS.Core.Entities.Activity;
 
 namespace LMS.Web.Controllers
 {
@@ -16,11 +20,13 @@ namespace LMS.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IDateValidationService _dateValidationService;
+        private readonly IMapper mapper;
 
-        public ActivitiesController(ApplicationDbContext context, IDateValidationService dateValidationService)
+        public ActivitiesController(ApplicationDbContext context, IDateValidationService dateValidationService, IMapper mapper)
         {
             _context = context;
             _dateValidationService = dateValidationService;
+            this.mapper = mapper;
         }
 
         // GET: Activities
@@ -58,7 +64,7 @@ namespace LMS.Web.Controllers
         // POST: Activities/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        /*[HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,ModuleId")] Activity activity)
         {
@@ -67,6 +73,25 @@ namespace LMS.Web.Controllers
                 _context.Add(activity);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
+            }
+            return View(activity);
+        }*/
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ActivityViewModel viewModel)
+        {
+            var activityType = _context.ActivityType.FirstOrDefault(a => a.Id == viewModel.ActivityTypeId);
+
+            var activity  = mapper.Map<Activity>(viewModel);
+            activity.ActivityType = activityType;
+            var courseId = int.Parse(TempData["CourseId"].ToString());
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(activity);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("DetailedView", "Courses", new { id = courseId });
             }
             return View(activity);
         }
