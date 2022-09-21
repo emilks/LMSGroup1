@@ -116,7 +116,21 @@
                             <td></td>
                             <td colspan="4">
                                 <span class="fw-bold fst-italic">Beskrivning: </span>@Html.DisplayFor(modelItem => item.Description)
+
+                                <div class="container-fluid">
+                                <div class="row">
+                                <div class="col-4">
                                 <h5 class="mb-2 mt-5">Aktiviteter:</h5>
+                                </div>
+                                    <div class="col-4">
+                                    <button class="btn btn-primary mt-5" data-bs-toggle="collapse" data-bs-target="#collapseAddActivity_@i" aria-expanded="false" aria-controls="collapseAddActivity_@i">Lägg till aktivitet</button>
+                                    <div class="collapse" id="collapseAddActivity_@i">
+                                        <partial name="~/Views/Activities/CreatePartial.cshtml" model="new ActivityViewModel{ModuleId = @item.Id}"/>
+                                    </div>
+                                </div>
+                                </div>
+                                </div>
+
                                 @foreach (var activity in item.Activities)
                                 {
                                     <div class="container-fluid">
@@ -166,12 +180,7 @@
                                         </div>
                                     </div>
                                 }
-                                <div class="ml-4">
-                                    <button class="btn btn-sm btn-primary smalltext12 mb-4" data-bs-toggle="collapse" data-bs-target="#collapseAddActivity_@i" aria-expanded="false" aria-controls="collapseAddActivity_@i">Lägg till aktivitet</button>
-                                    <div class="collapse col-sm-4 col-md-2" id="collapseAddActivity_@i">
-                                        <partial name="~/Views/Activities/CreatePartial.cshtml" model="new ActivityViewModel{ModuleId = @item.Id}"/>
-                                    </div>
-                                </div>
+
                             </td>
                         </tr>
                     </tbody>
