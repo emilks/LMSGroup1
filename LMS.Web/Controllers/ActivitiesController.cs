@@ -31,7 +31,7 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadDocument(CourseViewModel model) {
+        public async Task<IActionResult> UploadDocument(CourseViewModel model, int parentId) {
             if (ModelState.IsValid == false) {
                 return Problem("Could not upload file, model state not valid");
             }
