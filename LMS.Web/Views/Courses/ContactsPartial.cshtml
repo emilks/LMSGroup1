@@ -2,23 +2,20 @@
 
 
 <div class="modal-header">
-    <h5 class="modal-title" id="exampleModalLabel">Kontakter: @Model.Name</h5>
+    <h3 class="modal-title" id="exampleModalLabel">Deltagare</h3>
     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
 
 <div class="modal-body">
-<h3>Lärare</h3>
+<h4>Lärare</h4>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                Förnamn
-            </th>
-            <th>
-                Efternamn
+                Namn
             </th>
             <th>
                 E-Post
@@ -31,8 +28,6 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.LastName)
             </td>
             <td>
@@ -44,16 +39,13 @@
 </table>
 
 <br />
-<h3>Elever</h3>
+<h4>Elever</h4>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                Förnamn
-            </th>
-            <th>
-                Efternamn
+                Namn
             </th>
             <th>
                 E-Post
@@ -66,8 +58,6 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.LastName)
             </td>
             <td>
