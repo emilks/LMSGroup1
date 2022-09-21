@@ -36,9 +36,18 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link whitenav" asp-area="" asp-controller="Courses" asp-action="Index">Kurser</a>
-                        </li>
+                        @if (User.IsInRole("Teacher"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link whitenav" asp-area="" asp-controller="Courses" asp-action="Index">Kurser</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Student"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link whitenav" asp-area="" asp-controller="Courses" asp-action="MyCourse">Min Kurs</a>
+                            </li>
+                        }
                          <li class="nav-item">
                             <a class="nav-link whitenav" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Mitt konto</a>
                         </li>
