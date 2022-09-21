@@ -17,6 +17,7 @@ namespace LMS.Core.ViewModels
         // document properties
         public IFormFile? FileBuffer { get; set; }
         [DisplayName("Beskrivning")]
+        [Required]
         public string DocumentDescription { get; set; } = string.Empty;
 
         // alternativ 2

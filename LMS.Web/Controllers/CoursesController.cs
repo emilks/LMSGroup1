@@ -81,12 +81,12 @@ namespace LMS.Web.Controllers
 
             // create file object
             var documentName = model.FileBuffer!.FileName;
-            var documentPath = $"files/courses/{model.Name}";
+            var documentPath = $"files\\courses\\{model.Name}";
 
             var document = new Document() {
                 Name = documentName,
                 Description = model.DocumentDescription,
-                FilePath = $"{documentPath}/{documentName}",
+                FilePath = $"{documentPath}\\{documentName}",
                 Owner = await userManager.GetUserAsync(User),
                 Course = await uow.CourseRepository.GetCourseWithContacts(model.Id), // make 'WithContacts' optional!
                 Module = null, // ??
@@ -97,10 +97,11 @@ namespace LMS.Web.Controllers
             var path = Path.Combine(webHostEnvironment.WebRootPath, documentPath);
 
             if (!Directory.Exists(path)) {
-                Directory.CreateDirectory(documentPath);
+                var r = Directory.CreateDirectory(Path.GetDirectoryName(path));
             }
+            var testpath = Path.Combine(path, documentName);
 
-            using (Stream fileStream = new FileStream(Path.Combine(path, documentName), FileMode.Create)) {
+            using (Stream fileStream = new FileStream(testpath, FileMode.Create)) {
                 await model.FileBuffer.CopyToAsync(fileStream);
             }
 
