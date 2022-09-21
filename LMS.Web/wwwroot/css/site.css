@@ -86,6 +86,10 @@ a.blacknav:hover, a.blacknav:active {
     background-color: #2E0289 !important;
     color: white;
 }
+.uploadbuttoncolors {
+    background-color: #2E0289 !important;
+    border: hidden;
+}
 
 .btn-primary, .btn-primary:active, .btn-primary:visited {
     background-color: #2E0289 !important;
