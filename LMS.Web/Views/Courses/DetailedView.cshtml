@@ -19,6 +19,12 @@
             </p>
         </div>
         <div class="col-1">
+            @if (this.User.IsInRole("Teacher"))
+            {
+                <a href="#" data-bs-toggle="modal" data-bs-target="#editCourse"><img src="~/images/pencil.svg" alt="Edit course" /></a>
+            }
+        </div>
+        <div class="col-1">
             <h5>Deltagare</h5>
             <p class="smalltext12">Antal deltagare: @Model.Students.Count()</p>
         <button data-bs-toggle="modal" data-id="@Model.Id" id="btnListParticipants" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
@@ -142,9 +148,24 @@
         <br />
         i++;
     }
+    <!-- Partiell Vy: Lägg till modul -->
+    <div class="ml-4">
+        @if (this.User.IsInRole("Teacher"))
+        {
+            <button @*data-bs-toggle="modal" id="btnCreateCourse" data-bs-target="#modalPartial"*@ class="btn btn-sm btn-primary smalltext12 mb-4" data-bs-toggle="collapse" data-bs-target="#collapseAddModule" aria-expanded="false" aria-controls="collapseAddModule">Lägg till modul</button>
+            <div class="collapse col-sm-4 col-md-2" id="collapseAddModule">
+                <partial name="~/Views/Modules/CreatePartial.cshtml" model="new ModuleViewModel()" />
+            </div>
+        }
+    </div>
+
 </div>
 
 <!-- Modals -->
+<!-- Editera kurs -->
+<div class="modal fade" id="editCourse" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <partial name="EditPartial" />
+</div>
 
 <!-- Se deltagare -->
 <div class="modal fade" id="seeStudents" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -249,7 +270,6 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stäng</button>
-        @*<button type="button" class="btn btn-primary">Save changes</button>*@
       </div>
     </div>
   </div>
@@ -257,11 +277,14 @@
 
 <!-- Ladda upp dokument -->
 <div class="modal fade" id="addDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-@*    @{var Model.Documents.Id = Model.Id;}
-    @{var Model.DocumentViewModel = new DocumentViewModel;
-      Model.DocumentViewModel.Id = Model.Id;
+@*    
+    @{
+        var Model.DocumentVM = new DocumentViewModel();
+        Model.DocumentViewModel.ParentId = Model.Id;
     }
-   <partial name="UploadModalPartial" model="@Model.DocumentViewModel" />*@ 
+   <partial name="UploadModalPartial" model="@Model.DocumentViewModel" /> 
+
+*@   
     <partial name="UploadModalPartial" />
 </div>
 

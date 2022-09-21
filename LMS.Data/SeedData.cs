@@ -24,16 +24,18 @@ namespace LMS.Data
         private static Faker? faker;
         private static RoleManager<IdentityRole> roleManager = default!;
         private static UserManager<IdentityUser> userManager = default!;
+        private readonly static string testPassword = "a";
+        private static Random random = new();
 
-        public static async Task InitAsync(ApplicationDbContext context, IServiceProvider services)
+        public static async Task InitAsync(IServiceProvider services)
         {
-            if (context is null)
-                throw new ArgumentNullException(nameof(context));
+            db = services.GetRequiredService<ApplicationDbContext>();
 
-            db = context;
+            if (db is null)
+                throw new ArgumentNullException(nameof(db));
 
-            if (db.Course != null)
-                if (await db.Course.AnyAsync()) return;
+            if (await DbMissingTablesOrHasData())
+                return;
 
             roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             ArgumentNullException.ThrowIfNull(roleManager);
@@ -56,10 +58,44 @@ namespace LMS.Data
             var activityTypes = GetActivityTypes();
             await db.AddRangeAsync(activityTypes);
 
-            var courses = GetCourses(5, 3, 6, activityTypes, teachers, students);
+            var courses = GetCourses(
+                nrCourses: 4,
+                nrModulesPerCourse: 3,
+                nrActivitiesPerModule: 4,
+                activityTypes, teachers, students
+                );
+
             await db.AddRangeAsync(courses);
 
             await db.SaveChangesAsync();
+        }
+
+        private async static Task<bool> DbMissingTablesOrHasData()
+        {
+            ArgumentNullException.ThrowIfNull(db);
+
+            if (db.Course != null && await db.Course.AnyAsync())
+                return true;
+
+            if (db.Module != null && await db.Module.AnyAsync())
+                return true;
+
+            if (db.Activity != null && await db.Activity.AnyAsync())
+                return true;
+
+            if (db.Document != null && await db.Document.AnyAsync())
+                return true;
+
+            if (db.ActivityType != null && await db.ActivityType.AnyAsync())
+                return true;
+
+            if (db.Users != null && await db.Users.AnyAsync())
+                return true;
+
+            if (db.Roles != null && await db.Roles.AnyAsync())
+                return true;
+
+            return false;
         }
 
         private static async Task AddRolesAsync(string[] roleNames)
@@ -77,12 +113,8 @@ namespace LMS.Data
             }
         }
 
-        private static async Task<IEnumerable<IdentityUser>> GetTeacherUsersAsync(int nrOfUsers)
+        private static async Task<IdentityUser> GetTestTeacher()
         {
-            var users = new List<IdentityUser>();
-
-            var password = "a";
-
             var testTeacher = new TeacherUser()
             {
                 UserName = "teacher@lms.se",
@@ -91,16 +123,41 @@ namespace LMS.Data
                 LastName = faker.Name.LastName()
             };
 
-            var result = await userManager.CreateAsync(testTeacher, password);
+            var result = await userManager.CreateAsync(testTeacher, testPassword);
 
             if (!result.Succeeded)
                 throw new Exception(string.Join("\n", result.Errors));
 
-            users.Add(testTeacher);
+            return testTeacher;
+        }
+
+        private static async Task<IdentityUser> GetTestStudent()
+        {
+            var testStudent = new StudentUser
+            {
+                UserName = "student@lms.se",
+                Email = "student@lms.se",
+                FirstName = faker.Name.FirstName(),
+                LastName = faker.Name.LastName()
+            };
+
+            var result = await userManager.CreateAsync(testStudent, testPassword);
+
+            if (!result.Succeeded)
+                throw new Exception(string.Join("\n", result.Errors));
+
+            return testStudent;
+        }
+
+        private static async Task<IEnumerable<IdentityUser>> GetTeacherUsersAsync(int nrOfUsers)
+        {
+            var users = new List<IdentityUser>();
 
             for (var i = 0; i < nrOfUsers; i++)
             {
-                var email = faker.Internet.Email();
+                var person = new Person("sv");
+
+                var email = person.Email;
                 var found = await userManager.FindByEmailAsync(email);
 
                 if (found != null) return null!;
@@ -109,16 +166,17 @@ namespace LMS.Data
                 {
                     UserName = email,
                     Email = email,
-                    FirstName = faker.Name.FirstName(),
-                    LastName = faker.Name.LastName()
-                    //TimeOfRegistration = DateTime.Now
+                    FirstName = person.FirstName,
+                    LastName = person.LastName
                 };
 
                 users.Add(teacher);
 
-                result = await userManager.CreateAsync(teacher, password);
+                var result = await userManager.CreateAsync(teacher, testPassword);
                 if (!result.Succeeded) throw new Exception(string.Join("\n", result.Errors));
             }
+
+            users.Add(await GetTestTeacher());
 
             return users;
         }
@@ -127,27 +185,11 @@ namespace LMS.Data
         {
             var users = new List<IdentityUser>();
 
-            var password = "a";
-
-            var testStudent = new StudentUser
-            {
-                UserName = "student@lms.se",
-                Email = "student@lms.se",
-                FirstName = faker.Name.FirstName(),
-                LastName = faker.Name.LastName()
-                //TimeOfRegistration = DateTime.Now
-            };
-
-            var result = await userManager.CreateAsync(testStudent, password);
-
-            if (!result.Succeeded)
-                throw new Exception(string.Join("\n", result.Errors));
-
-            users.Add(testStudent);
-
             for (var i = 0; i < nrOfUsers; i++)
             {
-                var email = faker.Internet.Email();
+                var person = new Person("sv");
+
+                var email = person.Email;
                 var found = await userManager.FindByEmailAsync(email);
 
                 if (found != null) return null!;
@@ -156,18 +198,19 @@ namespace LMS.Data
                 {
                     UserName = email,
                     Email = email,
-                    FirstName = faker.Name.FirstName(),
-                    LastName = faker.Name.LastName()
-                    //TimeOfRegistration = DateTime.Now
+                    FirstName = person.FirstName,
+                    LastName = person.LastName
                 };
 
                 users.Add(student);
 
-                result = await userManager.CreateAsync(student, password);
+                var result = await userManager.CreateAsync(student, testPassword);
 
                 if (!result.Succeeded)
                     throw new Exception(string.Join("\n", result.Errors));
             }
+
+            users.Add(await GetTestStudent());
 
             return users;
         }
@@ -191,12 +234,12 @@ namespace LMS.Data
 
         private static IEnumerable<ActivityType> GetActivityTypes()
         {
-            var activityTypes = new List<ActivityType>();
-
-            activityTypes.Add(new ActivityType() { ActivityName = "E-Learning" });
-            activityTypes.Add(new ActivityType() { ActivityName = "Föreläsning" });
-            activityTypes.Add(new ActivityType() { ActivityName = "Övning" });
-            activityTypes.Add(new ActivityType() { ActivityName = "Inlämning" });
+            var activityTypes = new List<ActivityType>() {
+                new ActivityType() { ActivityName = "E-Learning" },
+                new ActivityType() { ActivityName = "Föreläsning" },
+                new ActivityType() { ActivityName = "Övning" },
+                new ActivityType() { ActivityName = "Inlämning" }
+            };
 
             return activityTypes;
         }
@@ -206,10 +249,9 @@ namespace LMS.Data
             var result = true;
 
             foreach (var c in courses)
-            {
                 if (c.Students.Contains(u))
                     result = false;
-            }
+
             return result;
         }
 
@@ -218,15 +260,17 @@ namespace LMS.Data
             var result = true;
 
             foreach (var c in courses)
-            {
                 if (c.Teachers.Contains(u))
                     result = false;
-            }
+
             return result;
         }
 
-        private static IEnumerable<Course> GetCourses(int nrCourses, int nrModules, int nrActivities,
-            IEnumerable<ActivityType> activityTypes, IEnumerable<IdentityUser> teachers, IEnumerable<IdentityUser> students)
+        private static IEnumerable<Course> GetCourses(
+            int nrCourses, int nrModulesPerCourse, int nrActivitiesPerModule,
+            IEnumerable<ActivityType> activityTypes,
+            IEnumerable<IdentityUser> teachers,
+            IEnumerable<IdentityUser> students)
         {
             var courses = new List<Course>();
 
@@ -236,26 +280,32 @@ namespace LMS.Data
                 {
                     Name = faker!.Company.CatchPhrase(),
                     Description = faker!.Lorem.Paragraph(),
-                    StartDate = DateTime.Now.AddDays(
-                        Random.Shared.Next(40) + Random.Shared.Next(40)),
-                    EndDate = DateTime.Now.AddDays(40 + Random.Shared.Next(40))
+                    StartDate = DateTime.Now.AddDays(1 + random.Next(40)),
+                    EndDate = DateTime.Now.AddDays(60 + random.Next(40))
                 };
 
-                course.Modules = GetModules(nrModules, nrActivities,
-                    course.StartDate, course.EndDate, activityTypes, teachers, students);
+                course.Modules = GetModules(
+                    nrModulesPerCourse,
+                    nrActivitiesPerModule,
+                    course.StartDate,
+                    course.EndDate,
+                    activityTypes, teachers, students);
 
-                var nrOfDocuments = Random.Shared.Next(8);
+                var nrOfDocuments = 3 + random.Next(2);
 
                 for (var j = 0; j < nrOfDocuments; j++)
                 {
-                    IdentityUser docOwner = teachers.ElementAt(Random.Shared.Next(teachers.Count()));
+                    IdentityUser docOwner = teachers.ElementAt(random.Next(teachers.Count()));
+
+                    var filePath = faker.Internet.UrlRootedPath("pdf");
+                    var fileName = filePath.Split("/").Last();
 
                     course.Documents.Add(new Document()
                     {
-                        Name = faker!.Lorem.Word(),
+                        Name = fileName,
                         Description = faker!.Lorem.Sentence(),
                         Timestamp = faker.Date.Recent(10),
-                        FilePath = faker.Internet.UrlRootedPath(".pdf"),
+                        FilePath = filePath,
                         Owner = docOwner
                     });
                 }
@@ -265,15 +315,12 @@ namespace LMS.Data
 
             foreach (var course in courses)
             {
-
-                var nrOfTeachers = 1 + Random.Shared.Next(3);
+                var nrOfTeachers = 1 + random.Next(3);
 
                 for (var j = 0; j < nrOfTeachers; j++)
                 {
-
                     foreach (var t in teachers)
                     {
-
                         if (TeacherIsFree(courses, t))
                         {
                             var castedTeacher = t as TeacherUser;
@@ -286,16 +333,16 @@ namespace LMS.Data
                     }
                 }
 
-                var nrOfStudents = 15 + Random.Shared.Next(15);
+                var nrOfStudents = 10 + random.Next(10);
 
                 for (var j = 0; j < nrOfStudents; j++)
                 {
                     foreach (var student in students)
                     {
-
                         if (StudentIsFree(courses, student))
                         {
                             var castedStudent = student as StudentUser;
+
                             if (castedStudent != null)
                             {
                                 course.Students.Add(castedStudent);
@@ -309,9 +356,12 @@ namespace LMS.Data
             return courses;
         }
 
-        private static ICollection<Module> GetModules(int nrModules, int nrActivities,
-            DateTime courseStart, DateTime courseEnd, IEnumerable<ActivityType> activityTypes,
-            IEnumerable<IdentityUser> teachers, IEnumerable<IdentityUser> students)
+        private static ICollection<Module> GetModules(
+            int nrModules, int nrActivitiesPerModule,
+            DateTime courseStart, DateTime courseEnd,
+            IEnumerable<ActivityType> activityTypes,
+            IEnumerable<IdentityUser> teachers,
+            IEnumerable<IdentityUser> students)
         {
             var modules = new List<Module>();
 
@@ -319,12 +369,15 @@ namespace LMS.Data
 
             for (var i = 0; i < nrModules; i++)
             {
-                var maxModuleDaysLen = courseEnd.Subtract(moduleStartDate).Days;
+                var maxModuleDaysLen = courseEnd.Subtract(new TimeSpan(10, 0, 0, 0)).Subtract(moduleStartDate).Days;
 
                 if (maxModuleDaysLen <= 0)
                     break;
 
-                var moduleEndDate = courseStart.AddDays(5 + Random.Shared.Next(maxModuleDaysLen));
+                var moduleEndDate = moduleStartDate.AddDays(10 + random.Next(maxModuleDaysLen));
+
+                if (moduleEndDate > courseEnd)
+                    break;
 
                 var module = new Module
                 {
@@ -334,25 +387,28 @@ namespace LMS.Data
                     EndDate = moduleEndDate
                 };
 
-                var nrOfDocuments = Random.Shared.Next(8);
+                var nrOfDocuments = 3 + random.Next(2);
 
                 for (var j = 0; j < nrOfDocuments; j++)
                 {
-                    IdentityUser docOwner = teachers.ElementAt(Random.Shared.Next(teachers.Count()));
+                    IdentityUser docOwner = teachers.ElementAt(random.Next(teachers.Count()));
+
+                    var filePath = faker.Internet.UrlRootedPath("pdf");
+                    var fileName = filePath.Split("/").Last();
 
                     module.Documents.Add(new Document()
                     {
-                        Name = faker!.Lorem.Word(),
+                        Name = fileName,
                         Description = faker!.Lorem.Sentence(),
                         Timestamp = faker.Date.Recent(10),
-                        FilePath = faker.Internet.UrlRootedPath(".pdf"),
+                        FilePath = filePath,
                         Owner = docOwner
                     });
                 }
 
                 moduleStartDate = moduleEndDate;
 
-                module.Activities = GetActivites(nrActivities, module.StartDate, module.EndDate,
+                module.Activities = GetActivites(nrActivitiesPerModule, module.StartDate, module.EndDate,
                     activityTypes, teachers, students);
 
                 modules.Add(module);
@@ -362,8 +418,10 @@ namespace LMS.Data
         }
 
         private static ICollection<Activity> GetActivites(int nrActivities,
-            DateTime moduleStart, DateTime moduleEnd, IEnumerable<ActivityType> activityTypes,
-            IEnumerable<IdentityUser> teachers, IEnumerable<IdentityUser> students)
+            DateTime moduleStart, DateTime moduleEnd,
+            IEnumerable<ActivityType> activityTypes,
+            IEnumerable<IdentityUser> teachers,
+            IEnumerable<IdentityUser> students)
         {
             var activites = new List<Activity>();
 
@@ -371,12 +429,15 @@ namespace LMS.Data
 
             for (var i = 0; i < nrActivities; i++)
             {
-                var maxActivityDaysLen = moduleEnd.Subtract(activityStartDate).Days;
+                var maxActivityDaysLen = moduleEnd.Subtract(new TimeSpan(2, 0, 0, 0)).Subtract(activityStartDate).Days;
 
                 if (maxActivityDaysLen <= 0)
                     break;
 
-                var activityEndDate = moduleStart.AddDays(1 + Random.Shared.Next(maxActivityDaysLen));
+                var activityEndDate = activityStartDate.AddDays(1 + random.Next(maxActivityDaysLen));
+
+                if (activityEndDate > moduleEnd)
+                    break;
 
                 var activity = new Activity
                 {
@@ -384,26 +445,30 @@ namespace LMS.Data
                     Description = faker!.Lorem.Paragraph(),
                     StartDate = activityStartDate,
                     EndDate = activityEndDate,
-                    ActivityType = activityTypes.ElementAt(Random.Shared.Next(activityTypes.Count()))
+                    ActivityType = activityTypes.ElementAt(random.Next(activityTypes.Count()))
                 };
 
-                var nrOfDocuments = Random.Shared.Next(8);
+                var nrOfDocuments = 3 + random.Next(2);
 
                 for (var j = 0; j < nrOfDocuments; j++)
                 {
                     IdentityUser docOwner;
 
-                    if (Random.Shared.Next(2) == 0)
-                        docOwner = teachers.ElementAt(Random.Shared.Next(teachers.Count()));
+                    if (random.Next(2) == 0)
+                        docOwner = teachers.ElementAt(random.Next(teachers.Count()));
                     else
-                        docOwner = students.ElementAt(Random.Shared.Next(students.Count()));
+                        docOwner = students.ElementAt(random.Next(students.Count()));
+
+                    var filePath = faker.Internet.UrlRootedPath("pdf");
+                    var fileName = filePath.Split("/").Last();
 
                     activity.Documents.Add(new Document()
                     {
-                        Name = faker!.Lorem.Word(),
+
+                        Name = fileName,
                         Description = faker!.Lorem.Sentence(),
                         Timestamp = faker.Date.Recent(10),
-                        FilePath = faker.Internet.UrlRootedPath(".pdf"),
+                        FilePath = filePath,
                         Owner = docOwner
                     });
                 }

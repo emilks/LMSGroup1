@@ -52,6 +52,7 @@ namespace LMS.Data.Repositories
         {
             db.Course.Remove(course);
         }
+
         public async Task<IEnumerable<TeacherUser?>> GetTeacherContacts()
         {
             if (db.TeacherUser == null)
@@ -60,6 +61,22 @@ namespace LMS.Data.Repositories
             }
 
             return await db.TeacherUser.ToListAsync();
+        }
+
+        public async void AddDocument(Course course, Document document) {
+            if(db.Course == null) {
+                return;
+            }
+
+            var target = await db.Course.Where(c => c.Id == course.Id)
+                                        .Include(c => c.Documents)
+                                        .FirstOrDefaultAsync();
+
+            if (target == null) {
+                return;
+            }
+
+            target.Documents.Add(document);
         }
     }
 }
