@@ -5,6 +5,8 @@ using LMS.Core.ViewModels;
 using LMS.Data.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -12,6 +14,7 @@ using System.Reflection;
 
 namespace LMS.Web.Controllers
 {
+    [Authorize]
     public class CoursesController : Controller
     {
         private readonly IWebHostEnvironment webHostEnvironment;
@@ -44,7 +47,13 @@ namespace LMS.Web.Controllers
         }
 
         // GET: Courses
-        public async Task<IActionResult> Index() {
+        public async Task<IActionResult> Index()
+        {
+            if (User.IsInRole("Student"))
+            {
+                return RedirectToAction("MyCourse");
+            }
+
             var courses = await uow.CourseRepository.GetCourses(includeModules: true);
             if (courses == null) {
                 return View();
@@ -117,7 +126,9 @@ namespace LMS.Web.Controllers
 
 
         // GET: Courses/Create
-        public IActionResult Create() {
+        [Authorize(Roles = "Teacher")]
+        public IActionResult Create()
+        {
             return View();
         }
 
@@ -136,8 +147,11 @@ namespace LMS.Web.Controllers
         }
 
         // GET: Courses/Edit/5
-        public async Task<IActionResult> Edit(int? id) {
-            if (id == null || _context.Course == null) {
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null || _context.Course == null)
+            {
                 return NotFound();
             }
 
@@ -235,7 +249,9 @@ namespace LMS.Web.Controllers
             return (_context.Course?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        public IActionResult CreatePartial() {
+        [Authorize(Roles = "Teacher")]
+        public IActionResult CreatePartial()
+        {
             return PartialView();
         }
 
@@ -249,7 +265,25 @@ namespace LMS.Web.Controllers
 
             return PartialView(vm);
         }
-        public async Task<IActionResult> DetailedView(int? id) {
+        public async Task<IActionResult> DetailedView(int? id, bool check = false)
+        {
+            if (User.IsInRole("Student") && check == false)
+            {
+                return RedirectToAction("MyCourse");
+
+                /*var userId = userManager.GetUserId(User);
+
+                var courseId = _context.Course.Include(e => e.Students)
+                    .Where(e => e.Students.Any(f => f.Id.Equals(userId)))
+                    .FirstOrDefault();
+
+                id = courseId?.Id;
+                if (courseId == null)
+                {
+                    id = 1;
+                }*/
+            }
+
             var course = await uow.CourseRepository.GetCourseFull(id);
             if (course == null) {
                 return Problem($"The course with id: {id} could not be found.");
@@ -290,6 +324,19 @@ namespace LMS.Web.Controllers
                 return RedirectToAction("DetailedView", "Courses", new { id = int.Parse(TempData["CourseId"].ToString()) });
             }
             return View(@student);
+        }
+
+        public async Task<IActionResult> MyCourse()
+        {
+            var userId = userManager.GetUserId(User);
+
+            var courseId = await _context.Course.Include(e => e.Students)
+                .Where(e => e.Students.Any(f => f.Id.Equals(userId)))
+                .FirstOrDefaultAsync();
+            //.Select(e => e.Id);
+            var test = courseId.Id;
+
+            return RedirectToAction("DetailedView", new { id = test, check = true });
         }
 
     }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using LMS.Web.Services;
 using LMS.Core.Services;
+using FluentAssertions.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,11 @@ builder.Services.AddScoped<IActivityTypeService, ActivityTypeService>();
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = "/MyAccount";
+});
+
 var app = builder.Build();
 
 await app.SeedDataAsync();
@@ -61,10 +67,11 @@ app.UseAuthorization();
 
 //Forces user to see login screen unless logged in
 
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapDefaultControllerRoute().RequireAuthorization();
-//});
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapDefaultControllerRoute().RequireAuthorization();
+});
+
 
 app.MapControllerRoute(
     name: "default",
