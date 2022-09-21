@@ -82,6 +82,11 @@ a.blacknav:hover, a.blacknav:active {
     color: white;
 }
 
+.close {
+    background-color: #2E0289 !important;
+    color: white;
+}
+
 .btn-primary, .btn-primary:active, .btn-primary:visited {
     background-color: #2E0289 !important;
     border: hidden;

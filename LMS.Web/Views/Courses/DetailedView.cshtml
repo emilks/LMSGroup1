@@ -61,10 +61,14 @@
     </div>
     <div class="col-4 aligncenter">
         <div class="ml-4">
-        <button @*data-bs-toggle="modal" id="btnCreateCourse" data-bs-target="#modalPartial"*@ class="btn btn-primary mb-4" data-bs-toggle="collapse" data-bs-target="#collapseAddModule" aria-expanded="false" aria-controls="collapseAddModule">Lägg till modul</button>
-        <div class="collapse" id="collapseAddModule">
-            <partial name="~/Views/Modules/CreatePartial.cshtml" model="new ModuleViewModel()" />
-        </div>
+
+        @if (this.User.IsInRole("Teacher"))
+        {
+            <button @*data-bs-toggle="modal" id="btnCreateCourse" data-bs-target="#modalPartial"*@ class="btn btn-primary mb-4" data-bs-toggle="collapse" data-bs-target="#collapseAddModule" aria-expanded="false" aria-controls="collapseAddModule">Lägg till modul</button>
+            <div class="collapse" id="collapseAddModule">
+                <partial name="~/Views/Modules/CreatePartial.cshtml" model="new ModuleViewModel()" />
+            </div>
+        }
     </div>
     </div>
     </div>
@@ -148,17 +152,6 @@
         <br />
         i++;
     }
-    <!-- Partiell Vy: Lägg till modul -->
-    <div class="ml-4">
-        @if (this.User.IsInRole("Teacher"))
-        {
-            <button @*data-bs-toggle="modal" id="btnCreateCourse" data-bs-target="#modalPartial"*@ class="btn btn-sm btn-primary smalltext12 mb-4" data-bs-toggle="collapse" data-bs-target="#collapseAddModule" aria-expanded="false" aria-controls="collapseAddModule">Lägg till modul</button>
-            <div class="collapse col-sm-4 col-md-2" id="collapseAddModule">
-                <partial name="~/Views/Modules/CreatePartial.cshtml" model="new ModuleViewModel()" />
-            </div>
-        }
-    </div>
-
 </div>
 
 <!-- Modals -->

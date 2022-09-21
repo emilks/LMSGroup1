@@ -12,7 +12,8 @@
 <h1 class="mt-3">Lärare hos Laxigon</h1>
 </div>
 <div class="col-4 aligncenter">
-    <a class="btn btn-primary" asp-action="Create">Skapa ny lärare</a>
+    @*<a class="btn btn-primary" asp-action="Create">Skapa ny lärare</a>*@
+    <button data-bs-toggle="modal" id="btnCreateTeacher" data-bs-target="#modalPartial" class="btn btn-primary">Skapa ny lärare</button>
 </div>
 </div>
 </div>
@@ -61,4 +62,25 @@
 }
     </tbody>
 </table>
+
+@section scripts{
+<script>
+
+$(function () {
+        $("body").on('click', '#btnCreateTeacher', function () {
+        //$("#myModel").modal("hide");
+        //var id = $(this).attr('data-id');
+ 
+        $.ajax({
+            url: 'Contact/Create',
+            //data: { id },
+            success: function (response) {
+                $("#ModalContent").html(response);
+                $("#modalPartial").modal("show");
+            }
+        });
+    });
+});
+</script>
+}
 

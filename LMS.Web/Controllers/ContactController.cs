@@ -35,7 +35,7 @@ namespace LMS.Web.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            return PartialView();
         }
 
         [HttpPost]

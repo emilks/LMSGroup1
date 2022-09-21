@@ -1,11 +1,17 @@
-﻿namespace LMS.Core.Entities
+﻿using System.ComponentModel;
+
+namespace LMS.Core.Entities
 {
     public class Course
     {
         public int Id { get; set; }
+        [DisplayName ("Namn")]
         public string Name { get; set; } = string.Empty;
+        [DisplayName("Beskrivning")]
         public string Description { get; set; } = string.Empty;
+        [DisplayName("Start datum")]
         public DateTime StartDate { get; set; }
+        [DisplayName("Slut datum")]
         public DateTime EndDate { get; set; }
 
         // Navigation props
