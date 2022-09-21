@@ -1,4 +1,6 @@
-﻿@model CourseViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@model CourseViewModel
+@inject UserManager<IdentityUser> userManager
 
 @{
     ViewData["Title"] = "DetailedView";
@@ -118,7 +120,7 @@
                                     <asp:hiddenfield id="activity" value=@activity.Id runat="server"/>
                                     @{
                                         foreach(var document in activity.Documents) {
-                                            <filehelper document="document"></filehelper>
+                                                <filehelper document="document"></filehelper>
                                         }
                                     }
                                 </div>
@@ -127,6 +129,13 @@
                                     <button data-bs-toggle="modal" data-bs-target="#addDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
                                     <input type="hidden" value=@activity.Id name=parentId/>
                                     <asp:hiddenfield id="activity" value=@activity.Id runat="server"/>
+                                    @{
+                                        foreach(var document in activity.Documents) {
+                                            if (document.Owner == await userManager.GetUserAsync(User)) {
+                                                <filehelper document="document"></filehelper>
+                                            }
+                                        }
+                                    }
                                 </div>
                                 </div>
                                 </div>
