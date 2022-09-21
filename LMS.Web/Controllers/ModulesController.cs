@@ -154,6 +154,11 @@ namespace LMS.Web.Controllers
             return View(@module);
         }
 
+        public IActionResult DeletePartial()
+        {
+            return PartialView();
+        }
+
         // POST: Modules/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
