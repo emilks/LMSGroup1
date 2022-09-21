@@ -119,8 +119,10 @@
                                     <input type="hidden" value=@activity.Id name=parentId/>                                   
                                     <asp:hiddenfield id="activity" value=@activity.Id runat="server"/>
                                     @{
-                                        foreach(var document in activity.Documents) {
+                                        foreach(var document in activity.Documents) {            
+                                            if(document.FilePath == $"files\\courses\\{Model.Name}\\{item.Name}\\{activity.Name}\\{document.Name}") {
                                                 <filehelper document="document"></filehelper>
+                                            }
                                         }
                                     }
                                 </div>
