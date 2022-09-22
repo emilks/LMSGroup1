@@ -80,33 +80,29 @@ namespace LMS.Web.Controllers
             }
 
             // create file object
-            var documentName = model.FileBuffer!.FileName;
-            var documentPath = $"files\\courses\\{model.Name}";
+            var fileName = model.FileBuffer!.FileName;
+            var createPath = Path.Combine(webHostEnvironment.WebRootPath, $"files\\courses\\{model.Name}");
+            string filePath = Path.Combine(createPath, fileName);
+
+            if(Directory.Exists(createPath) == false) {
+                Directory.CreateDirectory(createPath);
+            }
+
+            var course = await uow.CourseRepository.GetCourseWithContacts(model.Id);
+            ArgumentNullException.ThrowIfNull(nameof(course));
 
             var document = new Document() {
-                Name = documentName,
+                Name = fileName,
                 Description = model.DocumentDescription,
-                FilePath = $"{documentPath}\\{documentName}",
-                Owner = await userManager.GetUserAsync(User),
-                Course = await uow.CourseRepository.GetCourseWithContacts(model.Id), // make 'WithContacts' optional!
-                Module = null, // ??
-                Activity = null // ??
+                FilePath = filePath,
+                IdentityUserId = userManager.GetUserId(User),
+                Course = course,
+                Module = null,
+                Activity = null
             };
 
-            // save file
-            var path = Path.Combine(webHostEnvironment.WebRootPath, documentPath);
-
-            if (!Directory.Exists(path)) {
-                var r = Directory.CreateDirectory(Path.GetDirectoryName(path));
-            }
-            var testpath = Path.Combine(path, documentName);
-
-            using (Stream fileStream = new FileStream(testpath, FileMode.Create)) {
-                await model.FileBuffer.CopyToAsync(fileStream);
-            }
-
             // update data base
-            uow.CourseRepository.AddDocument(document.Course, document);
+            uow.CourseRepository.AddDocument(document.Course!, document);
             await uow.CompleteAsync();
 
             // expects an object as id, that's why an anonymous object is used
