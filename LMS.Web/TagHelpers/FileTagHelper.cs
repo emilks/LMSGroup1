@@ -16,9 +16,10 @@ namespace LMS.Web.TagHelpers
         public override void Process(TagHelperContext context, TagHelperOutput output) {
             output.TagName = "div";
             output.TagMode = TagMode.StartTagAndEndTag;
+            var filePath = $"/Courses/DownloadFile?path={Document.FilePath}";
 
             var image = $"<img src = \"/images/file-earmark.svg\" alt=\"\" width = \"20\" height = \"20\">";
-            var content = $"<span><a style=\"color: black; text-decoration: none;\" href=\"{Document.FilePath}\" download>{image} {Document.Name}</a></span>";
+            var content = $"<span><a style=\"color: black; text-decoration: none;\" href=\"{filePath}\" download>{image} {Document.Name}</a></span>";
 
             output.Content.SetHtmlContent(content);
         }

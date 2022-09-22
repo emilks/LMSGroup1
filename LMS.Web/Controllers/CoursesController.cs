@@ -81,11 +81,16 @@ namespace LMS.Web.Controllers
 
             // create file object
             var fileName = model.FileBuffer!.FileName;
-            var createPath = Path.Combine(webHostEnvironment.WebRootPath, $"files\\courses\\{model.Name}");
+            var relativePath = $"files/courses/{model.Name}";
+            var createPath = Path.Combine(webHostEnvironment.WebRootPath, relativePath);
             string filePath = Path.Combine(createPath, fileName);
 
             if(Directory.Exists(createPath) == false) {
                 Directory.CreateDirectory(createPath);
+            }
+
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create)) {
+                model.FileBuffer.CopyTo(fileStream);
             }
 
             var course = await uow.CourseRepository.GetCourseWithContacts(model.Id);
@@ -94,7 +99,7 @@ namespace LMS.Web.Controllers
             var document = new Document() {
                 Name = fileName,
                 Description = model.DocumentDescription,
-                FilePath = filePath,
+                FilePath = relativePath + "/" + fileName,//filePath,
                 IdentityUserId = userManager.GetUserId(User),
                 Course = course,
                 Module = null,
@@ -107,6 +112,11 @@ namespace LMS.Web.Controllers
 
             // expects an object as id, that's why an anonymous object is used
             return RedirectToAction("DetailedView", new { id = model.Id });
+        }
+
+
+        public  IActionResult DownloadFile(string path) {
+            return File(System.IO.File.ReadAllBytes(Path.Combine(webHostEnvironment.WebRootPath, path)), "application/octet-stream");
         }
 
 
