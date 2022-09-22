@@ -108,8 +108,7 @@
 @section scripts{
 <script>
 
-$(function () {
-        $("body").on('click', '#btnCreateCourse', function () {
+    function showCreateCourseModal() {
         //$("#myModel").modal("hide");
         //var id = $(this).attr('data-id');
  
@@ -121,9 +120,25 @@ $(function () {
                 $("#modalPartial").modal("show");
             }
         });
+    }
+
+$(function () {
+        $("body").on('click', '#btnCreateCourse', function () {
+                showCreateCourseModal();
     });
 });
-</script>
+    </script>
+
+@if (Context.Request.Query["showCreateCourse"] == true.ToString())
+{
+    <script>
+        $(document).ready(function() {
+            showCreateCourseModal();
+        });
+        </script>
+}
+
+
 
     <script>
 

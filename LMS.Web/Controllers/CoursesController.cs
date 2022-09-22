@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.Encodings.Web;
 
 namespace LMS.Web.Controllers
 {
@@ -143,7 +144,13 @@ namespace LMS.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(course);
+
+            TempData["NewCourseName"] = course.Name;
+            TempData["NewCourseDescription"] = course.Description;
+            TempData["NewCourseStartDate"] = course.StartDate.ToString();
+            TempData["NewCourseEndDate"] = course.EndDate.ToString();
+
+            return RedirectToAction(nameof(Index), new {showCreateCourse=true});
         }
 
         // GET: Courses/Edit/5
