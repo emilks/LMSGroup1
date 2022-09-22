@@ -1,6 +1,11 @@
 ﻿@using LMS.Core.Entities
 @model LMS.Core.Entities.Course
 
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+
 <div class="modal-header">
     <h5 class="modal-title" id="exampleModalLabel">Lägg till en kurs</h5>
     <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
@@ -44,9 +49,6 @@
     <input type="submit" form="CreateForm" value="Lägg till" class="btn btn-primary" />
 </div>
 
-<script src="~/lib/jquery/dist/jquery.js"></script>
-<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
-<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 
 @section Scripts {
     @{
