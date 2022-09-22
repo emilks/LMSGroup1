@@ -328,7 +328,15 @@ namespace LMS.Web.Controllers
                 .Where(e => e.Students.Any(f => f.Id.Equals(userId)))
                 .FirstOrDefaultAsync();
             //.Select(e => e.Id);
-            var test = courseId.Id;
+            var test = 0;
+            if (courseId == null)
+            {
+                test = 1;
+            }
+            else
+            {
+                test = courseId.Id;
+            }
 
             return RedirectToAction("DetailedView", new { id = test });
         }
