@@ -1,5 +1,6 @@
 ﻿@model CourseViewModel
-
+@using LMS.Core.Services
+@inject IDateSuggestionService DateSuggestionService
 @{
     ViewData["Title"] = "DetailedView";
 }
@@ -66,7 +67,7 @@
         {
             <button @*data-bs-toggle="modal" id="btnCreateCourse" data-bs-target="#modalPartial"*@ class="btn btn-primary mb-4" data-bs-toggle="collapse" data-bs-target="#collapseAddModule" aria-expanded="false" aria-controls="collapseAddModule">Lägg till modul</button>
             <div class="collapse" id="collapseAddModule">
-                <partial name="~/Views/Modules/CreatePartial.cshtml" model="new ModuleViewModel()" />
+                <partial name="~/Views/Modules/CreatePartial.cshtml" model="new ModuleViewModel() {StartDate = await DateSuggestionService.GetSuggestedModuleStartDate(Model.Id)}" />
             </div>
         }
     </div>
