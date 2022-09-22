@@ -37,32 +37,49 @@ namespace LMS.Web.Controllers
             }
 
             // create file object
-            var documentName = model.FileBuffer!.FileName;
-            var documentPath = $"files/courses/{model.Name}";
+            var fileName = model.FileBuffer!.FileName;
+            var relativePath = $"/files/courses/{model.Name}";
+            var createPath = Path.Combine(webHostEnvironment.WebRootPath, relativePath);
+            string filePath = Path.Combine(createPath, fileName);
+
+            var activity = _context.Activity.FirstOrDefault(a => a.Id == model.documentParentId);
+
+            relativePath += "/" + activity.Module.Name + "/" + activity.Name;
+            // temp
+            //
+            // public files
+            // files/courses/{courseName}/{moduleName}/{activityName}/{documentName}
+            //
+            // personal files
+            // files/courses/{courseName}/{moduleName}/{activityName}/{studentUserName}/{documentName}
+            //
+            // $"files\\courses\\{Model.Name}\\{item.Name}\\{activity.Name}\\{document.Name}"
+
+            if (Directory.Exists(createPath) == false) {
+                Directory.CreateDirectory(createPath);
+            }
+
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create)) {
+                model.FileBuffer.CopyTo(fileStream);
+            }
+
+            var course = await uow.CourseRepository.GetCourseWithContacts(model.Id);
+            ArgumentNullException.ThrowIfNull(nameof(course));
 
             var document = new Document() {
-                Name = documentName,
+                Name = fileName,
                 Description = model.DocumentDescription,
-                FilePath = $"{documentPath}/{documentName}",
+                FilePath = relativePath + "/" + fileName,
+                IdentityUserId = userManager.GetUserId(User),
+                // Owner is needed!
                 Owner = await userManager.GetUserAsync(User),
-                Course = await uow.CourseRepository.GetCourseWithContacts(model.Id), // make 'WithContacts' optional!
-                Module = null, // ??
-                Activity = null // ??
+                Course = course,
+                Module = null,
+                Activity = null
             };
 
-            // save file
-            var path = Path.Combine(webHostEnvironment.WebRootPath, documentPath);
-
-            if (!Directory.Exists(path)) {
-                Directory.CreateDirectory(documentPath);
-            }
-
-            using (Stream fileStream = new FileStream(Path.Combine(path, documentName), FileMode.Create)) {
-                await model.FileBuffer.CopyToAsync(fileStream);
-            }
-
             // update data base
-            uow.CourseRepository.AddDocument(document.Course, document);
+            uow.CourseRepository.AddDocument(document.Course!, document);
             await uow.CompleteAsync();
 
             // expects an object as id, that's why an anonymous object is used

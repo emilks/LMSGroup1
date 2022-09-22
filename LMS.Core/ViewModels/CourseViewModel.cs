@@ -15,6 +15,7 @@ namespace LMS.Core.ViewModels
         public DateTime EndDate { get; set; }
 
         // document properties
+        public int? documentParentId { get; set; }
         public IFormFile? FileBuffer { get; set; }
         [DisplayName("Beskrivning")]
         [Required]
