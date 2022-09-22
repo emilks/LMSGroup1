@@ -81,7 +81,7 @@ namespace LMS.Web.Controllers
 
             // create file object
             var fileName = model.FileBuffer!.FileName;
-            var relativePath = $"files/courses/{model.Name}";
+            var relativePath = $"/files/courses/{model.Name}";
             var createPath = Path.Combine(webHostEnvironment.WebRootPath, relativePath);
             string filePath = Path.Combine(createPath, fileName);
 
@@ -99,8 +99,10 @@ namespace LMS.Web.Controllers
             var document = new Document() {
                 Name = fileName,
                 Description = model.DocumentDescription,
-                FilePath = relativePath + "/" + fileName,//filePath,
+                FilePath = relativePath + "/" + fileName,
                 IdentityUserId = userManager.GetUserId(User),
+                // Owner is needed!
+                Owner = await userManager.GetUserAsync(User),
                 Course = course,
                 Module = null,
                 Activity = null
@@ -116,7 +118,11 @@ namespace LMS.Web.Controllers
 
 
         public  IActionResult DownloadFile(string path) {
-            return File(System.IO.File.ReadAllBytes(Path.Combine(webHostEnvironment.WebRootPath, path)), "application/octet-stream");
+            var fileName = Path.GetFileName(path);
+            var absolutePath = Path.Combine(webHostEnvironment.WebRootPath, path);
+            var fileBuffer = System.IO.File.ReadAllBytes(absolutePath);
+
+            return File(fileBuffer, "application/octet-stream", fileName);
         }
 
 
