@@ -144,7 +144,7 @@ namespace LMS.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Index), new {showCreateCourse=true});
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Courses/Edit/5

@@ -106,39 +106,23 @@
 
 
 @section scripts{
-<script>
-
-    function showCreateCourseModal() {
-        //$("#myModel").modal("hide");
-        //var id = $(this).attr('data-id');
- 
-        $.ajax({
-            url: 'Courses/CreatePartial',
-            //data: { id },
-            success: function (response) {
-                $("#ModalContent").html(response);
-                $("#modalPartial").modal("show");
-            }
-        });
-    }
-
-$(function () {
-        $("body").on('click', '#btnCreateCourse', function () {
-                showCreateCourseModal();
-    });
-});
-    </script>
-
-@if (Context.Request.Query["showCreateCourse"] == true.ToString())
-{
     <script>
-        $(document).ready(function() {
-            showCreateCourseModal();
+        $(function () {
+            $("body").on('click', '#btnCreateCourse', function () {
+                //$("#myModel").modal("hide");
+                //var id = $(this).attr('data-id');
+
+                $.ajax({
+                    url: 'Courses/CreatePartial',
+                    //data: { id },
+                    success: function (response) {
+                        $("#ModalContent").html(response);
+                        $("#modalPartial").modal("show");
+                    }
+                });
+            });
         });
-        </script>
-}
-
-
+    </script>
 
     <script>
 
