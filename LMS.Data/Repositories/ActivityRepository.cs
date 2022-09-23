@@ -13,11 +13,14 @@ namespace LMS.Data.Repositories
             this.db = context;
         }
 
-        public async Task<Activity?> GetActivity(int? id) {
+        public async Task<Activity?> GetActivity(int? id, bool includeModule) {
             if (id == null || db.Activity == null) {
                 return null;
             }
 
+            if (includeModule) {
+                return db.Activity.Include(a => a.Module).FirstOrDefault(a => a.Id == id);
+            }
             return db.Activity.FirstOrDefault(a => a.Id == id);
         }
     }

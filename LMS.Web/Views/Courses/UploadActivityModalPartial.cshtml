@@ -14,6 +14,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="documentParentId" />
 
             <div class="form-group mb-4">
                 <input asp-for="@Model.FileBuffer" id="file" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps" type="file" />

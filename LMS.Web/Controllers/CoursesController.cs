@@ -249,6 +249,7 @@ namespace LMS.Web.Controllers
 
             //var viewModel = mapper.Map<MainCourseIndexViewModel>(course);
             var viewModel = mapper.Map<CourseViewModel>(course);
+            viewModel.documentParentId = 1;
 
             return View(viewModel);
         }

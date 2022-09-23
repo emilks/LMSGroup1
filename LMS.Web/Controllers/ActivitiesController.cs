@@ -31,38 +31,50 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadDocument(CourseViewModel model, int parentId) {
+        public async Task<IActionResult> UploadDocument(CourseViewModel model) { //, int documentParentId) {
             if (ModelState.IsValid == false) {
                 return Problem("Could not upload file, model state not valid");
             }
 
-            // create file object
-            var fileName = model.FileBuffer!.FileName;
-            var relativePath = $"/files/courses/{model.Name}";
-            var createPath = Path.Combine(webHostEnvironment.WebRootPath, relativePath);
-            string filePath = Path.Combine(createPath, fileName);
-
-            var activity = _context.Activity.FirstOrDefault(a => a.Id == model.documentParentId);
-
-            relativePath += "/" + activity.Module.Name + "/" + activity.Name;
-            // temp
+            // name convention
             //
             // public files
-            // files/courses/{courseName}/{moduleName}/{activityName}/{documentName}
+            // files/courses/{courseName}/{moduleName}/{activityName}/{fileName}
             //
             // personal files
-            // files/courses/{courseName}/{moduleName}/{activityName}/{studentUserName}/{documentName}
+            // files/courses/{courseName}/{moduleName}/{activityName}/{studentUserName}/{fileName}
             //
-            // $"files\\courses\\{Model.Name}\\{item.Name}\\{activity.Name}\\{document.Name}"
 
-            if (Directory.Exists(createPath) == false) {
-                Directory.CreateDirectory(createPath);
+            // sort out names for file path
+            var activity = await uow.ActivityRepository.GetActivity(model.documentParentId, includeModule: true);
+            if (activity == null) throw new ArgumentNullException(nameof(activity));
+
+            var courseName = model.Name;
+            var moduleName = activity.Module.Name;
+            var activityName = activity.Name;
+            var fileName = model.FileBuffer!.FileName;
+            var userName = userManager.GetUserName(User);
+
+            // create file path
+            var relativePath = $"/files/courses/{courseName}/{moduleName}/{activityName}"; ;
+
+            if(User.IsInRole("Student")) {
+                relativePath += $"/{userName}";
             }
 
+            var absolutePath = Path.Combine(webHostEnvironment.WebRootPath, relativePath);
+            string filePath = Path.Combine(absolutePath, fileName);
+
+            if (Directory.Exists(absolutePath) == false) {
+                Directory.CreateDirectory(absolutePath);
+            }
+
+            // write file to disk
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create)) {
                 model.FileBuffer.CopyTo(fileStream);
             }
 
+            // create document object
             var course = await uow.CourseRepository.GetCourseWithContacts(model.Id);
             ArgumentNullException.ThrowIfNull(nameof(course));
 
@@ -83,7 +95,7 @@ namespace LMS.Web.Controllers
             await uow.CompleteAsync();
 
             // expects an object as id, that's why an anonymous object is used
-            return RedirectToAction("DetailedView", new { id = model.Id });
+            return RedirectToAction("DetailedView", "CoursesController", new { id = model.Id });
         }
 
         // GET: Activities
