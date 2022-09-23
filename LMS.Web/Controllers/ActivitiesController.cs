@@ -117,12 +117,14 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPartial(int id, [Bind("Id,Name,Description,StartDate,EndDate")] Activities activity)
+        public async Task<IActionResult> EditPartial(int id, Activities activity)
         {
             if (id != activity.Id)
             {
                 return NotFound();
             }
+            var moduleId =_context.Module.FirstOrDefault(m => m.Id == activity.ModuleId);
+            var courseId = moduleId.CourseId;
 
             if (ModelState.IsValid)
             {
@@ -142,7 +144,7 @@ namespace LMS.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("DetailedView", "Courses", new { id = courseId });
             }
             return View(activity);
         }
@@ -175,6 +177,9 @@ namespace LMS.Web.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Activity'  is null.");
             }
             var activity = await _context.Activity.Include(a => a.Documents).FirstOrDefaultAsync(a => a.Id == id);
+            var moduleId = new Module();
+            var courseId = moduleId.CourseId;
+
             if (activity != null)
             {
                 _context.RemoveRange(activity.Documents);
@@ -182,7 +187,7 @@ namespace LMS.Web.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("DetailedView", "Courses", new { id = courseId });
         }
 
         private bool ActivityExists(int id)

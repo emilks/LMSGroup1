@@ -112,6 +112,7 @@ namespace LMS.Web.Controllers
             {
                 return NotFound();
             }
+            var courseId = module.CourseId;
 
             if (ModelState.IsValid)
             {
@@ -131,7 +132,7 @@ namespace LMS.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("DetailedView", "Courses", new { id = courseId });
             }
             return View(@module);
         }
