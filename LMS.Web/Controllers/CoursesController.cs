@@ -145,11 +145,6 @@ namespace LMS.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            TempData["NewCourseName"] = course.Name;
-            TempData["NewCourseDescription"] = course.Description;
-            TempData["NewCourseStartDate"] = course.StartDate.ToString();
-            TempData["NewCourseEndDate"] = course.EndDate.ToString();
-
             return RedirectToAction(nameof(Index), new {showCreateCourse=true});
         }
 
