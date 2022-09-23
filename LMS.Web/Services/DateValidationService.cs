@@ -22,7 +22,7 @@ namespace LMS.Web.Services
             if (_context.Course == null)
                 return "Entity set 'ApplicationDbContext.Course'  is null.";
 
-            var course = await _context.Course.Include(c => c.Modules).FirstOrDefaultAsync(c => c.Id == courseId);
+            var course = await _context.Course.AsNoTracking().Include(c => c.Modules).FirstOrDefaultAsync(c => c.Id == courseId);
 
             if (course == null)
                 return "Ogiltigt kurs-ID.";
@@ -45,7 +45,7 @@ namespace LMS.Web.Services
             if (_context.Course == null)
                 return "Entity set 'ApplicationDbContext.Course'  is null.";
 
-            var course = await _context.Course.Include(c => c.Modules).FirstOrDefaultAsync(c => c.Id == courseId);
+            var course = await _context.Course.AsNoTracking().Include(c => c.Modules).FirstOrDefaultAsync(c => c.Id == courseId);
 
             if (course == null)
                 return "Ogiltigt kurs-ID.";
@@ -75,7 +75,7 @@ namespace LMS.Web.Services
             if (_context.Module == null)
                 return "Entity set 'ApplicationDbContext.Module'  is null.";
 
-            var module = await _context.Module.Include(c => c.Activities).FirstOrDefaultAsync(c => c.Id == moduleId);
+            var module = await _context.Module.AsNoTracking().Include(c => c.Activities).FirstOrDefaultAsync(c => c.Id == moduleId);
 
             if (module == null)
                 return "Ogiltigt modul-ID.";
@@ -97,7 +97,7 @@ namespace LMS.Web.Services
             if (_context.Module == null)
                 return "Entity set 'ApplicationDbContext.Module'  is null.";
 
-            var module = await _context.Module.Include(c => c.Activities).FirstOrDefaultAsync(c => c.Id == moduleId);
+            var module = await _context.Module.AsNoTracking().Include(c => c.Activities).FirstOrDefaultAsync(c => c.Id == moduleId);
 
             if (module == null)
                 return "Ogiltigt modul-ID.";
