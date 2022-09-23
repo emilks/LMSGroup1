@@ -70,7 +70,11 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapDefaultControllerRoute().RequireAuthorization();
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Courses}/{action=Index}/{id?}"
+        ).RequireAuthorization();
+    //endpoints.MapDefaultControllerRoute().RequireAuthorization();
 });
 
 

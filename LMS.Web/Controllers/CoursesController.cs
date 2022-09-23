@@ -6,7 +6,6 @@ using LMS.Data.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -267,13 +266,12 @@ namespace LMS.Web.Controllers
 
             return PartialView(vm);
         }
-        public async Task<IActionResult> DetailedView(int? id, bool check = false)
+        public async Task<IActionResult> DetailedView(int? id)
         {
-            if (User.IsInRole("Student") && check == false)
+            if (User.IsInRole("Student"))
             {
-                return RedirectToAction("MyCourse");
 
-                /*var userId = userManager.GetUserId(User);
+                var userId = userManager.GetUserId(User);
 
                 var courseId = _context.Course.Include(e => e.Students)
                     .Where(e => e.Students.Any(f => f.Id.Equals(userId)))
@@ -283,7 +281,7 @@ namespace LMS.Web.Controllers
                 if (courseId == null)
                 {
                     id = 1;
-                }*/
+                }
             }
 
             var course = await uow.CourseRepository.GetCourseFull(id);
@@ -293,10 +291,6 @@ namespace LMS.Web.Controllers
 
             //var viewModel = mapper.Map<MainCourseIndexViewModel>(course);
             var viewModel = mapper.Map<CourseViewModel>(course);
-
-            //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>(courses.AsQueryable());
-            //var viewModel = mapper.Map<MainCourseIndexViewModel>(course);
-            //var viewModel = mapper.ProjectTo<MainCourseIndexViewModel>((IQueryable)course);
 
             TempData["CourseId"] = id;
 
@@ -336,9 +330,17 @@ namespace LMS.Web.Controllers
                 .Where(e => e.Students.Any(f => f.Id.Equals(userId)))
                 .FirstOrDefaultAsync();
             //.Select(e => e.Id);
-            var test = courseId.Id;
+            var test = 0;
+            if (courseId == null)
+            {
+                test = 1;
+            }
+            else
+            {
+                test = courseId.Id;
+            }
 
-            return RedirectToAction("DetailedView", new { id = test, check = true });
+            return RedirectToAction("DetailedView", new { id = test });
         }
 
     }
