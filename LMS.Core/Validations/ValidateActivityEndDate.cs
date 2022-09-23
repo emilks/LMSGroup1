@@ -13,7 +13,7 @@ namespace LMS.Core.Validations
                 var validationService = (IDateValidationService)validationContext
                          .GetService(typeof(IDateValidationService))!;
 
-                var activity = validationContext.ObjectInstance as Activity;
+                var activity = validationContext.ObjectInstance as Activities;
 
                 if (activity is not null)
                 {

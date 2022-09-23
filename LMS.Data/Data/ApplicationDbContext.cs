@@ -12,7 +12,7 @@ namespace LMS.Data.Data
         }
         public DbSet<Course>? Course { get; set; }
         public DbSet<Module>? Module { get; set; }
-        public DbSet<Activity>? Activity { get; set; }
+        public DbSet<Activities>? Activity { get; set; }
         public DbSet<ActivityType>? ActivityType { get; set; }
         public DbSet<Document>? Document { get; set; }
         public DbSet<StudentUser>? StudentUser { get; set; }

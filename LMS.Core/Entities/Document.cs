@@ -17,7 +17,7 @@ namespace LMS.Core.Entities
 
         public Course? Course { get; set; }
         public Module? Module { get; set; }
-        public Activity? Activity { get; set; }
+        public Activities? Activity { get; set; }
         public IdentityUser Owner { get; set; }
 
         public Document() {
