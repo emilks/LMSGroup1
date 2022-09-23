@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace LMS.Core.Entities
 {
-    public class Activity
+    public class Activities
     {
         public int Id { get; set; }
 

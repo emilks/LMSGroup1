@@ -98,7 +98,7 @@ namespace LMS.Web.Controllers
             {
                 return NotFound();
             }
-            return View(@module);
+            return PartialView(@module);
         }
 
         // POST: Modules/Edit/5
@@ -106,12 +106,13 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,StartDate,EndDate")] Module @module)
+        public async Task<IActionResult> Edit(int id, Module @module)
         {
             if (id != @module.Id)
             {
                 return NotFound();
             }
+            var courseId = module.CourseId;
 
             if (ModelState.IsValid)
             {
@@ -131,13 +132,13 @@ namespace LMS.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("DetailedView", "Courses", new { id = courseId });
             }
             return View(@module);
         }
 
         // GET: Modules/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> DeletePartial(int? id)
         {
             if (id == null || _context.Module == null)
             {
@@ -151,13 +152,13 @@ namespace LMS.Web.Controllers
                 return NotFound();
             }
 
-            return View(@module);
+            return PartialView(@module);
         }
 
-        public IActionResult DeletePartial()
-        {
-            return PartialView();
-        }
+        //public IActionResult DeletePartial()
+        //{
+        //    return PartialView();
+        //}
 
         // POST: Modules/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -169,7 +170,7 @@ namespace LMS.Web.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Module'  is null.");
             }
             var module = await uow.ModuleRepository.GetModuleFull(id);
-
+            var courseId = module.CourseId; 
             if (module != null)
             {
                 _context.RemoveRange(module.Documents);
@@ -179,7 +180,7 @@ namespace LMS.Web.Controllers
             }
 
             await uow.CompleteAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("DetailedView", "Courses", new { id = courseId });
         }
 
         private bool ModuleExists(int id)
