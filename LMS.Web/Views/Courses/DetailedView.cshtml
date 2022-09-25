@@ -116,24 +116,23 @@
                                 <div class="mt-3 col-3">
                                     <span class="largetext20">Aktivitetsdokument </span>
                                     <button  data-bs-toggle="modal" data-bs-target="#addDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Ladda upp</button>
-                                    <input type="hidden" asp-for="documentParentId" value="@activity.Id" id="activity"/>
                                     @{
                                         foreach(var document in activity.Documents) {
                                             if(document.FilePath == $"files\\courses\\{Model.Name}\\{item.Name}\\{activity.Name}\\{document.Name}") {
-                                                <filehelper document="document"></filehelper>
+                                                                                                        <filehelper document="document"></filehelper>
                                             }
                                         }
                                     }
                                 </div>
                                 <div class="mt-3 col-3">
                                     <span class="largetext20">Inlämnade dokument </span>
-                                    <button data-bs-toggle="modal" data-bs-target="#addDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
-                                    <input type="hidden" asp-for="documentParentId" value="@activity.Id" id="activity"/>
+                                    @*<button data-bs-toggle="modal" data-bs-target="#addDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>*@
+                                    <button data-bs-toggle="modal" data-id="@activity.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
                                     @{
                                         foreach(var document in activity.Documents) {
                                             if(document.FilePath != $"files\\courses\\{Model.Name}\\{item.Name}\\{activity.Name}\\{document.Name}" &&
                                                document.Owner == await userManager.GetUserAsync(User)) {
-                                                    <filehelper document="document"></filehelper>
+                                                                                                            <filehelper document="document"></filehelper>
                                             }
                                         }
                                     }
@@ -344,7 +343,25 @@ $(function () {
         });
     });
 });
+
+$(function() { 
+    $("body").on('click', '#btnAddDocumentsActivity', function() {
+        var id = $(this).attr('data-id');
+        alert("js called");
+
+        $.ajax({
+            method: "GET"
+            data: { "documentParentId": id },
+            url: '/Activities/UploadDocumentTest'
+
+            success: function(response) {
+                alert('ajax success');
+                $("#ModalContent").html(response);
+                $("#ModalPartial").modal("show");
+            }
+        });
+    });
+});
+
 </script>
 }
-
-

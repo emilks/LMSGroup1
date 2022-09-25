@@ -26,10 +26,16 @@ namespace LMS.Web.Controllers
             this.webHostEnvironment = webHostEnvironment;
         }
 
-        // POST: Activities/UploadDocument
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UploadDocumentTest(int documentParentId) {
+            return PartialView("UploadActivityModalPartial");
+        }
+
+            // POST: Activities/UploadDocument
+            // To protect from overposting attacks, enable the specific properties you want to bind to.
+            // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+            [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadDocument(CourseViewModel model) { //, int documentParentId) {
             if (ModelState.IsValid == false) {
