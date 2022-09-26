@@ -1,15 +1,13 @@
-﻿using LMS.Core.Entities;
+﻿using AutoMapper;
+using LMS.Core.Entities;
 using LMS.Core.Repositories;
 using LMS.Core.Services;
-using LMS.Core.ViewModels;
-using AutoMapper;
-using System.Diagnostics;
-using Activities = LMS.Core.Entities.Activities;
 using LMS.Core.ViewModels;
 using LMS.Data.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Activities = LMS.Core.Entities.Activities;
 
 namespace LMS.Web.Controllers
 {
@@ -22,14 +20,19 @@ namespace LMS.Web.Controllers
         private readonly IUnitOfWork uow;
         private readonly IWebHostEnvironment webHostEnvironment;
 
-        public ActivitiesController(IWebHostEnvironment webHostEnvironment, IUnitOfWork unitOfWork, ApplicationDbContext context, IDateValidationService dateValidationService, UserManager<IdentityUser> um)
-        public ActivitiesController(ApplicationDbContext context, IDateValidationService dateValidationService, IMapper mapper)
+        public ActivitiesController(IDateValidationService dateValidationService,
+                                    IMapper mapper, 
+                                    IWebHostEnvironment webHostEnvironment, 
+                                    IUnitOfWork unitOfWork, 
+                                    ApplicationDbContext context, 
+                                    UserManager<IdentityUser> um)
         {
             _context = context;
             _dateValidationService = dateValidationService;
             userManager = um;
             uow = unitOfWork;
             this.webHostEnvironment = webHostEnvironment;
+            this.mapper = mapper;
         }
 
 
@@ -100,7 +103,6 @@ namespace LMS.Web.Controllers
 
             // expects an object as id, that's why an anonymous object is used
             return RedirectToAction("DetailedView", "Courses", new { id = model.Id });
-            this.mapper = mapper;
         }
 
         // GET: Activities
