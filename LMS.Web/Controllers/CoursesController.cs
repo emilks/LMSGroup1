@@ -249,14 +249,16 @@ namespace LMS.Web.Controllers
 
             //var viewModel = mapper.Map<MainCourseIndexViewModel>(course);
             var viewModel = mapper.Map<CourseViewModel>(course);
-            viewModel.documentParentId = 1;
 
             return View(viewModel);
         }
 
-        // test
         public IActionResult UploadActivityModalPartial(int? id) {
-            return PartialView();
+            if(id == null) {
+                return View();
+            }
+            var vm = new CourseViewModel () { documentParentId = (int)id };
+            return PartialView(vm);
         }
     }
 }
