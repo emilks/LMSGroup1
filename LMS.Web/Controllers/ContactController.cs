@@ -35,7 +35,7 @@ namespace LMS.Web.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            return PartialView();
         }
 
         [HttpPost]
@@ -136,6 +136,7 @@ namespace LMS.Web.Controllers
         {
             return (_context.TeacherUser?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
 
         //[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         //public IActionResult Error()

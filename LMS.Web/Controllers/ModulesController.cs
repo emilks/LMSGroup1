@@ -11,6 +11,7 @@ using LMS.Web.Services;
 using LMS.Core.Services;
 using AutoMapper;
 using LMS.Core.Repositories;
+using LMS.Core.ViewModels;
 
 namespace LMS.Web.Controllers
 {
@@ -66,13 +67,20 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,CourseId")] Module @module)
+        //public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,CourseId")] Module @module)
+        public async Task<IActionResult> Create(ModuleViewModel @module)
         {
+            var mapped = mapper.Map<Module>(module);
+            mapped.CourseId = int.Parse(TempData["CourseId"].ToString());
+
+            TempData.Keep("CourseId");
+
             if (ModelState.IsValid)
             {
-                _context.Add(@module);
+                _context.Add(mapped);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                //return RedirectToAction(nameof(Index));
+                return RedirectToAction("DetailedView", "Courses", new {id = int.Parse(TempData["CourseId"].ToString()) });
             }
             return View(@module);
         }
@@ -90,7 +98,7 @@ namespace LMS.Web.Controllers
             {
                 return NotFound();
             }
-            return View(@module);
+            return PartialView(@module);
         }
 
         // POST: Modules/Edit/5
@@ -98,12 +106,13 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,StartDate,EndDate")] Module @module)
+        public async Task<IActionResult> Edit(int id, Module @module)
         {
             if (id != @module.Id)
             {
                 return NotFound();
             }
+            var courseId = module.CourseId;
 
             if (ModelState.IsValid)
             {
@@ -123,13 +132,13 @@ namespace LMS.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("DetailedView", "Courses", new { id = courseId });
             }
             return View(@module);
         }
 
         // GET: Modules/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> DeletePartial(int? id)
         {
             if (id == null || _context.Module == null)
             {
@@ -143,8 +152,13 @@ namespace LMS.Web.Controllers
                 return NotFound();
             }
 
-            return View(@module);
+            return PartialView(@module);
         }
+
+        //public IActionResult DeletePartial()
+        //{
+        //    return PartialView();
+        //}
 
         // POST: Modules/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -156,7 +170,7 @@ namespace LMS.Web.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Module'  is null.");
             }
             var module = await uow.ModuleRepository.GetModuleFull(id);
-
+            var courseId = module.CourseId; 
             if (module != null)
             {
                 _context.RemoveRange(module.Documents);
@@ -166,22 +180,37 @@ namespace LMS.Web.Controllers
             }
 
             await uow.CompleteAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("DetailedView", "Courses", new { id = courseId });
         }
 
         private bool ModuleExists(int id)
         {
             return (_context.Module?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-
-        public async Task<IActionResult> VerifyStartDate(DateTime startDate, int courseId)
+        public async Task<IActionResult> VerifyStartDate(DateTime startDate)
         {
+            string courseIdStr = TempData["CourseId"].ToString();
+            TempData.Keep("CourseId");
+            int courseId = int.Parse(courseIdStr);
             return Json(await _dateValidationService.ValidateModuleStartDate(startDate, courseId));
         }
 
-        public async Task<IActionResult> VerifyEndDate(DateTime endDate, DateTime startDate, int courseId)
+        public async Task<IActionResult> VerifyEndDate(DateTime endDate,
+            [Bind(Prefix = "StartDate")] DateTime startDate)
         {
+            string courseIdStr = TempData["CourseId"].ToString();
+            TempData.Keep("CourseId");
+            int courseId = int.Parse(courseIdStr);
             return Json(await _dateValidationService.ValidateModuleEndDate(endDate, startDate, courseId));
+        }
+
+        public async Task<IActionResult> VerifyDuration(int duration,
+            [Bind(Prefix = "StartDate")] DateTime startDate)
+        {
+            string courseIdStr = TempData["CourseId"].ToString();
+            TempData.Keep("CourseId");
+            int courseId = int.Parse(courseIdStr);
+            return Json(await _dateValidationService.ValidateModuleDuration(duration, startDate, courseId));
         }
     }
 }

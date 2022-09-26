@@ -19,12 +19,14 @@ namespace LMS.Data
 
             CreateMap<Course, CourseContactsViewModel>();
 
-            CreateMap<Activity, ActivityViewModel>();
+            CreateMap<Activities, ActivitiesViewModel>().ReverseMap();
 
             CreateMap<Course, CourseViewModel>();
 
             CreateMap<ContactsViewModel, TeacherUser>().ReverseMap();
-                //.ForMember(dest => dest.TeacherUserId, from => from.MapFrom(u => u.Id));
+
+            CreateMap<StudentUser, StudentUserViewModel>().ReverseMap();
+            //.ForMember(dest => dest.TeacherUserId, from => from.MapFrom(u => u.Id));
         }
     }
 }

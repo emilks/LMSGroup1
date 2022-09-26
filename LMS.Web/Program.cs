@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using LMS.Web.Services;
 using LMS.Core.Services;
+using FluentAssertions.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,8 +32,15 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IDateValidationService, DateValidationService>();
+builder.Services.AddScoped<IDateSuggestionService, DateSuggestionService>();
+builder.Services.AddScoped<IActivityTypeService, ActivityTypeService>();
 
 builder.Services.AddAutoMapper(typeof(MapperProfile));
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = "/MyAccount";
+});
 
 var app = builder.Build();
 
@@ -60,14 +68,20 @@ app.UseAuthorization();
 
 //Forces user to see login screen unless logged in
 
-//app.UseEndpoints(endpoints =>
-//{
-//    endpoints.MapDefaultControllerRoute().RequireAuthorization();
-//});
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Courses}/{action=Index}/{id?}"
+        ).RequireAuthorization();
+    //endpoints.MapDefaultControllerRoute().RequireAuthorization();
+});
+
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Courses}/{action=Index}/{id?}");
+
 app.MapRazorPages();
 
 app.Run();

@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LMS.Web.Data.Migrations
+namespace LMS.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220922085810_id_document_properties")]
-    partial class id_document_properties
+    [Migration("20220920142110_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -122,22 +122,19 @@ namespace LMS.Web.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FilePath")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("IdentityUserId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("ModuleId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("Timestamp")
                         .HasColumnType("datetime2");
@@ -148,9 +145,9 @@ namespace LMS.Web.Data.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.HasIndex("IdentityUserId");
-
                     b.HasIndex("ModuleId");
+
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Document");
                 });
@@ -467,13 +464,13 @@ namespace LMS.Web.Data.Migrations
                         .WithMany("Documents")
                         .HasForeignKey("CourseId");
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("IdentityUserId");
-
                     b.HasOne("LMS.Core.Entities.Module", "Module")
                         .WithMany("Documents")
                         .HasForeignKey("ModuleId");
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
 
                     b.Navigation("Activity");
 

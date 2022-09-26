@@ -5,14 +5,18 @@ using LMS.Core.ViewModels;
 using LMS.Data.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.Encodings.Web;
 
 namespace LMS.Web.Controllers
 {
-    public class CoursesController : Controller {
+    [Authorize]
+    public class CoursesController : Controller
+    {
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly ApplicationDbContext _context;
         private readonly IMapper mapper;
@@ -21,10 +25,13 @@ namespace LMS.Web.Controllers
 
         public CoursesController(IWebHostEnvironment webHostEnvironment, ApplicationDbContext context, IMapper mapper, IUnitOfWork unitOfWork, UserManager<IdentityUser> um) {
             this.webHostEnvironment = webHostEnvironment;
+        //public CoursesController(ApplicationDbContext context, IMapper mapper, IUnitOfWork unitOfWork, UserManager<IdentityUser> userManager)
+        //{
             _context = context;
             this.mapper = mapper;
             uow = unitOfWork;
             userManager = um;
+            //this.userManager = userManager;
         }
 
         // GET: Courses/Contacts/5
@@ -40,7 +47,13 @@ namespace LMS.Web.Controllers
         }
 
         // GET: Courses
-        public async Task<IActionResult> Index() {
+        public async Task<IActionResult> Index()
+        {
+            if (User.IsInRole("Student"))
+            {
+                return RedirectToAction("MyCourse");
+            }
+
             var courses = await uow.CourseRepository.GetCourses(includeModules: true);
             if (courses == null) {
                 return View();
@@ -126,7 +139,9 @@ namespace LMS.Web.Controllers
 
 
         // GET: Courses/Create
-        public IActionResult Create() {
+        [Authorize(Roles = "Teacher")]
+        public IActionResult Create()
+        {
             return View();
         }
 
@@ -141,12 +156,16 @@ namespace LMS.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(course);
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Courses/Edit/5
-        public async Task<IActionResult> Edit(int? id) {
-            if (id == null || _context.Course == null) {
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null || _context.Course == null)
+            {
                 return NotFound();
             }
 
@@ -180,7 +199,8 @@ namespace LMS.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                //return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(DetailedView), new { Id = id});
             }
             return View(course);
         }
@@ -198,6 +218,23 @@ namespace LMS.Web.Controllers
             }
 
             return View(course);
+        }
+
+        public async Task<IActionResult> DeletePartial(int? id)
+        {
+            if (id == null || _context.Course == null)
+            {
+                return NotFound();
+            }
+
+            var course = await _context.Course
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            return PartialView(course);
         }
 
         // POST: Courses/Delete/5
@@ -226,7 +263,9 @@ namespace LMS.Web.Controllers
             return (_context.Course?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
-        public IActionResult CreatePartial() {
+        [Authorize(Roles = "Teacher")]
+        public IActionResult CreatePartial()
+        {
             return PartialView();
         }
 
@@ -240,7 +279,24 @@ namespace LMS.Web.Controllers
 
             return PartialView(vm);
         }
-        public async Task<IActionResult> DetailedView(int? id) {
+        public async Task<IActionResult> DetailedView(int? id)
+        {
+            if (User.IsInRole("Student"))
+            {
+
+                var userId = userManager.GetUserId(User);
+
+                var courseId = _context.Course.Include(e => e.Students)
+                    .Where(e => e.Students.Any(f => f.Id.Equals(userId)))
+                    .FirstOrDefault();
+
+                id = courseId?.Id;
+                if (courseId == null)
+                {
+                    id = 1;
+                }
+            }
+
             var course = await uow.CourseRepository.GetCourseFull(id);
             if (course == null) {
                 return Problem($"The course with id: {id} could not be found.");
@@ -249,7 +305,55 @@ namespace LMS.Web.Controllers
             //var viewModel = mapper.Map<MainCourseIndexViewModel>(course);
             var viewModel = mapper.Map<CourseViewModel>(course);
 
+            TempData["CourseId"] = id;
+
             return View(viewModel);
+        }
+
+        public IActionResult AddStudentsPartial()
+        {
+            return PartialView();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddStudentsPartial(StudentUserViewModel @student)
+        {
+            var mapped = mapper.Map<StudentUser>(student);
+
+            mapped.CourseId = int.Parse(TempData["CourseId"].ToString());
+
+            TempData.Keep("CourseId");
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(mapped);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("DetailedView", "Courses", new { id = int.Parse(TempData["CourseId"].ToString()) });
+            }
+            return View(@student);
+        }
+
+        public async Task<IActionResult> MyCourse()
+        {
+            var userId = userManager.GetUserId(User);
+
+            var courseId = await _context.Course.Include(e => e.Students)
+                .Where(e => e.Students.Any(f => f.Id.Equals(userId)))
+                .FirstOrDefaultAsync();
+            //.Select(e => e.Id);
+            var test = 0;
+            if (courseId == null)
+            {
+                test = 1;
+            }
+            else
+            {
+                test = courseId.Id;
+            }
+
+            return RedirectToAction("DetailedView", new { id = test });
         }
 
         public IActionResult UploadActivityModalPartial(int? id, int? documentParentId, string? CourseName) {

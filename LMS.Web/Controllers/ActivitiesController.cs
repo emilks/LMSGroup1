@@ -2,6 +2,10 @@
 using LMS.Core.Repositories;
 using LMS.Core.Services;
 using LMS.Core.ViewModels;
+using AutoMapper;
+using System.Diagnostics;
+using Activities = LMS.Core.Entities.Activities;
+using LMS.Core.ViewModels;
 using LMS.Data.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +17,13 @@ namespace LMS.Web.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IDateValidationService _dateValidationService;
+        private readonly IMapper mapper;
         private readonly UserManager<IdentityUser> userManager;
         private readonly IUnitOfWork uow;
         private readonly IWebHostEnvironment webHostEnvironment;
 
         public ActivitiesController(IWebHostEnvironment webHostEnvironment, IUnitOfWork unitOfWork, ApplicationDbContext context, IDateValidationService dateValidationService, UserManager<IdentityUser> um)
+        public ActivitiesController(ApplicationDbContext context, IDateValidationService dateValidationService, IMapper mapper)
         {
             _context = context;
             _dateValidationService = dateValidationService;
@@ -94,6 +100,7 @@ namespace LMS.Web.Controllers
 
             // expects an object as id, that's why an anonymous object is used
             return RedirectToAction("DetailedView", "Courses", new { id = model.Id });
+            this.mapper = mapper;
         }
 
         // GET: Activities
@@ -131,7 +138,7 @@ namespace LMS.Web.Controllers
         // POST: Activities/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        /*[HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate,ModuleId")] Activity activity)
         {
@@ -142,10 +149,29 @@ namespace LMS.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(activity);
+        }*/
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ActivitiesViewModel viewModel)
+        {
+            var activityType = _context.ActivityType.FirstOrDefault(a => a.Id == viewModel.ActivityTypeId);
+
+            var activity  = mapper.Map<Activities>(viewModel);
+            activity.ActivityType = activityType;
+            var courseId = int.Parse(TempData["CourseId"].ToString());
+
+            if (ModelState.IsValid)
+            {
+                _context.Add(activity);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("DetailedView", "Courses", new { id = courseId });
+            }
+            return View(activity);
         }
 
         // GET: Activities/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> EditPartial(int? id)
         {
             if (id == null || _context.Activity == null)
             {
@@ -157,7 +183,7 @@ namespace LMS.Web.Controllers
             {
                 return NotFound();
             }
-            return View(activity);
+            return PartialView(activity);
         }
 
         // POST: Activities/Edit/5
@@ -165,12 +191,14 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,StartDate,EndDate")] Activity activity)
+        public async Task<IActionResult> EditPartial(int id, Activities activity)
         {
             if (id != activity.Id)
             {
                 return NotFound();
             }
+            var moduleId =_context.Module.FirstOrDefault(m => m.Id == activity.ModuleId);
+            var courseId = moduleId.CourseId;
 
             if (ModelState.IsValid)
             {
@@ -190,13 +218,13 @@ namespace LMS.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("DetailedView", "Courses", new { id = courseId });
             }
             return View(activity);
         }
 
         // GET: Activities/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> DeletePartial(int? id)
         {
             if (id == null || _context.Activity == null)
             {
@@ -210,7 +238,7 @@ namespace LMS.Web.Controllers
                 return NotFound();
             }
 
-            return View(activity);
+            return PartialView(activity);
         }
 
         // POST: Activities/Delete/5
@@ -223,6 +251,9 @@ namespace LMS.Web.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Activity'  is null.");
             }
             var activity = await _context.Activity.Include(a => a.Documents).FirstOrDefaultAsync(a => a.Id == id);
+            var moduleId = new Module();
+            var courseId = moduleId.CourseId;
+
             if (activity != null)
             {
                 _context.RemoveRange(activity.Documents);
@@ -230,7 +261,7 @@ namespace LMS.Web.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("DetailedView", "Courses", new { id = courseId });
         }
 
         private bool ActivityExists(int id)

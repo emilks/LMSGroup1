@@ -12,24 +12,26 @@ using System.Threading.Tasks;
 
 namespace LMS.Core.Entities
 {
-    public class Activity
+    public class Activities
     {
         public int Id { get; set; }
 
+        [DisplayName("Namn")]
         [Required]
         [StringLength(100, MinimumLength = 3)]
         public string Name { get; set; } = string.Empty;
 
+        [DisplayName("Beskrivning")]
         [Required]
         [StringLength(500, MinimumLength = 3)]
         public string Description { get; set; } = string.Empty;
 
-        [DisplayName("Start date")]
+        [DisplayName("Start datum")]
         [Remote(action: "VerifyStartDate", controller: "Activities", AdditionalFields = "ModuleId")]
         [ValidateActivityStartDate]
         public DateTime StartDate { get; set; }
 
-        [DisplayName("End date")]
+        [DisplayName("Slut datum")]
         [Remote(action: "VerifyEndDate", controller: "Activities", AdditionalFields = "StartDate,ModuleId")]
         [ValidateActivityEndDate]
         public DateTime EndDate { get; set; }
