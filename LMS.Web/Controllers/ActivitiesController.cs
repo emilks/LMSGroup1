@@ -33,9 +33,9 @@ namespace LMS.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadDocument(CourseViewModel model) { 
-            if (ModelState.IsValid == false) {
-                return Problem("Could not upload file, model state not valid");
-            }
+            //if (ModelState.IsValid == false) {
+            //    return Problem("Could not upload file, model state not valid");
+            //}
 
             // name convention
             //
@@ -93,7 +93,7 @@ namespace LMS.Web.Controllers
             await uow.CompleteAsync();
 
             // expects an object as id, that's why an anonymous object is used
-            return RedirectToAction("DetailedView", "CoursesController", new { id = model.Id });
+            return RedirectToAction("DetailedView", "Courses", new { id = model.Id });
         }
 
         // GET: Activities

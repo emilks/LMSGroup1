@@ -349,7 +349,7 @@ $(function() {
 
         $.ajax({
             method: "GET",
-            data: { "id": id },
+            data: { "id": @Model.Id, "documentParentId": id },
             url: '/Courses/UploadActivityModalPartial',
 
             success: function(response) {

@@ -253,11 +253,11 @@ namespace LMS.Web.Controllers
             return View(viewModel);
         }
 
-        public IActionResult UploadActivityModalPartial(int? id) {
-            if(id == null) {
+        public IActionResult UploadActivityModalPartial(int? id, int? documentParentId) {
+            if(id == null || documentParentId == null) {
                 return View();
             }
-            var vm = new CourseViewModel () { documentParentId = (int)id };
+            var vm = new CourseViewModel () { Id = (int)id, documentParentId = (int)documentParentId };
             return PartialView(vm);
         }
     }
