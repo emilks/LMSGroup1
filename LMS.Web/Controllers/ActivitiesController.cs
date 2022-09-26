@@ -32,7 +32,7 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadDocument(CourseViewModel model) { 
+        public async Task<IActionResult> UploadDocument(CourseViewModel model) {
             //if (ModelState.IsValid == false) {
             //    return Problem("Could not upload file, model state not valid");
             //}
@@ -57,7 +57,7 @@ namespace LMS.Web.Controllers
             var userName = userManager.GetUserName(User);
 
             // create file path
-            var relativePath = $"/files/courses/{courseName}/{moduleName}/{activityName}"; 
+            var relativePath = $"files/courses/{courseName}/{moduleName}/{activityName}"; 
 
             if(User.IsInRole("Student")) {
                 relativePath += $"/{userName}";

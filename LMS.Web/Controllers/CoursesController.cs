@@ -12,8 +12,7 @@ using System.Reflection;
 
 namespace LMS.Web.Controllers
 {
-    public class CoursesController : Controller
-    {
+    public class CoursesController : Controller {
         private readonly IWebHostEnvironment webHostEnvironment;
         private readonly ApplicationDbContext _context;
         private readonly IMapper mapper;
@@ -85,7 +84,7 @@ namespace LMS.Web.Controllers
             var createPath = Path.Combine(webHostEnvironment.WebRootPath, relativePath);
             string filePath = Path.Combine(createPath, fileName);
 
-            if(Directory.Exists(createPath) == false) {
+            if (Directory.Exists(createPath) == false) {
                 Directory.CreateDirectory(createPath);
             }
 
@@ -117,7 +116,7 @@ namespace LMS.Web.Controllers
         }
 
 
-        public  IActionResult DownloadFile(string path) {
+        public IActionResult DownloadFile(string path) {
             var fileName = Path.GetFileName(path);
             var absolutePath = Path.Combine(webHostEnvironment.WebRootPath, path);
             var fileBuffer = System.IO.File.ReadAllBytes(absolutePath);
@@ -253,12 +252,15 @@ namespace LMS.Web.Controllers
             return View(viewModel);
         }
 
-        public IActionResult UploadActivityModalPartial(int? id, int? documentParentId) {
-            if(id == null || documentParentId == null) {
+        public IActionResult UploadActivityModalPartial(int? id, int? documentParentId, string? CourseName) {
+            if(ModelState.IsValid == false || documentParentId == null) {
                 return View();
             }
-            var vm = new CourseViewModel () { Id = (int)id, documentParentId = (int)documentParentId };
-            return PartialView(vm);
+            var model = new CourseViewModel();
+            model.documentParentId = documentParentId;
+            model.Id = (int)id;
+            model.Name = CourseName;
+            return PartialView(model);
         }
     }
 }
