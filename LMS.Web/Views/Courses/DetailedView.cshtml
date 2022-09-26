@@ -115,12 +115,11 @@
                                 <div class="mt-3 col-1"></div>
                                 <div class="mt-3 col-3">
                                     <span class="largetext20">Aktivitetsdokument </span>
-                                    @*<button  data-bs-toggle="modal" data-bs-target="#addDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Ladda upp</button>*@
-                                    <button data-bs-toggle="modal" data-id="@activity.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
+                                    <button data-bs-toggle="modal" data-id="@activity.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Ladda upp</button>
                                     @{
                                         foreach(var document in activity.Documents) {
-                                            if(document.FilePath == $"files\\courses\\{Model.Name}\\{item.Name}\\{activity.Name}\\{document.Name}") {
-                                                                    <filehelper document="document"></filehelper>
+                                            if(document.FilePath == $"files/courses/{Model.Name}/{item.Name}/{activity.Name}/{document.Name}") {
+                                                <filehelper document="document"></filehelper>
                                             }
                                         }
                                     }
@@ -130,9 +129,9 @@
                                     <button data-bs-toggle="modal" data-id="@activity.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
                                     @{
                                         foreach(var document in activity.Documents) {
-                                            if(document.FilePath != $"files\\courses\\{Model.Name}\\{item.Name}\\{activity.Name}\\{document.Name}" &&
+                                            if(document.FilePath != $"files/courses/{Model.Name}/{item.Name}/{activity.Name}/{document.Name}" &&
                                                document.Owner == await userManager.GetUserAsync(User)) {
-                                                                        <filehelper document="document"></filehelper>
+                                                    <filehelper document="document"></filehelper>
                                             }
                                         }
                                     }
@@ -264,22 +263,10 @@
 
 <!-- Ladda upp dokument -->
 <div class="modal fade" id="addDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-@*    
-    @{
-        var Model.DocumentVM = new DocumentViewModel();
-        Model.DocumentViewModel.ParentId = Model.Id;
-    }
-   <partial name="UploadModalPartial" model="@Model.DocumentViewModel" /> 
-
-*@   
     <partial name="UploadModalPartial" />
 </div>
 
 <div class="modal fade" id="addDocumentsActivity" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-@*    @{
-        Model.DocumentVM = new DocumentViewModel() { ParentId = Html.HiddenFor(, null) }; 
-    }
-*@  
     <partial name="UploadActivityModalPartial" />
 </div>
 
