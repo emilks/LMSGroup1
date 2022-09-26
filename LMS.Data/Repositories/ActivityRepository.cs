@@ -13,15 +13,34 @@ namespace LMS.Data.Repositories
             this.db = context;
         }
 
-        public async Task<Activity?> GetActivity(int? id, bool includeModule) {
+        public async Task<Activity?> GetActivity(int? id, bool includeModuleAndDocuments) {
             if (id == null || db.Activity == null) {
                 return null;
             }
 
-            if (includeModule) {
-                return db.Activity.Include(a => a.Module).FirstOrDefault(a => a.Id == id);
+            if (includeModuleAndDocuments) {
+                return db.Activity.Include(a => a.Module)
+                                  .Include(a => a.Documents)
+                                  .FirstOrDefault(a => a.Id == id);
             }
             return db.Activity.FirstOrDefault(a => a.Id == id);
         }
+
+        public async void AddDocument(Activity activity, Document document) {
+            if (db.Activity == null) {
+                return;
+            }
+
+            var target = await db.Activity.Where(a => a.Id == activity.Id)
+                                          .Include(a => a.Documents)
+                                          .FirstOrDefaultAsync();
+
+            if (target == null) {
+                return;
+            }
+
+            target.Documents.Add(document);
+        }
+
     }
 }

@@ -26,18 +26,13 @@ namespace LMS.Web.Controllers
             this.webHostEnvironment = webHostEnvironment;
         }
 
+
+        // POST: Activities/UploadDocument
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UploadDocumentTest(int? id) {
-            return PartialView("UploadActivityModalPartial");
-        }
-
-            // POST: Activities/UploadDocument
-            // To protect from overposting attacks, enable the specific properties you want to bind to.
-            // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-            [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadDocument(CourseViewModel model) { //, int documentParentId) {
+        public async Task<IActionResult> UploadDocument(CourseViewModel model) { 
             if (ModelState.IsValid == false) {
                 return Problem("Could not upload file, model state not valid");
             }
@@ -52,7 +47,7 @@ namespace LMS.Web.Controllers
             //
 
             // sort out names for file path
-            var activity = await uow.ActivityRepository.GetActivity(model.documentParentId, includeModule: true);
+            var activity = await uow.ActivityRepository.GetActivity(model.documentParentId, includeModuleAndDocuments: true);
             if (activity == null) throw new ArgumentNullException(nameof(activity));
 
             var courseName = model.Name;
@@ -80,10 +75,7 @@ namespace LMS.Web.Controllers
                 model.FileBuffer.CopyTo(fileStream);
             }
 
-            // create document object
-            var course = await uow.CourseRepository.GetCourseWithContacts(model.Id);
-            ArgumentNullException.ThrowIfNull(nameof(course));
-
+            // create document
             var document = new Document() {
                 Name = fileName,
                 Description = model.DocumentDescription,
@@ -91,13 +83,13 @@ namespace LMS.Web.Controllers
                 IdentityUserId = userManager.GetUserId(User),
                 // Owner is needed!
                 Owner = await userManager.GetUserAsync(User),
-                Course = course,
+                Course = null,
                 Module = null,
-                Activity = null
+                Activity = activity
             };
 
             // update data base
-            uow.CourseRepository.AddDocument(document.Course!, document);
+            uow.ActivityRepository.AddDocument(activity, document);
             await uow.CompleteAsync();
 
             // expects an object as id, that's why an anonymous object is used
