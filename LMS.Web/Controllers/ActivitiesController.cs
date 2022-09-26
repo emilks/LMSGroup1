@@ -28,7 +28,7 @@ namespace LMS.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UploadDocumentTest(int documentParentId) {
+        public IActionResult UploadDocumentTest(int? id) {
             return PartialView("UploadActivityModalPartial");
         }
 
@@ -62,7 +62,7 @@ namespace LMS.Web.Controllers
             var userName = userManager.GetUserName(User);
 
             // create file path
-            var relativePath = $"/files/courses/{courseName}/{moduleName}/{activityName}"; ;
+            var relativePath = $"/files/courses/{courseName}/{moduleName}/{activityName}"; 
 
             if(User.IsInRole("Student")) {
                 relativePath += $"/{userName}";

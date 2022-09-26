@@ -254,5 +254,9 @@ namespace LMS.Web.Controllers
             return View(viewModel);
         }
 
+        // test
+        public IActionResult UploadActivityModalPartial(int? id) {
+            return PartialView();
+        }
     }
 }
