@@ -1,5 +1,6 @@
 ﻿#nullable disable
 using LMS;
+using LMS.Core.Entities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -18,6 +19,7 @@ namespace LMS.Core.ViewModels
         [DisplayName("Startdatum")]
         [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
+        [DataType(DataType.Date)]
         public DateTime EndDate { get; set; }
         [DisplayName("Längd (antal dagar)")]
         public int Duration
@@ -31,5 +33,7 @@ namespace LMS.Core.ViewModels
                 EndDate = StartDate + TimeSpan.FromDays(value);
             }
         }
+
+        public ICollection<Document> Documents { get; set; } = new List<Document>();
     }
 }

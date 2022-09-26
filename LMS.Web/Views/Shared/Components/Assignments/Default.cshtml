@@ -1,0 +1,112 @@
+﻿@model IEnumerable<ActivityViewModel>
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> userManager
+@{
+    int i = 0;
+}
+<div class="row overflow-auto">
+
+    <div class="col-6">
+        <h5>Kommande inlämningar</h5>
+
+        <table class="table smalltext12">
+            <thead>
+                <tr>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.Name)*@
+                        Uppgift
+                    </th>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.EndDate)*@
+                        Inlämningsdatum
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    if(item.EndDate > DateTime.Now){
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EndDate)
+                                
+                            </td>
+                            <td>
+                                @if (item.Documents.Any(d => d.Owner.Id == userManager.GetUserId(User)))
+                                {
+                                    <p>Du har lämnat in!</p>
+                                }
+                                else
+                                {
+                                    <p>Ej inlämnad</p>
+                                }
+                            </td>
+                        </tr>
+                        i++;
+                        if(i >= 3){
+                            break;
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+
+
+
+    </div>
+    <div class="col-6">
+        <h5>Senaste inlämningar</h5>
+        <table class="table smalltext12">
+            <thead>
+                <tr>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.Name)*@
+                        Uppgift
+                    </th>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.EndDate)*@
+                        Inlämningsdatum
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    i = 0;
+                }
+                @foreach (var item in Model)
+                {
+                    if(item.EndDate < DateTime.Now){
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EndDate)
+                            </td>
+                            <td>
+                                @if (item.Documents.Any(d => d.Owner.Id == userManager.GetUserId(User)))
+                                {
+                                    <p>Inlämnad!</p>
+                                }
+                                else{
+                                    <p>Försenad!</p>
+                                }
+                            </td>
+                        </tr>
+                        i++;
+                        if (i >= 3)
+                        {
+                            break;
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>

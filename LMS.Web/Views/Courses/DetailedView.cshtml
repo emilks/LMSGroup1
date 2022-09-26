@@ -11,7 +11,7 @@
         <div class="col-2">
             <img src="~/images/workshop.jpg" class="img courseimg" alt="workshop" />
         </div>
-        <div class="col-2">
+        <div class="col-2" id="FirstCol">
             <h3>
                 @Html.DisplayFor(model => model.Name)
             </h3>
@@ -28,14 +28,14 @@
         <div class="col-1">
             <h5>Deltagare</h5>
             <p class="smalltext12">Antal deltagare: @Model.Students.Count()</p>
-        <button data-bs-toggle="modal" data-id="@Model.Id" id="btnListParticipants" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
+            <button data-bs-toggle="modal" data-id="@Model.Id" id="btnListParticipants" data-bs-target="#modalPartial" class="btn btn-lg btn-primary smalltext12 w-100">Se deltagare</button>
         
             @if (this.User.IsInRole("Teacher"))
             {
                 <button data-bs-toggle="modal" data-id="@Model.Id" id="btnAddStudent" data-bs-target="#modalPartial"  class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lägg till deltagare</button>
             }
         </div>
-        <div class="col-1">
+        <!--<div class="col-1">
             <h5>Uppgifter</h5>
             <p class="smalltext12">Pågående uppgifter: 2</p>
             <button data-bs-toggle="modal" data-bs-target="#seeTasks" class="btn btn-lg btn-primary smalltext12 w-100">Se uppgifter</button>
@@ -45,15 +45,19 @@
             <h5>Kursdokument</h5>
             <p class="smalltext12">Antal dokument: @Model.Documents.Count()</p>
             <button data-bs-toggle="modal" data-bs-target="#seeDocuments" class="btn btn-lg btn-primary smalltext12 w-100">Se dokument</button>
-            @if(User.IsInRole("Teacher")){
-                <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
-            }
-        </div>
+            <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Ladda upp</button>
+            
+        </div>-->
         <div class="col-1">
             <h5>Inlämningar</h5>
             <p class="smalltext12">Antal inlämnade: 4</p>
             <button data-bs-toggle="modal" data-bs-target="#seeTurnedIn" class="btn btn-lg btn-primary smalltext12 w-100">Se inlämnade</button>
             <button data-bs-toggle="modal" data-bs-target="#turnIn" class="btn btn-lg btn-primary smalltext12 w-100 mt-1">Lämna in</button>
+        </div>
+        <div class="col-1"></div>
+        <div class="col-4 card rounded-xl border-2 overflow-auto">
+            @await Component.InvokeAsync("Assignments", new { id = Model.Id })
+
         </div>
 
     </div>
