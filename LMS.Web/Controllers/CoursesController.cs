@@ -121,7 +121,7 @@ namespace LMS.Web.Controllers
             };
 
             // update data base
-            uow.CourseRepository.AddDocument(document.Course!, document);
+            await uow.CourseRepository.AddDocument(document.Course!, document);
             await uow.CompleteAsync();
 
             // expects an object as id, that's why an anonymous object is used

@@ -26,7 +26,7 @@ namespace LMS.Data.Repositories
             return db.Activity.FirstOrDefault(a => a.Id == id);
         }
 
-        public async void AddDocument(Activity activity, Document document) {
+        public async Task AddDocument(Activity activity, Document document) {
             if (db.Activity == null) {
                 return;
             }

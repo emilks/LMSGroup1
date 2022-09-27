@@ -98,7 +98,7 @@ namespace LMS.Web.Controllers
             };
 
             // update data base
-            uow.ActivityRepository.AddDocument(activity, document);
+            await uow.ActivityRepository.AddDocument(activity, document);
             await uow.CompleteAsync();
 
             // expects an object as id, that's why an anonymous object is used

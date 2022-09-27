@@ -107,7 +107,7 @@
                                 @Html.DisplayFor(modelItem => cSDate)
                                 <span> - </span>
                                 @Html.DisplayFor(modelItem => cEDate)
-                                                                @if (User.IsInRole("Teacher"))
+                                @if (User.IsInRole("Teacher"))
                                 {
                                 <a data-bs-toggle="modal" data-id="@item.Id" id="btnEditModule" data-bs-target="#modalPartial">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="navpurple mx-3" viewBox="0 0 16 16">
@@ -128,63 +128,7 @@
                             @(DateTime.Now > item.StartDate && DateTime.Now < item.EndDate?"show":"")
                             " id="r_@i" data-bs-parent=".table" data-target=".table">
                         <td></td>
-                        <td colspan="4">
-                            <span class="fw-bold fst-italic">Beskrivning: </span>@Html.DisplayFor(modelItem => item.Description)
-                            <h5 class="mb-2 mt-5">Aktiviteter:</h5>
-                            @foreach (var activity in item.Activities)
-                            {
-                                <div class="container-fluid">
-                                    <div class="row">
-                                <div class="mt-3 col-5">
-                                    <div class="sectioncolors d-flex justify-content-between">
-                                        <div>
-                                            @Html.DisplayFor(modelItem => activity.Name)
-                                        </div>
-                                        <div>
-                                            @{
-                                                string sdate = activity.StartDate.ToString("d");
-                                                string edate = activity.EndDate.ToString("d");
-                                            }
-                                            @Html.DisplayFor(modelItem => sdate)
-                                            <span> - </span>
-                                            @Html.DisplayFor(modelItem => edate)
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <span class="fw-bold fst-italic">Beskrivning: </span>
-                                        @Html.DisplayFor(modelItem => activity.Description)
-                                    </div>
-                                </div>
-                                <div class="mt-3 col-1"></div>
-                                <div class="mt-3 col-3">
-                                    <span class="largetext20">Aktivitetsdokument </span>
-                                    <button data-bs-toggle="modal" data-id="@activity.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Ladda upp</button>
-                                    @{
-                                        foreach(var document in activity.Documents) {
-                                            if(document.FilePath == $"files/courses/{Model.Name}/{item.Name}/{activity.Name}/{document.Name}") {
-                                                <filehelper document="document"></filehelper>
-                                            }
-                                        }
-                                    }
-                                </div>
-                                <div class="mt-3 col-3">
-                                    <span class="largetext20">Inlämnade dokument </span>
-                                    <button data-bs-toggle="modal" data-id="@activity.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
-                                    @{
-                                        foreach(var document in activity.Documents) {
-                                            if(document.FilePath != $"files/courses/{Model.Name}/{item.Name}/{activity.Name}/{document.Name}" &&
-                                               document.Owner == await userManager.GetUserAsync(User)) {
-                                                    <filehelper document="document"></filehelper>
-                                            }
-                                        }
-                                    }
-                                </div>
-                                </div>
-                                </div>
-                            }
-                        </td>
                       
-                            <td></td>
                             <td colspan="4">
                                 <span class="fw-bold fst-italic">Beskrivning: </span>@Html.DisplayFor(modelItem => item.Description)
 
