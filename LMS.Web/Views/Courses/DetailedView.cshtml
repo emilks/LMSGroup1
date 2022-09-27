@@ -214,10 +214,10 @@
                                         <button data-bs-toggle="modal" data-id="@activity.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
                                     }
                                     @{
+                                        var userFolder = userManager.GetUserName(User);
                                         foreach(var document in activity.Documents) {
-                                            if(document.FilePath != $"files/courses/{Model.Name}/{item.Name}/{activity.Name}/{document.Name}" &&
-                                               document.Owner == await userManager.GetUserAsync(User)) {
-                                                    <filehelper document="document"></filehelper>
+                                            if(document.FilePath == $"files/courses/{Model.Name}/{item.Name}/{activity.Name}/{userFolder}/{document.Name}") {
+                                                <filehelper document="document"></filehelper>
                                             }
                                         }
                                     }
