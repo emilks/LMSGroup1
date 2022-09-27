@@ -4,7 +4,7 @@
 @{
     int i = 0;
 }
-<div class="row overflow-auto">
+<div class="row overflow-auto mt-2">
 
     <div class="col-6">
         <h5>Kommande inlämningar</h5>
@@ -36,7 +36,7 @@
                                 
                             </td>
                             <td>
-                                @if (item.Documents.Any(d => d.Owner.Id == userManager.GetUserId(User)))
+                                @if (item.Documents.Any(d => d.Owner.Id.Equals(userManager.GetUserId(User))))
                                 {
                                     <p>Du har lämnat in!</p>
                                 }
@@ -54,7 +54,6 @@
                 }
             </tbody>
         </table>
-
 
 
     </div>
@@ -78,7 +77,7 @@
                 @{
                     i = 0;
                 }
-                @foreach (var item in Model)
+                @foreach (var item in Model.Reverse())
                 {
                     if(item.EndDate < DateTime.Now){
                         <tr>
@@ -89,7 +88,7 @@
                                 @Html.DisplayFor(modelItem => item.EndDate)
                             </td>
                             <td>
-                                @if (item.Documents.Any(d => d.Owner.Id == userManager.GetUserId(User)))
+                                @if (item.Documents.Any(d => d.Owner.Id.Equals(userManager.GetUserId(User))))
                                 {
                                     <p>Inlämnad!</p>
                                 }
