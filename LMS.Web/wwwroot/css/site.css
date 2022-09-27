@@ -117,13 +117,13 @@ a.blacknav:hover, a.blacknav:active {
 div.right {
     text-align: right;
 }
-.table tr {
+.cursorpointer {
     cursor: pointer;
 }
-tr.collapsed .icon-arrow-down {
+th.collapsed .icon-arrow-down {
     display: none;
 }
-tr:not(.collapsed) .icon-arrow-up {
+th:not(.collapsed) .icon-arrow-up {
     display: none;
 }
 .arrow {
