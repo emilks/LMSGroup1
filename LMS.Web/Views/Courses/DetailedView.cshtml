@@ -219,6 +219,9 @@
                                             if(document.FilePath == $"files/courses/{Model.Name}/{item.Name}/{activity.Name}/{userFolder}/{document.Name}") {
                                                 <filehelper document="document"></filehelper>
                                             }
+                                            else if(User.IsInRole("Teacher") && document.FilePath != $"files/courses/{Model.Name}/{item.Name}/{activity.Name}/{document.Name}") {
+                                                <filehelper document="document"></filehelper>
+                                            }
                                         }
                                     }
                                 </div>
