@@ -26,7 +26,7 @@ namespace LMS.Web.ViewComponents
                 .OrderBy(a => a.EndDate)
                 .Include(a => a.Documents).ThenInclude(d => d.Owner);
 
-            var viewModels = mapper.ProjectTo<ActivityViewModel>(activities);
+            var viewModels = mapper.ProjectTo<ActivitiesViewModel>(activities);
 
             return View(viewModels);
         }
