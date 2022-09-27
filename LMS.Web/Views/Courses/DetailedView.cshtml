@@ -244,14 +244,29 @@
                                                 </div>
                                             </div>
                                             <div class="mt-3 col-1"></div>
-                                            <div class="mt-3 col-3">
-                                                <span class="largetext20">Aktivitetsdokument </span>
-                                                <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Ladda upp</button>
-                                            </div>
-                                            <div class="mt-3 col-3">
-                                                <span class="largetext20">Inlämnade dokument </span>
-                                                <button data-bs-toggle="modal" data-bs-target="#turnIn" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
-                                            </div>
+                                <div class="mt-3 col-3">
+                                    <span class="largetext20">Aktivitetsdokument </span>
+                                    <button data-bs-toggle="modal" data-id="@activity.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Ladda upp</button>
+                                    @{
+                                        foreach(var document in activity.Documents) {
+                                            if(document.FilePath == $"files/courses/{Model.Name}/{item.Name}/{activity.Name}/{document.Name}") {
+                                                <filehelper document="document"></filehelper>
+                                            }
+                                        }
+                                    }
+                                </div>
+                                <div class="mt-3 col-3">
+                                    <span class="largetext20">Inlämnade dokument </span>
+                                    <button data-bs-toggle="modal" data-id="@activity.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
+                                    @{
+                                        foreach(var document in activity.Documents) {
+                                            if(document.FilePath != $"files/courses/{Model.Name}/{item.Name}/{activity.Name}/{document.Name}" &&
+                                               document.Owner == await userManager.GetUserAsync(User)) {
+                                                    <filehelper document="document"></filehelper>
+                                            }
+                                        }
+                                    }
+                                </div>
                                         </div>
                                     </div>
                                 }
