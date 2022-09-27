@@ -63,7 +63,7 @@ namespace LMS.Data.Repositories
             return await db.TeacherUser.ToListAsync();
         }
 
-        public async void AddDocument(Course course, Document document) {
+        public async Task AddDocument(Course course, Document document) {
             if(db.Course == null) {
                 return;
             }

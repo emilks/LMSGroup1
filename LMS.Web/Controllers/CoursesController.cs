@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.Encodings.Web;
 
 namespace LMS.Web.Controllers
 {
@@ -91,36 +92,49 @@ namespace LMS.Web.Controllers
             }
 
             // create file object
-            var documentName = model.FileBuffer!.FileName;
+            var fileName = model.FileBuffer!.FileName;
+            var relativePath = $"/files/courses/{model.Name}";
+            var createPath = Path.Combine(webHostEnvironment.WebRootPath, relativePath);
+            string filePath = Path.Combine(createPath, fileName);
+
+            if (Directory.Exists(createPath) == false) {
+                Directory.CreateDirectory(createPath);
+            }
+
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create)) {
+                model.FileBuffer.CopyTo(fileStream);
+            }
+
+            var course = await uow.CourseRepository.GetCourseWithContacts(model.Id);
+            ArgumentNullException.ThrowIfNull(nameof(course));
 
             var document = new Document() {
-                Name = documentName,
+                Name = fileName,
                 Description = model.DocumentDescription,
-                FilePath = $"/files/courses/{model.Name}/{documentName}",
+                FilePath = relativePath + "/" + fileName,
+                IdentityUserId = userManager.GetUserId(User),
+                // Owner is needed!
                 Owner = await userManager.GetUserAsync(User),
-                Course = await uow.CourseRepository.GetCourseWithContacts(model.Id), // make 'WithContacts' optional!
-                Module = null, // ??
-                Activity = null // ??
+                Course = course,
+                Module = null,
+                Activity = null
             };
 
-            // save file
-            var documentPath = $"files\\courses\\{model.Name}";
-            var path = Path.Combine(webHostEnvironment.WebRootPath, documentPath);
-
-            if (!Directory.Exists(path)) {
-                Directory.CreateDirectory(documentPath);
-            }
-
-            using (Stream fileStream = new FileStream(Path.Combine(path, documentName), FileMode.Create)) {
-                await model.FileBuffer.CopyToAsync(fileStream);
-            }
-
             // update data base
-            uow.CourseRepository.AddDocument(document.Course, document);
+            await uow.CourseRepository.AddDocument(document.Course!, document);
             await uow.CompleteAsync();
 
             // expects an object as id, that's why an anonymous object is used
             return RedirectToAction("DetailedView", new { id = model.Id });
+        }
+
+
+        public IActionResult DownloadFile(string path) {
+            var fileName = Path.GetFileName(path);
+            var absolutePath = Path.Combine(webHostEnvironment.WebRootPath, path);
+            var fileBuffer = System.IO.File.ReadAllBytes(absolutePath);
+
+            return File(fileBuffer, "application/octet-stream", fileName);
         }
 
 
@@ -142,7 +156,8 @@ namespace LMS.Web.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(course);
+
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: Courses/Edit/5
@@ -341,5 +356,15 @@ namespace LMS.Web.Controllers
             return RedirectToAction("DetailedView", new { id = test });
         }
 
+        public IActionResult UploadActivityModalPartial(int? id, int? documentParentId, string? CourseName) {
+            if(ModelState.IsValid == false || documentParentId == null) {
+                return View();
+            }
+            var model = new CourseViewModel();
+            model.documentParentId = documentParentId;
+            model.Id = (int)id;
+            model.Name = CourseName;
+            return PartialView(model);
+        }
     }
 }

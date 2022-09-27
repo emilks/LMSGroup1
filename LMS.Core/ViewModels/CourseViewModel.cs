@@ -15,12 +15,11 @@ namespace LMS.Core.ViewModels
         public DateTime EndDate { get; set; }
 
         // document properties
+        public int? documentParentId { get; set; }
         public IFormFile? FileBuffer { get; set; }
+        [Required]
         [DisplayName("Beskrivning")]
         public string DocumentDescription { get; set; } = string.Empty;
-
-        // alternativ 2
-        public DocumentViewModel? DocumentVM { get; set; }
 
         // Navigation props
         public ICollection<Module> Modules { get; set; } = new List<Module>();

@@ -9,6 +9,7 @@ namespace LMS.Core.ViewModels
 {
     public class ModuleViewModel
     {
+        public int Id { get; set; }
         [DisplayName("Modulnamn")]
         public string Name { get; set; }
         [DisplayName("Beskrivning")]
@@ -40,6 +41,6 @@ namespace LMS.Core.ViewModels
             }
         }
 
-        public IEnumerable<ActivityViewModel> Activities { get; set; }
+        public IEnumerable<ActivitiesViewModel> Activities { get; set; }
     }
 }

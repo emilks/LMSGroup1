@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace LMS.Core.Entities
 {
@@ -10,7 +11,9 @@ namespace LMS.Core.Entities
         [DisplayName("Beskrivning")]
         public string Description { get; set; } = string.Empty;
         [DisplayName("Start datum")]
+        [DataType(DataType.Date)]
         public DateTime StartDate { get; set; }
+        [DataType(DataType.Date)]
         [DisplayName("Slut datum")]
         public DateTime EndDate { get; set; }
 

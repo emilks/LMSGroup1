@@ -258,14 +258,14 @@ namespace LMS.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FilePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CourseId = table.Column<int>(type: "int", nullable: true),
                     ModuleId = table.Column<int>(type: "int", nullable: true),
                     ActivityId = table.Column<int>(type: "int", nullable: true),
-                    OwnerId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    IdentityUserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -276,8 +276,8 @@ namespace LMS.Data.Migrations
                         principalTable: "Activity",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Document_AspNetUsers_OwnerId",
-                        column: x => x.OwnerId,
+                        name: "FK_Document_AspNetUsers_IdentityUserId",
+                        column: x => x.IdentityUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
@@ -362,14 +362,14 @@ namespace LMS.Data.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Document_IdentityUserId",
+                table: "Document",
+                column: "IdentityUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Document_ModuleId",
                 table: "Document",
                 column: "ModuleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Document_OwnerId",
-                table: "Document",
-                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Module_CourseId",

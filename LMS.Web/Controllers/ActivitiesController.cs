@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using LMS.Core.Entities;
-using LMS.Data.Data;
-using LMS.Web.Services;
+using LMS.Core.Repositories;
 using LMS.Core.Services;
 using LMS.Core.ViewModels;
-using AutoMapper;
-using System.Diagnostics;
+using LMS.Data.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Activity = LMS.Core.Entities.Activity;
 
 namespace LMS.Web.Controllers
@@ -21,12 +16,93 @@ namespace LMS.Web.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IDateValidationService _dateValidationService;
         private readonly IMapper mapper;
+        private readonly UserManager<IdentityUser> userManager;
+        private readonly IUnitOfWork uow;
+        private readonly IWebHostEnvironment webHostEnvironment;
 
-        public ActivitiesController(ApplicationDbContext context, IDateValidationService dateValidationService, IMapper mapper)
+        public ActivitiesController(IDateValidationService dateValidationService,
+                                    IMapper mapper, 
+                                    IWebHostEnvironment webHostEnvironment, 
+                                    IUnitOfWork unitOfWork, 
+                                    ApplicationDbContext context, 
+                                    UserManager<IdentityUser> um)
         {
             _context = context;
             _dateValidationService = dateValidationService;
+            userManager = um;
+            uow = unitOfWork;
+            this.webHostEnvironment = webHostEnvironment;
             this.mapper = mapper;
+        }
+
+
+        // POST: Activities/UploadDocument
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadDocument(CourseViewModel model) {
+            //if (ModelState.IsValid == false) {
+            //    return Problem("Could not upload file, model state not valid");
+            //}
+
+            // name convention
+            //
+            // public files
+            // files/courses/{courseName}/{moduleName}/{activityName}/{fileName}
+            //
+            // personal files
+            // files/courses/{courseName}/{moduleName}/{activityName}/{studentUserName}/{fileName}
+            //
+
+            // sort out names for file path
+            var activity = await uow.ActivityRepository.GetActivity(model.documentParentId, includeModuleAndDocuments: true);
+            if (activity == null) throw new ArgumentNullException(nameof(activity));
+
+            var courseName = model.Name;
+            var moduleName = activity.Module.Name;
+            var activityName = activity.Name;
+            var fileName = model.FileBuffer!.FileName;
+            var userName = userManager.GetUserName(User);
+
+            // create file path
+            var relativePath = $"files/courses/{courseName}/{moduleName}/{activityName}"; 
+
+            if(User.IsInRole("Student")) {
+                relativePath += $"/{userName}";
+            }
+
+            var absolutePath = Path.Combine(webHostEnvironment.WebRootPath, relativePath);
+            string filePath = Path.Combine(absolutePath, fileName);
+
+            if (Directory.Exists(absolutePath) == false) {
+                Directory.CreateDirectory(absolutePath);
+            }
+
+            // write file to disk
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create)) {
+                model.FileBuffer.CopyTo(fileStream);
+            }
+
+            // create document
+            var document = new Document() {
+                Name = fileName,
+                Description = model.DocumentDescription,
+                FilePath = relativePath + "/" + fileName,
+                IdentityUserId = userManager.GetUserId(User),
+                // Owner is needed!
+                Owner = await userManager.GetUserAsync(User),
+                Course = null,
+                Module = null,
+                Activity = activity
+            };
+
+            // update data base
+            await uow.ActivityRepository.AddDocument(activity, document);
+            await uow.CompleteAsync();
+
+            // expects an object as id, that's why an anonymous object is used
+            return RedirectToAction("DetailedView", "Courses", new { id = model.Id });
         }
 
         // GET: Activities
@@ -79,7 +155,7 @@ namespace LMS.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ActivityViewModel viewModel)
+        public async Task<IActionResult> Create(ActivitiesViewModel viewModel)
         {
             var activityType = _context.ActivityType.FirstOrDefault(a => a.Id == viewModel.ActivityTypeId);
 
@@ -97,7 +173,7 @@ namespace LMS.Web.Controllers
         }
 
         // GET: Activities/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> EditPartial(int? id)
         {
             if (id == null || _context.Activity == null)
             {
@@ -109,7 +185,7 @@ namespace LMS.Web.Controllers
             {
                 return NotFound();
             }
-            return View(activity);
+            return PartialView(activity);
         }
 
         // POST: Activities/Edit/5
@@ -117,12 +193,14 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,StartDate,EndDate")] Activity activity)
+        public async Task<IActionResult> EditPartial(int id, Activity activity)
         {
             if (id != activity.Id)
             {
                 return NotFound();
             }
+            var moduleId =_context.Module.FirstOrDefault(m => m.Id == activity.ModuleId);
+            var courseId = moduleId.CourseId;
 
             if (ModelState.IsValid)
             {
@@ -142,13 +220,13 @@ namespace LMS.Web.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("DetailedView", "Courses", new { id = courseId });
             }
             return View(activity);
         }
 
         // GET: Activities/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> DeletePartial(int? id)
         {
             if (id == null || _context.Activity == null)
             {
@@ -162,7 +240,7 @@ namespace LMS.Web.Controllers
                 return NotFound();
             }
 
-            return View(activity);
+            return PartialView(activity);
         }
 
         // POST: Activities/Delete/5
@@ -175,6 +253,9 @@ namespace LMS.Web.Controllers
                 return Problem("Entity set 'ApplicationDbContext.Activity'  is null.");
             }
             var activity = await _context.Activity.Include(a => a.Documents).FirstOrDefaultAsync(a => a.Id == id);
+            var moduleId = new Module();
+            var courseId = moduleId.CourseId;
+
             if (activity != null)
             {
                 _context.RemoveRange(activity.Documents);
@@ -182,7 +263,7 @@ namespace LMS.Web.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("DetailedView", "Courses", new { id = courseId });
         }
 
         private bool ActivityExists(int id)

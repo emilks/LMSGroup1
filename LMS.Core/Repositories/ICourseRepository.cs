@@ -10,6 +10,6 @@ namespace LMS.Core.Repositories
 
         void RemoveCourse(Course course);
         Task<IEnumerable<TeacherUser?>> GetTeacherContacts();
-        void AddDocument(Course course, Document document);
+        Task AddDocument(Course course, Document document);
     }
 }

@@ -280,8 +280,8 @@ namespace LMS.Data
                 {
                     Name = faker!.Company.CatchPhrase(),
                     Description = faker!.Lorem.Paragraph(),
-                    StartDate = DateTime.Now.AddDays(1 + random.Next(40)),
-                    EndDate = DateTime.Now.AddDays(60 + random.Next(40))
+                    StartDate = DateTime.Now.Date.AddDays(1 + random.Next(40)),
+                    EndDate = DateTime.Now.Date.AddDays(60 + random.Next(40))
                 };
 
                 course.Modules = GetModules(

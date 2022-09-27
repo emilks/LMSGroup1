@@ -1,4 +1,7 @@
-﻿@model CourseViewModel
+﻿@using Microsoft.AspNetCore.Identity
+@model CourseViewModel
+@inject UserManager<IdentityUser> userManager
+
 @using LMS.Core.Services
 @inject IDateSuggestionService DateSuggestionService
 @{
@@ -85,45 +88,43 @@
             <div class="table-responsive">
                 <table class="table accordion">
                     <tbody>
-                        <tr data-bs-toggle="collapse" data-bs-target="#r_@i">
-                            <th scope="row">
-                                <i class="icon-arrow-down arrow up mx-2"></i>
-                                <i class="icon-arrow-up arrow down mx-2"></i>
+                        <tr>
+                            <th scope="row" data-bs-toggle="collapse" data-bs-target="#r_@i">
+                                <i class="icon-arrow-down arrow up mx-2 cursorpointer"></i>
+                                <i class="icon-arrow-up arrow down mx-2 cursorpointer"></i>
                             </th>
-                            <td class="d-flex justify-content-start">
-
-
-                                <span class="fw-bold text-start">@Html.DisplayFor(modelItem => item.Name) </span><span> | </span>
-
-                                
+                            <td>
+                                     <span class="fw-bold">@Html.DisplayFor(modelItem => item.Name) </span><span> | </span>
                                 @{
                                     string cSDate = item.StartDate.ToString("d");
                                     string cEDate = item.EndDate.ToString("d");
                                 }
+                                
                                 @Html.DisplayFor(modelItem => cSDate)
                                 <span> - </span>
                                 @Html.DisplayFor(modelItem => cEDate)
                                 @if (User.IsInRole("Teacher"))
                                 {
-                                    <a asp-controller="Modules" asp-action="Edit" asp-route-id="@item.Id">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen navpurple" viewBox="0 0 16 16">
-                                            <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z" />
-                                        </svg>
-                                    </a>
-                                    <span>|</span>
-                                    <a asp-controller="Modules" asp-action="Delete" asp-route-id="@item.Id" class="bi bi-trash">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash navpurple" viewBox="0 0 16 16">
-                                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
-                                        </svg>
-                                    </a>
+                                <a data-bs-toggle="modal" data-id="@item.Id" id="btnEditModule" data-bs-target="#modalPartial">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="navpurple mx-3 cursorpointer" viewBox="0 0 16 16">
+                                        <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z" />
+                                    </svg>
+
+                                    </a> <span>|</span>
+                                <a data-bs-toggle="modal" data-id="@item.Id" id="btnDeleteModule" data-bs-target="#modalPartial">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="navpurple mx-3 cursorpointer" viewBox="0 0 16 16">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                    </svg>
+                                </a>
                                 }
                             </td>
                         </tr>
                         <tr class="collapse accordion-collapse
                             @(DateTime.Now > item.StartDate && DateTime.Now < item.EndDate?"show":"")
                             " id="r_@i" data-bs-parent=".table" data-target=".table">
-                            <td></td>
+                        <td></td>
+                      
                             <td colspan="4">
                                 <span class="fw-bold fst-italic">Beskrivning: </span>@Html.DisplayFor(modelItem => item.Description)
 
@@ -136,7 +137,7 @@
                                         @if(User.IsInRole("Teacher")){
                                                 <button class="btn btn-primary mt-5" data-bs-toggle="collapse" data-bs-target="#collapseAddActivity_@i" aria-expanded="false" aria-controls="collapseAddActivity_@i">Lägg till aktivitet</button>
                                                 <div class="collapse" id="collapseAddActivity_@i">
-                                                    <partial name="~/Views/Activities/CreatePartial.cshtml" model="new ActivityViewModel{ModuleId = @item.Id}" />
+                                                    <partial name="~/Views/Activities/CreatePartial.cshtml" model="new ActivitiesViewModel{ModuleId = @item.Id}" />
                                                 </div>
                                         }
                                     </div>
@@ -163,18 +164,17 @@
                                                     </div>
                                                     <div>
                                                         @if(User.IsInRole("Teacher")){
-                                                            <a asp-controller="Activities" asp-action="Edit" asp-route-id="@activity.Id">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-pen navpurple" viewBox="0 0 16 16">
-                                                                    <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z" />
-                                                                </svg>
-                                                            </a>
-                                                            <span>|</span>
-                                                            <a asp-controller="Activities" asp-action="Delete" asp-route-id="@activity.Id" class="bi bi-trash">
-                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-trash navpurple" viewBox="0 0 16 16">
-                                                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                                                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
-                                                                </svg>
-                                                            </a>
+                                                        <a data-bs-toggle="modal" data-id="@activity.Id" id="btnEditActivity" data-bs-target="#modalPartial">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="mx-2 navpurple" viewBox="0 0 16 16">
+                                                                <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z" />
+                                                            </svg>
+                                                            </a> <span>|</span>
+                                                        <a data-bs-toggle="modal" data-id="@activity.Id" id="btnDeleteActivity" data-bs-target="#modalPartial">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="mx-2 navpurple" viewBox="0 0 16 16">
+                                                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                                            </svg>
+                                                        </a>
                                                         }
                                                     </div>
                                                 </div>
@@ -184,14 +184,29 @@
                                                 </div>
                                             </div>
                                             <div class="mt-3 col-1"></div>
-                                            <div class="mt-3 col-3">
-                                                <span class="largetext20">Aktivitetsdokument </span>
-                                                <button data-bs-toggle="modal" data-bs-target="#addDocuments" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Ladda upp</button>
-                                            </div>
-                                            <div class="mt-3 col-3">
-                                                <span class="largetext20">Inlämnade dokument </span>
-                                                <button data-bs-toggle="modal" data-bs-target="#turnIn" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
-                                            </div>
+                                <div class="mt-3 col-3">
+                                    <span class="largetext20">Aktivitetsdokument </span>
+                                    <button data-bs-toggle="modal" data-id="@activity.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Ladda upp</button>
+                                    @{
+                                        foreach(var document in activity.Documents) {
+                                            if(document.FilePath == $"files/courses/{Model.Name}/{item.Name}/{activity.Name}/{document.Name}") {
+                                                <filehelper document="document"></filehelper>
+                                            }
+                                        }
+                                    }
+                                </div>
+                                <div class="mt-3 col-3">
+                                    <span class="largetext20">Inlämnade dokument </span>
+                                    <button data-bs-toggle="modal" data-id="@activity.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
+                                    @{
+                                        foreach(var document in activity.Documents) {
+                                            if(document.FilePath != $"files/courses/{Model.Name}/{item.Name}/{activity.Name}/{document.Name}" &&
+                                               document.Owner == await userManager.GetUserAsync(User)) {
+                                                    <filehelper document="document"></filehelper>
+                                            }
+                                        }
+                                    }
+                                </div>
                                         </div>
                                     </div>
                                 }
@@ -323,15 +338,11 @@
 
 <!-- Ladda upp dokument -->
 <div class="modal fade" id="addDocuments" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-@*    
-    @{
-        var Model.DocumentVM = new DocumentViewModel();
-        Model.DocumentViewModel.ParentId = Model.Id;
-    }
-   <partial name="UploadModalPartial" model="@Model.DocumentViewModel" /> 
-
-*@   
     <partial name="UploadModalPartial" />
+</div>
+
+<div class="modal fade" id="addDocumentsActivity" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <partial name="UploadActivityModalPartial" />
 </div>
 
     <!-- Se inlämnade -->
@@ -395,6 +406,27 @@ $(function () {
     });
 });
 
+$(function() { 
+    $("body").on('click', '#btnAddDocumentsActivity', function() {
+        var id = $(this).attr('data-id');
+        $.ajax({
+            method: "GET",
+            data: { "id": @Model.Id, "documentParentId": id },
+            url: `/Courses/UploadActivityModalPartial?CourseName=@Model.Name`,
+
+            success: function(response) {
+
+                $("#addDocumentsActivity").html(response);
+                $("#addDocumentsActivity").modal("show");
+            },
+            error: function(response) {
+                console.log(response)
+            }
+        });
+    });
+});
+
+
 $(function () {
         $("body").on('click', '#btnAddStudent', function () {
             var id = $(this).attr('data-id');
@@ -410,8 +442,74 @@ $(function () {
         });
     });
 });
+
+$(function () {
+        $("body").on('click', '#btnEditModule', function () {
+            var id = $(this).attr('data-id');
+ 
+        $.ajax({
+            data: { id },
+            url: '../../Modules/Edit',
+            
+            success: function (response) {
+                $("#ModalContent").html(response);
+                $("#modalPartial").modal("show");
+            }
+        });
+    });
+});
+
+$(function () {
+        $("body").on('click', '#btnDeleteModule', function () {
+            var id = $(this).attr('data-id');
+ 
+        $.ajax({
+            data: { id },
+            url: '../../Modules/DeletePartial',
+            
+            success: function (response) {
+                $("#ModalContent").html(response);
+                $("#modalPartial").modal("show");
+            }
+        });
+    });
+});
+
+$(function () {
+        $("body").on('click', '#btnEditActivity', function () {
+            var id = $(this).attr('data-id');
+ 
+        $.ajax({
+            data: { id },
+            url: '../../Activities/EditPartial',
+            
+            success: function (response) {
+                $("#ModalContent").html(response);
+                $("#modalPartial").modal("show");
+            }
+        });
+    });
+});
+
+$(function () {
+        $("body").on('click', '#btnDeleteActivity', function () {
+            var id = $(this).attr('data-id');
+ 
+        $.ajax({
+            data: { id },
+            url: '../../Activities/DeletePartial',
+            
+            success: function (response) {
+                $("#ModalContent").html(response);
+                $("#modalPartial").modal("show");
+            }
+        });
+    });
+});
+
+
 </script>
 
+
+
 }
-
-

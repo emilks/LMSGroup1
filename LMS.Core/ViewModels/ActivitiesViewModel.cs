@@ -6,8 +6,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LMS.Core.ViewModels
 {
-    public class ActivityViewModel
+    public class ActivitiesViewModel
     {
+        public int Id { get; set; }
         public int ModuleId { get; set; }
 
         [DisplayName("Aktivitetsnamn")]
