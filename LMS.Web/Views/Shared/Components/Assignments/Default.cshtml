@@ -1,0 +1,116 @@
+﻿@model IEnumerable<ActivitiesViewModel>
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> userManager
+@{
+    int i = 0;
+}
+<div class="row overflow-auto mt-2">
+
+    <div class="col-6">
+        <h5>Kommande inlämningar</h5>
+
+        <table class="table smalltext12">
+            <thead>
+                <tr>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.Name)*@
+                        Uppgift
+                    </th>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.EndDate)*@
+                        Inlämningsdatum
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    if(item.EndDate > DateTime.Now){
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EndDate)
+                                
+                            </td>
+                            <td>
+                                @if(User.IsInRole("Student")){
+                                    if (item.Documents.Any(d => d.Owner.Id.Equals(userManager.GetUserId(User))))
+                                    {
+                                        <p>Du har lämnat in!</p>
+                                    }
+                                    else
+                                    {
+                                        <button data-bs-toggle="modal" data-id="@item.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        i++;
+                        if(i >= 3){
+                            break;
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+
+
+    </div>
+    <div class="col-6">
+        <h5>Senaste inlämningar</h5>
+        <table class="table smalltext12">
+            <thead>
+                <tr>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.Name)*@
+                        Uppgift
+                    </th>
+                    <th>
+                        @*@Html.DisplayNameFor(model => model.EndDate)*@
+                        Inlämningsdatum
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    i = 0;
+                }
+                @foreach (var item in Model.Reverse())
+                {
+                    if(item.EndDate < DateTime.Now){
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.EndDate)
+                            </td>
+                            <td>
+                                @if(User.IsInRole("Student")){
+                                    if (item.Documents.Any(d => d.Owner.Id.Equals(userManager.GetUserId(User))))
+                                    {
+                                        <p>Inlämnad!</p>
+                                    }
+                                    else{
+                                        <p>Försenad!</p>
+                                        <button data-bs-toggle="modal" data-id="@item.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                        i++;
+                        if (i >= 3)
+                        {
+                            break;
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
