@@ -36,13 +36,15 @@
                                 
                             </td>
                             <td>
-                                @if (item.Documents.Any(d => d.Owner.Id.Equals(userManager.GetUserId(User))))
-                                {
-                                    <p>Du har lämnat in!</p>
-                                }
-                                else
-                                {
-                                    <p>Ej inlämnad</p>
+                                @if(User.IsInRole("Student")){
+                                    if (item.Documents.Any(d => d.Owner.Id.Equals(userManager.GetUserId(User))))
+                                    {
+                                        <p>Du har lämnat in!</p>
+                                    }
+                                    else
+                                    {
+                                        <button data-bs-toggle="modal" data-id="@item.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
+                                    }
                                 }
                             </td>
                         </tr>
@@ -88,12 +90,15 @@
                                 @Html.DisplayFor(modelItem => item.EndDate)
                             </td>
                             <td>
-                                @if (item.Documents.Any(d => d.Owner.Id.Equals(userManager.GetUserId(User))))
-                                {
-                                    <p>Inlämnad!</p>
-                                }
-                                else{
-                                    <p>Försenad!</p>
+                                @if(User.IsInRole("Student")){
+                                    if (item.Documents.Any(d => d.Owner.Id.Equals(userManager.GetUserId(User))))
+                                    {
+                                        <p>Inlämnad!</p>
+                                    }
+                                    else{
+                                        <p>Försenad!</p>
+                                        <button data-bs-toggle="modal" data-id="@item.Id" id="btnAddDocumentsActivity" class="btn btn-lg btn-primary smalltext12 w-30 mt-1 mx-4">Lämna in</button>
+                                    }
                                 }
                             </td>
                         </tr>
