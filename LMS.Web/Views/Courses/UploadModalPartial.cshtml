@@ -15,6 +15,9 @@
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="Name" />
 
+            <div>
+            </div>
+
             <div class="form-group mb-4">
                 <input asp-for="@Model.FileBuffer" id="file" accept="image/jpeg,image/gif,image/png,application/pdf,image/x-eps" type="file" class="text-black"/>
             </div>
@@ -35,3 +38,9 @@
     </div>
   </div>
 
+<script>
+    function FileSelected(e) {
+        file = document.getElementById('filePicker').files[document.getElementById('filePicker').files.length - 1];
+        document.getElementById('fileName').innerHtml= file.name;
+    }
+</script>

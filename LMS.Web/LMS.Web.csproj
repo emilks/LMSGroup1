@@ -9,15 +9,19 @@
 
   <ItemGroup>
     <Compile Remove="Assets\**" />
+    <Compile Remove="ViewModels\**" />
     <Compile Remove="Views\Assets\**" />
     <Compile Remove="wwwroot\NewFolder1\**" />
     <Content Remove="Assets\**" />
+    <Content Remove="ViewModels\**" />
     <Content Remove="Views\Assets\**" />
     <Content Remove="wwwroot\NewFolder1\**" />
     <EmbeddedResource Remove="Assets\**" />
+    <EmbeddedResource Remove="ViewModels\**" />
     <EmbeddedResource Remove="Views\Assets\**" />
     <EmbeddedResource Remove="wwwroot\NewFolder1\**" />
     <None Remove="Assets\**" />
+    <None Remove="ViewModels\**" />
     <None Remove="Views\Assets\**" />
     <None Remove="wwwroot\NewFolder1\**" />
   </ItemGroup>
@@ -45,10 +49,6 @@
   <ItemGroup>
     <ProjectReference Include="..\LMS.Core\LMS.Core.csproj" />
     <ProjectReference Include="..\LMS.Data\LMS.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
   </ItemGroup>
 
   <ItemGroup>
