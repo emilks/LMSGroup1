@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-using Activities = LMS.Core.Entities.Activities;
+using Activity = LMS.Core.Entities.Activity;
 using Module = LMS.Core.Entities.Module;
 
 namespace LMS.Data
@@ -417,13 +417,13 @@ namespace LMS.Data
             return modules;
         }
 
-        private static ICollection<Activities> GetActivites(int nrActivities,
+        private static ICollection<Activity> GetActivites(int nrActivities,
             DateTime moduleStart, DateTime moduleEnd,
             IEnumerable<ActivityType> activityTypes,
             IEnumerable<IdentityUser> teachers,
             IEnumerable<IdentityUser> students)
         {
-            var activites = new List<Activities>();
+            var activites = new List<Activity>();
 
             var activityStartDate = moduleStart;
 
@@ -439,7 +439,7 @@ namespace LMS.Data
                 if (activityEndDate > moduleEnd)
                     break;
 
-                var activity = new Activities
+                var activity = new Activity
                 {
                     Name = faker!.Company.CatchPhrase(),
                     Description = faker!.Lorem.Paragraph(),

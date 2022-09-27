@@ -39,7 +39,7 @@ namespace LMS.Core.Entities
         public int CourseId { get; set; }
 
         // Navigation props
-        public ICollection<Activities> Activities { get; set; } = new List<Activities>();
+        public ICollection<Activity> Activities { get; set; } = new List<Activity>();
         public ICollection<Document> Documents { get; set; } = new List<Document>();
 
         public Course Course { get; set; }

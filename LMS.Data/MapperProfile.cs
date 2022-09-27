@@ -19,7 +19,7 @@ namespace LMS.Data
 
             CreateMap<Course, CourseContactsViewModel>();
 
-            CreateMap<Activities, ActivitiesViewModel>().ReverseMap();
+            CreateMap<Activity, ActivitiesViewModel>().ReverseMap();
 
             CreateMap<Course, CourseViewModel>();
 

@@ -7,7 +7,7 @@ using LMS.Data.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Activities = LMS.Core.Entities.Activities;
+using Activity = LMS.Core.Entities.Activity;
 
 namespace LMS.Web.Controllers
 {
@@ -159,7 +159,7 @@ namespace LMS.Web.Controllers
         {
             var activityType = _context.ActivityType.FirstOrDefault(a => a.Id == viewModel.ActivityTypeId);
 
-            var activity  = mapper.Map<Activities>(viewModel);
+            var activity  = mapper.Map<Activity>(viewModel);
             activity.ActivityType = activityType;
             var courseId = int.Parse(TempData["CourseId"].ToString());
 
@@ -193,7 +193,7 @@ namespace LMS.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPartial(int id, Activities activity)
+        public async Task<IActionResult> EditPartial(int id, Activity activity)
         {
             if (id != activity.Id)
             {

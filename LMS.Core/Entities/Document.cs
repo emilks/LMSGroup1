@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel;
 
 namespace LMS.Core.Entities
 {
@@ -23,7 +24,6 @@ namespace LMS.Core.Entities
 
         public string? IdentityUserId { get; set; }
         public IdentityUser? Owner { get; set; }
-        public Activities? Activity { get; set; }
 
         public Document() {
             Timestamp = DateTime.Now;
